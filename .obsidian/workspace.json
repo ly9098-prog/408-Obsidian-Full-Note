@@ -4,24 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "333b0f58f0c4550f",
+        "id": "ced0089b6def1dc2",
         "type": "tabs",
         "children": [
           {
-            "id": "9b1357c3032043f9",
+            "id": "cf5f4ddb52a8b252",
             "type": "leaf",
             "state": {
-              "type": "canvas",
-              "state": {
-                "file": "CS408-Obsidian-Note-latest/1数据结构/1 绪论/1 绪论.canvas",
-                "viewState": {
-                  "x": 710.4057502621026,
-                  "y": 956.5802516940948,
-                  "zoom": -1.6669435271683177
-                }
-              },
-              "icon": "lucide-layout-dashboard",
-              "title": "1 绪论"
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "新标签页"
             }
           }
         ]
@@ -77,8 +70,7 @@
               "title": "书签"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -200,9 +192,10 @@
   },
   "active": "bc4c6b3085281598",
   "lastOpenFiles": [
+    "未命名.canvas",
+    "CS408-Obsidian-Note-latest/1数据结构/1 绪论/1 绪论.canvas",
     "CS408-Obsidian-Note-latest/1数据结构/1 绪论/1.1.1 数据结构基本概念和术语.md",
     "CS408-Obsidian-Note-latest/1数据结构/1 绪论/1.0 绪论常考点.md",
-    "CS408-Obsidian-Note-latest/1数据结构/1 绪论/1 绪论.canvas",
     "CS408-Obsidian-Note-latest/1数据结构/5 树与二叉树/5 树与二叉树.canvas",
     "CS408-Obsidian-Note-latest/1数据结构/2 线性表/2.3.6 顺序表和链表的比较.md",
     "CS408-Obsidian-Note-latest/1数据结构/2 线性表/2.3.5 静态链表.md",
