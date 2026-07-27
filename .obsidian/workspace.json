@@ -1,0 +1,221 @@
+{
+  "main": {
+    "id": "8ee00086b59ed0fb",
+    "type": "split",
+    "children": [
+      {
+        "id": "333b0f58f0c4550f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "9b1357c3032043f9",
+            "type": "leaf",
+            "state": {
+              "type": "canvas",
+              "state": {
+                "file": "CS408-Obsidian-Note-latest/1数据结构/1 绪论/1 绪论.canvas",
+                "viewState": {
+                  "x": 710.4057502621026,
+                  "y": 956.5802516940948,
+                  "zoom": -1.6669435271683177
+                }
+              },
+              "icon": "lucide-layout-dashboard",
+              "title": "1 绪论"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "ea849bb26e558e1b",
+    "type": "split",
+    "children": [
+      {
+        "id": "ab073b6c646bf3eb",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "11c4255ecaddd44b",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "0f5273548e83e7c9",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "c53cb92e839e6a7f",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "709892d8b0301cf6",
+    "type": "split",
+    "children": [
+      {
+        "id": "2f4f3416d40395f7",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a61cc4a103f8b56f",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "CS408-Obsidian-Note-latest/1数据结构/1 绪论/1 绪论.canvas",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "1 绪论 的反向链接列表"
+            }
+          },
+          {
+            "id": "4347bc2a44d96f02",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "CS408-Obsidian-Note-latest/1数据结构/1 绪论/1 绪论.canvas",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "1 绪论 的出链列表"
+            }
+          },
+          {
+            "id": "3926f647386f9b97",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "349b949b15869578",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "添加笔记属性"
+            }
+          },
+          {
+            "id": "3f8146120ea55e90",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "CS408-Obsidian-Note-latest/1数据结构/1 绪论/1 绪论.canvas",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "1 绪论 的大纲"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "bases:新建数据库": false
+    }
+  },
+  "active": "9b1357c3032043f9",
+  "lastOpenFiles": [
+    "CS408-Obsidian-Note-latest/1数据结构/1 绪论/1.1.1 数据结构基本概念和术语.md",
+    "CS408-Obsidian-Note-latest/1数据结构/1 绪论/1.0 绪论常考点.md",
+    "CS408-Obsidian-Note-latest/1数据结构/1 绪论/1 绪论.canvas",
+    "CS408-Obsidian-Note-latest/1数据结构/5 树与二叉树/5 树与二叉树.canvas",
+    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/2.3.6 顺序表和链表的比较.md",
+    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/2.3.5 静态链表.md",
+    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/C的初始动态分配语句.md",
+    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/C++的初始动态分配语句.md",
+    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/循环链表常考结论.md",
+    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/双链表的插入操作.md",
+    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/静态链表结构描述.md",
+    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/单链表删除节点操作.md",
+    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/单链表求表长操作（不含头结点）.md",
+    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/单链表插入节点操作.md",
+    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/单 双链表常考结论.md",
+    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/按值查找单链表节点.md",
+    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/按序号查找单链表节点值.md",
+    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/2.3.4 循环链表.md",
+    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/2.3.3 双链表.md",
+    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/2.3.2 单链表上基本操作的实现.md",
+    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/2.3.1 单链表相关概念.md",
+    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/2.3 线性表的链式表示.md",
+    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/2.2.2 顺序表相关操作.md",
+    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/2.2.1 顺序表的定义.md",
+    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/2.2 线性表的顺序表示.md",
+    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/2.1.1 线性表的逻辑结构.md",
+    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/2.1 线性表的定义和基本操作.md",
+    "CS408-Obsidian-Note-latest/1数据结构/1 绪论/attachments/1.2.2计算方法2017统考真题.jpeg",
+    "CS408-Obsidian-Note-latest/1数据结构/1 绪论/attachments/1.2.2计算方法2019统考真题.jpeg"
+  ]
+}
