@@ -1,9 +1,12 @@
 {
 	"nodes":[
-		{"id":"599278c6731040de","type":"text","text":"![[1.0 绪论常考点]]","x":-1423,"y":-382,"width":663,"height":242,"color":"4"},
+		{"id":"dd3a5554382f65fa","x":960,"y":320,"width":785,"height":681,"type":"group"},
 		{"id":"5502a02d60feeb52","type":"text","text":"![[1.1.1 数据结构基本概念和术语]]","x":-1423,"y":-60,"width":583,"height":403,"color":"4"},
 		{"id":"881efd2b25891a83","type":"text","text":"![[1.2 算法和算法评价]]","x":-280,"y":-382,"width":1200,"height":2982,"color":"4"},
-		{"id":"b4ccb91c1850fc0b","type":"text","text":"![[1.1.2 数据结构三要素]]","x":-1440,"y":460,"width":1020,"height":1280,"color":"4"}
+		{"id":"b4ccb91c1850fc0b","type":"text","text":"![[1.1.2 数据结构三要素]]","x":-1440,"y":460,"width":1020,"height":1080,"color":"4"},
+		{"id":"599278c6731040de","type":"text","text":"![[1.0 绪论常考点]]","x":-1423,"y":-460,"width":663,"height":282,"color":"4"},
+		{"id":"5525fe99160a87fe","x":980,"y":340,"width":738,"height":360,"type":"file","file":"Pasted image 20260728213950.png"},
+		{"id":"ba959b6837dbb2ec","x":980,"y":721,"width":745,"height":260,"type":"file","file":"Pasted image 20260728214111.png"}
 	],
 	"edges":[
 		{"id":"ee0299e05db60eda","fromNode":"599278c6731040de","fromSide":"bottom","toNode":"5502a02d60feeb52","toSide":"top"},

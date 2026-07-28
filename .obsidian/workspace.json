@@ -11,10 +11,17 @@
             "id": "cf5f4ddb52a8b252",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
-              "icon": "lucide-file",
-              "title": "新标签页"
+              "type": "canvas",
+              "state": {
+                "file": "CS408-Obsidian-Note-latest/1数据结构/1 绪论/1 绪论.canvas",
+                "viewState": {
+                  "x": 239.42529619944526,
+                  "y": 1700.561653604997,
+                  "zoom": -0.0002768605016513215
+                }
+              },
+              "icon": "lucide-layout-dashboard",
+              "title": "1 绪论"
             }
           }
         ]
@@ -190,8 +197,10 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "bc4c6b3085281598",
+  "active": "cf5f4ddb52a8b252",
   "lastOpenFiles": [
+    "Pasted image 20260728214111.png",
+    "Pasted image 20260728213950.png",
     "未命名.canvas",
     "CS408-Obsidian-Note-latest/1数据结构/1 绪论/1 绪论.canvas",
     "CS408-Obsidian-Note-latest/1数据结构/1 绪论/1.1.1 数据结构基本概念和术语.md",
