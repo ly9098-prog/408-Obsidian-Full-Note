@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>循环队列：方法二与方法三</title>
+<style>
+  :root{
+    --bg:#0f1720;
+    --panel:#17212b;
+    --panel2:#1f2b36;
+    --line:#3b4a58;
+    --text:#e8eef5;
+    --muted:#a9b7c6;
+    --lime:#a3e635;
+    --blue:#38bdf8;
+    --orange:#f59e0b;
+    --green:#34d399;
+    --red:#fb7185;
+    --purple:#c084fc;
+    --cell:#24313d;
+    --cell-active:#1d4ed8;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:linear-gradient(180deg,#0c1218,#111a22);
+    color:var(--text);
+    font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",Arial,sans-serif;
+  }
+  .page{
+    width:min(1500px,96vw);
+    margin:0 auto;
+    padding:28px 0 36px;
+  }
+  h1{
+    margin:0 0 8px;
+    color:var(--lime);
+    font-size:clamp(28px,4vw,48px);
+    letter-spacing:.02em;
+  }
+  .subtitle{
+    color:var(--muted);
+    font-size:17px;
+    margin-bottom:22px;
+  }
+  .toolbar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    align-items:center;
+    margin-bottom:18px;
+    padding:14px 16px;
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:rgba(23,33,43,.82);
+  }
+  button{
+    appearance:none;
+    border:1px solid var(--line);
+    background:#22303c;
+    color:var(--text);
+    border-radius:10px;
+    padding:10px 15px;
+    font-size:15px;
+    cursor:pointer;
+  }
+  button:hover{border-color:var(--blue)}
+  button.primary{
+    background:var(--blue);
+    color:#06202c;
+    border-color:transparent;
+    font-weight:700;
+  }
+  button:disabled{opacity:.4;cursor:not-allowed}
+  .step-info{
+    margin-left:auto;
+    color:var(--muted);
+    font-size:15px;
+  }
+  .method-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+  }
+  .method{
+    background:rgba(23,33,43,.95);
+    border:1px solid var(--line);
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 14px 36px rgba(0,0,0,.2);
+  }
+  .method-head{
+    padding:18px 20px;
+    background:#22303b;
+    border-bottom:1px solid var(--line);
+  }
+  .method-title{
+    margin:0;
+    font-size:25px;
+    color:#f8fafc;
+  }
+  .method-title span{
+    color:var(--orange);
+    margin-right:8px;
+  }
+  .method-desc{
+    color:var(--muted);
+    margin-top:7px;
+    font-size:15px;
+    line-height:1.6;
+  }
+  .visual{
+    padding:18px 14px 8px;
+  }
+  .diagram{
+    width:100%;
+    aspect-ratio:1.45/1;
+    display:block;
+  }
+  .metrics{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    padding:0 18px 14px;
+  }
+  .metric{
+    background:var(--panel2);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:11px 12px;
+  }
+  .metric .k{
+    color:var(--muted);
+    font-size:13px;
+  }
+  .metric .v{
+    margin-top:5px;
+    font-size:19px;
+    font-weight:700;
+  }
+  .formula{
+    margin:0 18px 18px;
+    background:#111922;
+    border:1px solid var(--line);
+    border-left:4px solid var(--purple);
+    border-radius:12px;
+    padding:14px 16px;
+    line-height:1.75;
+    font-size:16px;
+  }
+  .formula code{
+    font-family:Consolas,Monaco,monospace;
+    color:#fde68a;
+    background:transparent;
+  }
+  .state-banner{
+    margin:0 18px 14px;
+    padding:12px 14px;
+    border-radius:12px;
+    font-weight:700;
+    text-align:center;
+  }
+  .empty{background:rgba(52,211,153,.13);color:var(--green);border:1px solid rgba(52,211,153,.4)}
+  .normal{background:rgba(56,189,248,.12);color:var(--blue);border:1px solid rgba(56,189,248,.4)}
+  .full{background:rgba(251,113,133,.12);color:var(--red);border:1px solid rgba(251,113,133,.4)}
+  .explain{
+    margin-top:18px;
+    border:1px solid var(--line);
+    background:rgba(23,33,43,.9);
+    border-radius:18px;
+    padding:20px;
+  }
+  .explain h2{
+    margin:0 0 12px;
+    color:var(--lime);
+    font-size:23px;
+  }
+  .explain p{
+    color:var(--muted);
+    line-height:1.8;
+    margin:8px 0;
+  }
+  .compare{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    margin-top:14px;
+  }
+  .compare-card{
+    background:var(--panel2);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:15px;
+  }
+  .compare-card strong{color:#fff}
+  .legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+    color:var(--muted);
+    font-size:14px;
+    margin-top:12px;
+  }
+  .dot{
+    display:inline-block;
+    width:10px;height:10px;border-radius:50%;
+    margin-right:6px;
+  }
+  .note{
+    color:#fda4af;
+    font-size:14px;
+    margin-top:12px;
+  }
+  @media (max-width:980px){
+    .method-grid,.compare{grid-template-columns:1fr}
+    .step-info{width:100%;margin-left:0}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>循环队列的实现：方法二与方法三</h1>
+  <div class="subtitle">参考环形队列示意图重新绘制。容量 MaxSize = 6，rear 指向“下一次入队位置”。</div>
+
+  <div class="toolbar">
+    <button id="prev">上一步</button>
+    <button id="next" class="primary">下一步</button>
+    <button id="reset">重新开始</button>
+    <div class="step-info" id="stepInfo"></div>
+  </div>
+
+  <div class="method-grid">
+    <section class="method">
+      <div class="method-head">
+        <h2 class="method-title"><span>方法二</span>增加 size 计数器</h2>
+        <div class="method-desc">size 直接记录队列中当前元素个数，因此即使 front 与 rear 重合，也能判断是空还是满。</div>
+      </div>
+      <div class="visual">
+        <svg id="svgSize" class="diagram" viewBox="0 0 680 470" role="img" aria-label="方法二环形队列状态图"></svg>
+      </div>
+      <div id="sizeState" class="state-banner"></div>
+      <div class="metrics">
+        <div class="metric"><div class="k">front</div><div class="v" id="sizeFront"></div></div>
+        <div class="metric"><div class="k">rear</div><div class="v" id="sizeRear"></div></div>
+        <div class="metric"><div class="k">size</div><div class="v" id="sizeCount"></div></div>
+      </div>
+      <div class="formula">
+        队空：<code>size == 0</code><br>
+        队满：<code>size == MaxSize</code><br>
+        入队：<code>rear = (rear + 1) % MaxSize，size++</code><br>
+        出队：<code>front = (front + 1) % MaxSize，size--</code>
+      </div>
+    </section>
+
+    <section class="method">
+      <div class="method-head">
+        <h2 class="method-title"><span>方法三</span>增加 tag 标志位</h2>
+        <div class="method-desc">tag 记录最近一次操作：入队后设为 1，出队后设为 0。front == rear 时，由 tag 区分空和满。</div>
+      </div>
+      <div class="visual">
+        <svg id="svgTag" class="diagram" viewBox="0 0 680 470" role="img" aria-label="方法三环形队列状态图"></svg>
+      </div>
+      <div id="tagState" class="state-banner"></div>
+      <div class="metrics">
+        <div class="metric"><div class="k">front</div><div class="v" id="tagFront"></div></div>
+        <div class="metric"><div class="k">rear</div><div class="v" id="tagRear"></div></div>
+        <div class="metric"><div class="k">tag</div><div class="v" id="tagValue"></div></div>
+      </div>
+      <div class="formula">
+        约定：<code>入队后 tag = 1</code>，<code>出队后 tag = 0</code><br>
+        队空：<code>front == rear && tag == 0</code><br>
+        队满：<code>front == rear && tag == 1</code><br>
+        当 <code>front != rear</code> 时，队列一定既不空也不满。
+      </div>
+    </section>
+  </div>
+
+  <section class="explain">
+    <h2 id="actionTitle"></h2>
+    <p id="actionText"></p>
+    <div class="compare">
+      <div class="compare-card">
+        <strong>方法二的判断依据：</strong>
+        <p id="sizeExplain"></p>
+      </div>
+      <div class="compare-card">
+        <strong>方法三的判断依据：</strong>
+        <p id="tagExplain"></p>
+      </div>
+    </div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--blue)"></i>front：当前队头元素</span>
+      <span><i class="dot" style="background:var(--orange)"></i>rear：下一次入队位置</span>
+      <span><i class="dot" style="background:var(--lime)"></i>已占用队列单元</span>
+    </div>
+    <div class="note">注意：某些教材也可反向约定 tag 的含义；只要“入队/出队如何更新 tag”和“空/满判断条件”保持一致即可。</div>
+  </section>
+</div>
+
+<script>
+const MAX = 6;
+
+const states = [
+  {
+    title:"① 初始化",
+    action:"front = rear = 0。队列中没有元素。",
+    front:0,rear:0,size:0,tag:0,
+    cells:[null,null,null,null,null,null],
+    sizeExplain:"size = 0，所以直接判定为队空。",
+    tagExplain:"front == rear，并且 tag = 0，所以判定为队空。"
+  },
+  {
+    title:"② a、b、c 依次入队",
+    action:"每入队一个元素，rear 向前移动一格。三个元素分别进入 0、1、2 号单元。",
+    front:0,rear:3,size:3,tag:1,
+    cells:["a","b","c",null,null,null],
+    sizeExplain:"size = 3，既不等于 0，也不等于 MaxSize，因此队列正常。",
+    tagExplain:"front != rear，因此无需查看 tag，队列一定既不空也不满。"
+  },
+  {
+    title:"③ a、b 依次出队",
+    action:"每出队一个元素，front 向前移动一格。此时只剩下 c。",
+    front:2,rear:3,size:1,tag:0,
+    cells:[null,null,"c",null,null,null],
+    sizeExplain:"size = 1，所以队列中还有一个元素。",
+    tagExplain:"最近一次操作是出队，因此 tag = 0；但 front != rear，此时仍不是空队列。"
+  },
+  {
+    title:"④ d、e、f 依次入队，rear 绕回数组开头",
+    action:"d、e、f 进入 3、4、5 号单元，rear 从 5 再前进后回到 0，体现循环队列的“循环”。",
+    front:2,rear:0,size:4,tag:1,
+    cells:[null,null,"c","d","e","f"],
+    sizeExplain:"size = 4，队列中有四个元素。",
+    tagExplain:"最近一次操作是入队，tag = 1；front != rear，所以当前还没有满。"
+  },
+  {
+    title:"⑤ g、h 入队，队列装满",
+    action:"g、h 进入 0、1 号单元，rear 再次追上 front。此时 front == rear，但队列是满的。",
+    front:2,rear:2,size:6,tag:1,
+    cells:["g","h","c","d","e","f"],
+    sizeExplain:"size = MaxSize = 6，所以判定为队满。",
+    tagExplain:"front == rear，并且最近一次操作是入队，tag = 1，所以判定为队满。"
+  },
+  {
+    title:"⑥ 全部元素出队，队列重新变空",
+    action:"六个元素全部出队后，front 又追上 rear。此时 front == rear，但队列是空的。",
+    front:2,rear:2,size:0,tag:0,
+    cells:[null,null,null,null,null,null],
+    sizeExplain:"size = 0，所以判定为队空。",
+    tagExplain:"front == rear，并且最近一次操作是出队，tag = 0，所以判定为队空。"
+  }
+];
+
+let step = 0;
+const svgNS = "http://www.w3.org/2000/svg";
+
+function el(name, attrs={}, text=""){
+  const e = document.createElementNS(svgNS,name);
+  for(const [k,v] of Object.entries(attrs)) e.setAttribute(k,v);
+  if(text) e.textContent = text;
+  return e;
+}
+
+function polar(cx,cy,r,deg){
+  const a=(deg-90)*Math.PI/180;
+  return {x:cx+r*Math.cos(a), y:cy+r*Math.sin(a)};
+}
+
+function arcPath(cx,cy,r1,r2,start,end){
+  const p1=polar(cx,cy,r2,start), p2=polar(cx,cy,r2,end);
+  const p3=polar(cx,cy,r1,end), p4=polar(cx,cy,r1,start);
+  const large=(end-start)>180?1:0;
+  return [
+    `M ${p1.x} ${p1.y}`,
+    `A ${r2} ${r2} 0 ${large} 1 ${p2.x} ${p2.y}`,
+    `L ${p3.x} ${p3.y}`,
+    `A ${r1} ${r1} 0 ${large} 0 ${p4.x} ${p4.y}`,
+    "Z"
+  ].join(" ");
+}
+
+function addMarker(svg,id,color){
+  const defs=el("defs");
+  const marker=el("marker",{id,markerWidth:"10",markerHeight:"10",refX:"8",refY:"3",orient:"auto"});
+  marker.appendChild(el("path",{d:"M0,0 L0,6 L9,3 z",fill:color}));
+  defs.appendChild(marker);
+  svg.appendChild(defs);
+}
+
+function drawQueue(svg,state,mode){
+  svg.innerHTML="";
+  addMarker(svg,"arrowFront"+mode,"#38bdf8");
+  addMarker(svg,"arrowRear"+mode,"#f59e0b");
+
+  const cx=340, cy=225, r1=74, r2=165;
+  for(let i=0;i<MAX;i++){
+    const start=i*60, end=(i+1)*60;
+    const active=state.cells[i]!==null;
+    const path=el("path",{
+      d:arcPath(cx,cy,r1,r2,start,end),
+      fill:active?"#365314":"#25323e",
+      stroke:active?"#a3e635":"#5b6a78",
+      "stroke-width":active?"3":"2"
+    });
+    svg.appendChild(path);
+
+    const p=polar(cx,cy,(r1+r2)/2,start+30);
+    const label=state.cells[i] ?? i;
+    svg.appendChild(el("text",{
+      x:p.x,y:p.y+7,
+      "text-anchor":"middle",
+      "font-size":active?"31":"20",
+      "font-weight":active?"800":"600",
+      fill:active?"#d9f99d":"#94a3b8"
+    },String(label)));
+  }
+
+  svg.appendChild(el("circle",{cx,cy,r:r1-3,fill:"#111922",stroke:"#718096","stroke-width":"2"}));
+  svg.appendChild(el("text",{x:cx,y:cy-5,"text-anchor":"middle","font-size":"18",fill:"#94a3b8"},"循环队列"));
+  svg.appendChild(el("text",{x:cx,y:cy+23,"text-anchor":"middle","font-size":"16",fill:"#64748b"},"MaxSize = 6"));
+
+  drawPointer(svg,state.front,"front","#38bdf8",205,mode);
+  drawPointer(svg,state.rear,"rear","#f59e0b",225,mode);
+
+  if(state.front===state.rear){
+    svg.appendChild(el("text",{
+      x:340,y:438,"text-anchor":"middle","font-size":"17","font-weight":"700",
+      fill:mode==="size" ? "#c084fc" : (state.tag===1?"#fb7185":"#34d399")
+    },mode==="size" ? "front == rear：由 size 判断空/满" : `front == rear：由 tag=${state.tag} 判断空/满`));
+  }else{
+    svg.appendChild(el("text",{
+      x:340,y:438,"text-anchor":"middle","font-size":"17","font-weight":"700",fill:"#38bdf8"
+    },"front != rear：当前既不空也不满"));
+  }
+}
+
+function drawPointer(svg,index,label,color,radius,mode){
+  const mid=index*60+30;
+  const outer=polar(340,225,radius,mid);
+  const inner=polar(340,225,170,mid);
+  svg.appendChild(el("line",{
+    x1:outer.x,y1:outer.y,x2:inner.x,y2:inner.y,
+    stroke:color,"stroke-width":"4",
+    "marker-end":`url(#arrow${label==="front"?"Front":"Rear"}${mode})`
+  }));
+  const tp=polar(340,225,radius+24,mid);
+  svg.appendChild(el("text",{
+    x:tp.x,y:tp.y+6,"text-anchor":"middle",
+    "font-size":"19","font-weight":"800",fill:color
+  },label));
+}
+
+function classify(state,mode){
+  if(mode==="size"){
+    if(state.size===0) return ["队空","empty"];
+    if(state.size===MAX) return ["队满","full"];
+    return ["正常状态","normal"];
+  }
+  if(state.front===state.rear && state.tag===0) return ["队空","empty"];
+  if(state.front===state.rear && state.tag===1) return ["队满","full"];
+  return ["正常状态","normal"];
+}
+
+function update(){
+  const s=states[step];
+  drawQueue(document.getElementById("svgSize"),s,"size");
+  drawQueue(document.getElementById("svgTag"),s,"tag");
+
+  document.getElementById("sizeFront").textContent=s.front;
+  document.getElementById("sizeRear").textContent=s.rear;
+  document.getElementById("sizeCount").textContent=s.size;
+  document.getElementById("tagFront").textContent=s.front;
+  document.getElementById("tagRear").textContent=s.rear;
+  document.getElementById("tagValue").textContent=s.tag;
+
+  const [ss,sc]=classify(s,"size");
+  const [ts,tc]=classify(s,"tag");
+  const sizeState=document.getElementById("sizeState");
+  const tagState=document.getElementById("tagState");
+  sizeState.textContent=ss; sizeState.className="state-banner "+sc;
+  tagState.textContent=ts; tagState.className="state-banner "+tc;
+
+  document.getElementById("actionTitle").textContent=s.title;
+  document.getElementById("actionText").textContent=s.action;
+  document.getElementById("sizeExplain").textContent=s.sizeExplain;
+  document.getElementById("tagExplain").textContent=s.tagExplain;
+  document.getElementById("stepInfo").textContent=`第 ${step+1} / ${states.length} 步`;
+
+  document.getElementById("prev").disabled=step===0;
+  document.getElementById("next").disabled=step===states.length-1;
+}
+
+document.getElementById("prev").addEventListener("click",()=>{if(step>0){step--;update();}});
+document.getElementById("next").addEventListener("click",()=>{if(step<states.length-1){step++;update();}});
+document.getElementById("reset").addEventListener("click",()=>{step=0;update();});
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowLeft" && step>0){step--;update();}
+  if(e.key==="ArrowRight" && step<states.length-1){step++;update();}
+});
+update();
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e"}' crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>栈生成前缀 / 后缀表达式演示</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --panel: rgba(15, 29, 49, 0.88);
+      --panel-2: rgba(24, 43, 70, 0.82);
+      --line: rgba(148, 179, 220, 0.18);
+      --text: #eef6ff;
+      --muted: #a5b8d0;
+      --accent: #63e6be;
+      --accent-2: #74c0fc;
+      --warning: #ffd43b;
+      --danger: #ff8787;
+      --operator: #ffa94d;
+      --operand: #74c0fc;
+      --paren: #b197fc;
+      --shadow: 0 18px 55px rgba(0, 0, 0, 0.28);
+    }
+
+    * { box-sizing: border-box; }
+    html { color-scheme: dark; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 0%, rgba(116, 192, 252, .16), transparent 28%),
+        radial-gradient(circle at 86% 8%, rgba(99, 230, 190, .12), transparent 26%),
+        linear-gradient(145deg, #06101d 0%, #0a1728 52%, #07101c 100%);
+      font-family: Inter, "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+    }
+
+    button, input { font: inherit; }
+    button { color: inherit; }
+
+    .app {
+      width: min(1500px, 96vw);
+      margin: 0 auto;
+      padding: 26px 0 38px;
+    }
+
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: flex-end;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 4vw, 48px);
+      line-height: 1.05;
+      letter-spacing: -0.035em;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .legend span, .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(255,255,255,.035);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot.operand { background: var(--operand); }
+    .dot.operator { background: var(--operator); }
+    .dot.paren { background: var(--paren); }
+
+    .panel {
+      background: linear-gradient(180deg, rgba(19, 37, 61, .90), rgba(10, 24, 42, .92));
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .setup {
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: minmax(260px, 1fr) auto;
+      gap: 12px;
+      align-items: end;
+    }
+
+    label {
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      min-height: 48px;
+      padding: 0 15px;
+      color: var(--text);
+      background: rgba(2, 10, 20, .55);
+      border: 1px solid rgba(148, 179, 220, .24);
+      border-radius: 13px;
+      outline: none;
+      transition: .2s ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent-2);
+      box-shadow: 0 0 0 4px rgba(116, 192, 252, .10);
+    }
+
+    .mode-switch {
+      display: inline-grid;
+      grid-template-columns: 1fr 1fr;
+      padding: 4px;
+      border-radius: 13px;
+      background: rgba(2, 10, 20, .55);
+      border: 1px solid var(--line);
+    }
+
+    .mode-switch button {
+      min-width: 120px;
+      min-height: 40px;
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      cursor: pointer;
+      color: var(--muted);
+      transition: .2s ease;
+    }
+
+    .mode-switch button.active {
+      color: #07111f;
+      background: linear-gradient(135deg, var(--accent), #8ce99a);
+      font-weight: 800;
+      box-shadow: 0 8px 20px rgba(99, 230, 190, .18);
+    }
+
+    .examples {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .example-btn {
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: rgba(255,255,255,.035);
+      cursor: pointer;
+    }
+
+    .example-btn:hover { border-color: rgba(116, 192, 252, .55); }
+
+    .controls {
+      display: grid;
+      grid-template-columns: auto auto auto auto auto minmax(190px, 1fr);
+      gap: 10px;
+      align-items: center;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+    }
+
+    .control-btn {
+      min-height: 42px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: rgba(255,255,255,.045);
+      cursor: pointer;
+      transition: .18s ease;
+    }
+
+    .control-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      border-color: rgba(116, 192, 252, .55);
+      background: rgba(116, 192, 252, .09);
+    }
+
+    .control-btn.primary {
+      border: 0;
+      color: #06111d;
+      background: linear-gradient(135deg, var(--accent), #8ce99a);
+      font-weight: 800;
+    }
+
+    .control-btn:disabled {
+      cursor: not-allowed;
+      opacity: .38;
+    }
+
+    .speed {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+      min-width: 190px;
+    }
+
+    input[type="range"] { width: 100%; accent-color: var(--accent); }
+
+    .progress-wrap {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .progress {
+      height: 7px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+    }
+
+    .progress > div {
+      height: 100%;
+      width: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent-2), var(--accent));
+      transition: width .2s ease;
+    }
+
+    .step-counter { color: var(--muted); font-size: 12px; }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(280px, .6fr);
+      gap: 16px;
+    }
+
+    .main-view { padding: 18px; min-width: 0; }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .section-title h2, .section-title h3 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .direction {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .token-track {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      min-height: 64px;
+      padding: 13px;
+      border-radius: 15px;
+      background: rgba(2, 10, 20, .48);
+      border: 1px solid var(--line);
+    }
+
+    .token {
+      display: grid;
+      place-items: center;
+      min-width: 42px;
+      height: 38px;
+      padding: 0 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.05);
+      font-weight: 800;
+      transition: .2s ease;
+    }
+
+    .token.operand { color: var(--operand); }
+    .token.operator { color: var(--operator); }
+    .token.paren { color: var(--paren); }
+    .token.current {
+      color: #06111d;
+      background: var(--warning);
+      border-color: var(--warning);
+      transform: translateY(-3px) scale(1.06);
+      box-shadow: 0 10px 28px rgba(255, 212, 59, .22);
+    }
+    .token.processed { opacity: .32; transform: scale(.94); }
+
+    .stage-grid {
+      display: grid;
+      grid-template-columns: minmax(220px, .72fr) minmax(0, 1.28fr);
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .viz-card {
+      min-height: 280px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(2, 10, 20, .34);
+    }
+
+    .stack-shell {
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 8px;
+      min-height: 206px;
+      margin-top: 12px;
+      padding: 10px 12px 0;
+      border: solid rgba(148, 179, 220, .35);
+      border-width: 0 3px 3px;
+      border-radius: 0 0 13px 13px;
+    }
+
+    .stack-item {
+      display: grid;
+      place-items: center;
+      min-height: 38px;
+      border-radius: 9px;
+      color: #08121e;
+      background: linear-gradient(135deg, var(--operator), #ffd8a8);
+      font-weight: 900;
+      animation: enter .22s ease-out;
+    }
+
+    .stack-empty {
+      margin: auto;
+      color: var(--muted);
+      opacity: .66;
+      font-size: 13px;
+    }
+
+    .output-flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      gap: 9px;
+      min-height: 206px;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 13px;
+      background: rgba(255,255,255,.025);
+      border: 1px dashed rgba(148, 179, 220, .24);
+    }
+
+    .output-item {
+      display: grid;
+      place-items: center;
+      min-width: 42px;
+      height: 38px;
+      padding: 0 10px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(116, 192, 252, .22), rgba(99, 230, 190, .17));
+      border: 1px solid rgba(116, 192, 252, .32);
+      font-weight: 850;
+      animation: enter .22s ease-out;
+    }
+
+    .empty-hint {
+      width: 100%;
+      margin: auto;
+      text-align: center;
+      color: var(--muted);
+      opacity: .66;
+      font-size: 13px;
+    }
+
+    .explain {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: start;
+      min-height: 82px;
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 15px;
+      background: linear-gradient(135deg, rgba(116, 192, 252, .08), rgba(99, 230, 190, .06));
+      border: 1px solid rgba(116, 192, 252, .18);
+    }
+
+    .action-badge {
+      padding: 6px 9px;
+      border-radius: 8px;
+      color: #07111f;
+      background: var(--accent-2);
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .explain strong { display: block; margin-bottom: 5px; }
+    .explain p { margin: 0; color: var(--muted); line-height: 1.6; font-size: 13px; }
+
+    .side {
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    .result-card, .rule-card, .history-card { padding: 16px; }
+
+    .result-box {
+      display: grid;
+      gap: 9px;
+      margin-top: 12px;
+    }
+
+    .result-line {
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: rgba(2, 10, 20, .42);
+    }
+
+    .result-line small { color: var(--muted); }
+    .result-line code {
+      display: block;
+      margin-top: 5px;
+      color: var(--accent);
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .rule-list {
+      display: grid;
+      gap: 9px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .rule {
+      padding-left: 12px;
+      border-left: 2px solid rgba(116, 192, 252, .5);
+    }
+
+    .history {
+      max-height: 260px;
+      overflow: auto;
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+      padding-right: 4px;
+    }
+
+    .history-item {
+      display: grid;
+      grid-template-columns: 35px 1fr;
+      gap: 8px;
+      padding: 8px;
+      border-radius: 9px;
+      color: var(--muted);
+      background: rgba(255,255,255,.028);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .history-item.active {
+      color: var(--text);
+      outline: 1px solid rgba(99, 230, 190, .35);
+      background: rgba(99, 230, 190, .07);
+    }
+
+    .history-index { color: var(--accent-2); font-weight: 800; }
+
+    .error {
+      display: none;
+      margin-top: 11px;
+      padding: 10px 12px;
+      color: #ffe3e3;
+      border: 1px solid rgba(255, 135, 135, .35);
+      border-radius: 10px;
+      background: rgba(255, 135, 135, .10);
+      font-size: 13px;
+    }
+    .error.show { display: block; }
+
+    @keyframes enter {
+      from { opacity: 0; transform: translateY(8px) scale(.94); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @media (max-width: 980px) {
+      .hero { align-items: flex-start; flex-direction: column; }
+      .legend { justify-content: flex-start; }
+      .workspace { grid-template-columns: 1fr; }
+      .side { grid-template-columns: 1fr 1fr; }
+      .history-card { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 720px) {
+      .app { width: min(94vw, 1500px); padding-top: 18px; }
+      .input-row { grid-template-columns: 1fr; }
+      .mode-switch { width: 100%; }
+      .mode-switch button { min-width: 0; }
+      .controls { grid-template-columns: repeat(3, 1fr); }
+      .speed { grid-column: 1 / -1; }
+      .stage-grid { grid-template-columns: 1fr; }
+      .side { grid-template-columns: 1fr; }
+      .history-card { grid-column: auto; }
+      .control-btn { padding: 0 8px; font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <div>
+        <h1>栈生成前缀 / 后缀表达式</h1>
+        <p>逐步观察扫描方向、运算符栈与输出序列的变化。</p>
+      </div>
+      <div class="legend" aria-label="图例">
+        <span><i class="dot operand"></i>操作数</span>
+        <span><i class="dot operator"></i>运算符</span>
+        <span><i class="dot paren"></i>括号</span>
+      </div>
+    </header>
+
+    <section class="panel setup">
+      <div class="input-row">
+        <label>
+          中缀表达式
+          <input id="expressionInput" type="text" value="A + B * (C - D) / E" spellcheck="false" autocomplete="off" />
+        </label>
+        <div class="mode-switch" aria-label="转换模式">
+          <button id="postfixMode" class="active" type="button">中缀 → 后缀</button>
+          <button id="prefixMode" type="button">中缀 → 前缀</button>
+        </div>
+      </div>
+
+      <div class="examples">
+        <span>示例：</span>
+        <button class="example-btn" type="button">A+B*C</button>
+        <button class="example-btn" type="button">(A+B)*(C-D)</button>
+        <button class="example-btn" type="button">x1^2+3*x1-5</button>
+        <button class="example-btn" type="button">a/(b-c+d)*(e-a)*c</button>
+      </div>
+      <div id="errorBox" class="error" role="alert"></div>
+    </section>
+
+    <section class="panel controls">
+      <button id="generateBtn" class="control-btn primary" type="button">生成步骤</button>
+      <button id="playBtn" class="control-btn" type="button">▶ 自动播放</button>
+      <button id="prevBtn" class="control-btn" type="button">← 上一步</button>
+      <button id="nextBtn" class="control-btn" type="button">下一步 →</button>
+      <button id="resetBtn" class="control-btn" type="button">↺ 重置</button>
+
+      <label class="speed">
+        <span>播放速度</span>
+        <input id="speedRange" type="range" min="250" max="1800" step="50" value="850" />
+        <span id="speedLabel">0.85 秒</span>
+      </label>
+
+      <div class="progress-wrap">
+        <div class="progress" aria-label="播放进度"><div id="progressBar"></div></div>
+        <div id="stepCounter" class="step-counter">0 / 0</div>
+      </div>
+    </section>
+
+    <div class="workspace">
+      <section class="panel main-view">
+        <div class="section-title">
+          <h2>表达式扫描</h2>
+          <span id="directionText" class="direction">从左向右扫描 →</span>
+        </div>
+        <div id="tokenTrack" class="token-track"></div>
+
+        <div class="stage-grid">
+          <article class="viz-card">
+            <div class="section-title">
+              <h3>运算符栈</h3>
+              <span class="badge">栈顶在上</span>
+            </div>
+            <div id="stackShell" class="stack-shell"></div>
+          </article>
+
+          <article class="viz-card">
+            <div class="section-title">
+              <h3 id="outputTitle">后缀输出序列</h3>
+              <span id="outputHint" class="badge">直接从左向右读取</span>
+            </div>
+            <div id="outputFlow" class="output-flow"></div>
+          </article>
+        </div>
+
+        <div class="explain">
+          <span id="actionBadge" class="action-badge">准备</span>
+          <div>
+            <strong id="actionTitle">输入表达式并生成步骤</strong>
+            <p id="actionText">支持操作数、括号以及 +、-、*、/、%、^ 运算符。</p>
+          </div>
+        </div>
+      </section>
+
+      <aside class="side">
+        <section class="panel result-card">
+          <div class="section-title"><h3>转换结果</h3><span class="badge">实时计算</span></div>
+          <div class="result-box">
+            <div class="result-line">
+              <small>前缀表达式</small>
+              <code id="prefixResult">—</code>
+            </div>
+            <div class="result-line">
+              <small>后缀表达式</small>
+              <code id="postfixResult">—</code>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel rule-card">
+          <div class="section-title"><h3>核心规则</h3></div>
+          <div id="ruleList" class="rule-list"></div>
+        </section>
+
+        <section class="panel history-card">
+          <div class="section-title"><h3>步骤记录</h3><span class="badge">可滚动</span></div>
+          <div id="history" class="history"></div>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const $ = (selector) => document.querySelector(selector);
+      const input = $("#expressionInput");
+      const postfixModeBtn = $("#postfixMode");
+      const prefixModeBtn = $("#prefixMode");
+      const generateBtn = $("#generateBtn");
+      const playBtn = $("#playBtn");
+      const prevBtn = $("#prevBtn");
+      const nextBtn = $("#nextBtn");
+      const resetBtn = $("#resetBtn");
+      const speedRange = $("#speedRange");
+      const speedLabel = $("#speedLabel");
+      const errorBox = $("#errorBox");
+      const tokenTrack = $("#tokenTrack");
+      const stackShell = $("#stackShell");
+      const outputFlow = $("#outputFlow");
+      const outputTitle = $("#outputTitle");
+      const outputHint = $("#outputHint");
+      const directionText = $("#directionText");
+      const actionBadge = $("#actionBadge");
+      const actionTitle = $("#actionTitle");
+      const actionText = $("#actionText");
+      const prefixResult = $("#prefixResult");
+      const postfixResult = $("#postfixResult");
+      const progressBar = $("#progressBar");
+      const stepCounter = $("#stepCounter");
+      const history = $("#history");
+      const ruleList = $("#ruleList");
+
+      const precedence = { "+": 1, "-": 1, "*": 2, "/": 2, "%": 2, "^": 3 };
+      const operators = new Set(Object.keys(precedence));
+
+      let mode = "postfix";
+      let tokens = [];
+      let steps = [];
+      let currentStep = 0;
+      let timer = null;
+      let isPlaying = false;
+
+      function tokenize(expression) {
+        const compact = expression.trim();
+        if (!compact) throw new Error("请输入一个中缀表达式。");
+
+        const result = [];
+        let i = 0;
+
+        while (i < compact.length) {
+          const ch = compact[i];
+
+          if (/\s/.test(ch)) {
+            i++;
+            continue;
+          }
+
+          if (/[A-Za-z_\u4e00-\u9fa5]/.test(ch)) {
+            let token = ch;
+            i++;
+            while (i < compact.length && /[A-Za-z0-9_\u4e00-\u9fa5]/.test(compact[i])) {
+              token += compact[i++];
+            }
+            result.push(token);
+            continue;
+          }
+
+          if (/\d|\./.test(ch)) {
+            let token = ch;
+            let dots = ch === "." ? 1 : 0;
+            i++;
+            while (i < compact.length && /[\d.]/.test(compact[i])) {
+              if (compact[i] === ".") dots++;
+              token += compact[i++];
+            }
+            if (dots > 1 || token === ".") throw new Error(`数字“${token}”格式不正确。`);
+            result.push(token);
+            continue;
+          }
+
+          if (operators.has(ch) || ch === "(" || ch === ")") {
+            result.push(ch);
+            i++;
+            continue;
+          }
+
+          throw new Error(`无法识别字符“${ch}”。`);
+        }
+
+        validateTokens(result);
+        return result;
+      }
+
+      function validateTokens(list) {
+        let balance = 0;
+        let expectOperand = true;
+
+        list.forEach((token, index) => {
+          if (token === "(") {
+            if (!expectOperand) throw new Error(`第 ${index + 1} 个记号前缺少运算符。`);
+            balance++;
+            expectOperand = true;
+          } else if (token === ")") {
+            if (expectOperand) throw new Error(`右括号前缺少操作数。`);
+            balance--;
+            if (balance < 0) throw new Error("右括号数量多于左括号。");
+            expectOperand = false;
+          } else if (operators.has(token)) {
+            if (expectOperand) {
+              throw new Error(`运算符“${token}”前缺少操作数。本演示暂不处理一元正负号。`);
+            }
+            expectOperand = true;
+          } else {
+            if (!expectOperand) throw new Error(`操作数“${token}”前缺少运算符。`);
+            expectOperand = false;
+          }
+        });
+
+        if (balance !== 0) throw new Error("左右括号数量不匹配。");
+        if (expectOperand) throw new Error("表达式不能以运算符结尾。");
+      }
+
+      function isOperator(token) {
+        return operators.has(token);
+      }
+
+      function isOperand(token) {
+        return !isOperator(token) && token !== "(" && token !== ")";
+      }
+
+      function tokenClass(token) {
+        if (isOperator(token)) return "operator";
+        if (token === "(" || token === ")") return "paren";
+        return "operand";
+      }
+
+      function addSnapshot(collection, state, details) {
+        collection.push({
+          stack: [...state.stack],
+          output: [...state.output],
+          tokenIndex: details.tokenIndex ?? -1,
+          processed: new Set(details.processed ?? []),
+          badge: details.badge,
+          title: details.title,
+          text: details.text,
+          phase: details.phase || ""
+        });
+      }
+
+      function buildPostfixSteps(list) {
+        const collection = [];
+        const state = { stack: [], output: [] };
+        const processed = [];
+
+        addSnapshot(collection, state, {
+          badge: "准备",
+          title: "后缀转换开始",
+          text: "从左向右扫描中缀表达式；操作数直接输出，运算符按优先级管理。",
+          processed
+        });
+
+        list.forEach((token, index) => {
+          addSnapshot(collection, state, {
+            tokenIndex: index,
+            badge: "读取",
+            title: `读取记号 ${token}`,
+            text: describeToken(token),
+            processed
+          });
+
+          if (isOperand(token)) {
+            state.output.push(token);
+            processed.push(index);
+            addSnapshot(collection, state, {
+              tokenIndex: index,
+              badge: "输出",
+              title: `将 ${token} 加入输出序列`,
+              text: "操作数无需进入运算符栈，直接追加到后缀序列。",
+              processed
+            });
+            return;
+          }
+
+          if (token === "(") {
+            state.stack.push(token);
+            processed.push(index);
+            addSnapshot(collection, state, {
+              tokenIndex: index,
+              badge: "入栈",
+              title: "左括号入栈",
+              text: "左括号作为边界保留在栈中，等待匹配的右括号。",
+              processed
+            });
+            return;
+          }
+
+          if (token === ")") {
+            while (state.stack.length && state.stack[state.stack.length - 1] !== "(") {
+              const popped = state.stack.pop();
+              state.output.push(popped);
+              addSnapshot(collection, state, {
+                tokenIndex: index,
+                badge: "弹栈",
+                title: `弹出 ${popped} 并输出`,
+                text: "遇到右括号，持续弹出运算符，直到栈顶出现左括号。",
+                processed
+              });
+            }
+            state.stack.pop();
+            processed.push(index);
+            addSnapshot(collection, state, {
+              tokenIndex: index,
+              badge: "匹配",
+              title: "丢弃一对括号",
+              text: "括号只控制计算顺序，不出现在后缀表达式中。",
+              processed
+            });
+            return;
+          }
+
+          while (
+            state.stack.length &&
+            isOperator(state.stack[state.stack.length - 1]) &&
+            (
+              precedence[state.stack[state.stack.length - 1]] > precedence[token] ||
+              (precedence[state.stack[state.stack.length - 1]] === precedence[token] && token !== "^")
+            )
+          ) {
+            const popped = state.stack.pop();
+            state.output.push(popped);
+            addSnapshot(collection, state, {
+              tokenIndex: index,
+              badge: "弹栈",
+              title: `先弹出 ${popped}`,
+              text: `栈顶运算符优先级更高，或与 ${token} 同级且满足左结合，因此先输出栈顶运算符。`,
+              processed
+            });
+          }
+
+          state.stack.push(token);
+          processed.push(index);
+          addSnapshot(collection, state, {
+            tokenIndex: index,
+            badge: "入栈",
+            title: `运算符 ${token} 入栈`,
+            text: "当前运算符已找到合适位置，压入运算符栈。",
+            processed
+          });
+        });
+
+        while (state.stack.length) {
+          const popped = state.stack.pop();
+          state.output.push(popped);
+          addSnapshot(collection, state, {
+            badge: "清栈",
+            title: `弹出剩余运算符 ${popped}`,
+            text: "扫描结束，依次弹出栈中剩余运算符并追加到输出序列。",
+            processed
+          });
+        }
+
+        addSnapshot(collection, state, {
+          badge: "完成",
+          title: "后缀表达式生成完成",
+          text: `结果：${state.output.join(" ")}`,
+          processed,
+          phase: "done"
+        });
+
+        return { steps: collection, result: [...state.output] };
+      }
+
+      function buildPrefixSteps(list) {
+        const collection = [];
+        const state = { stack: [], output: [] };
+        const processed = [];
+
+        addSnapshot(collection, state, {
+          badge: "准备",
+          title: "前缀转换开始",
+          text: "从右向左扫描；先构造临时输出序列，最后将它整体逆序得到前缀表达式。",
+          processed
+        });
+
+        for (let index = list.length - 1; index >= 0; index--) {
+          const token = list[index];
+
+          addSnapshot(collection, state, {
+            tokenIndex: index,
+            badge: "读取",
+            title: `读取记号 ${token}`,
+            text: describeToken(token),
+            processed
+          });
+
+          if (isOperand(token)) {
+            state.output.push(token);
+            processed.push(index);
+            addSnapshot(collection, state, {
+              tokenIndex: index,
+              badge: "输出",
+              title: `将 ${token} 加入临时输出`,
+              text: "操作数直接追加到临时序列；最终会整体逆序。",
+              processed
+            });
+            continue;
+          }
+
+          if (token === ")") {
+            state.stack.push(token);
+            processed.push(index);
+            addSnapshot(collection, state, {
+              tokenIndex: index,
+              badge: "入栈",
+              title: "右括号入栈",
+              text: "由于从右向左扫描，右括号在这里充当括号边界。",
+              processed
+            });
+            continue;
+          }
+
+          if (token === "(") {
+            while (state.stack.length && state.stack[state.stack.length - 1] !== ")") {
+              const popped = state.stack.pop();
+              state.output.push(popped);
+              addSnapshot(collection, state, {
+                tokenIndex: index,
+                badge: "弹栈",
+                title: `弹出 ${popped} 到临时输出`,
+                text: "遇到左括号，持续弹出运算符，直到栈顶出现右括号。",
+                processed
+              });
+            }
+            state.stack.pop();
+            processed.push(index);
+            addSnapshot(collection, state, {
+              tokenIndex: index,
+              badge: "匹配",
+              title: "丢弃一对括号",
+              text: "括号只决定优先级，不保留在最终前缀表达式中。",
+              processed
+            });
+            continue;
+          }
+
+          while (
+            state.stack.length &&
+            isOperator(state.stack[state.stack.length - 1]) &&
+            (
+              precedence[state.stack[state.stack.length - 1]] > precedence[token] ||
+              (precedence[state.stack[state.stack.length - 1]] === precedence[token] && token === "^")
+            )
+          ) {
+            const popped = state.stack.pop();
+            state.output.push(popped);
+            addSnapshot(collection, state, {
+              tokenIndex: index,
+              badge: "弹栈",
+              title: `先弹出 ${popped}`,
+              text: `从右向左扫描时，同级运算符的结合性判断与后缀转换相反。`,
+              processed
+            });
+          }
+
+          state.stack.push(token);
+          processed.push(index);
+          addSnapshot(collection, state, {
+            tokenIndex: index,
+            badge: "入栈",
+            title: `运算符 ${token} 入栈`,
+            text: "当前运算符压入运算符栈，继续向左扫描。",
+            processed
+          });
+        }
+
+        while (state.stack.length) {
+          const popped = state.stack.pop();
+          state.output.push(popped);
+          addSnapshot(collection, state, {
+            badge: "清栈",
+            title: `弹出剩余运算符 ${popped}`,
+            text: "扫描结束，将栈中剩余运算符依次加入临时输出。",
+            processed
+          });
+        }
+
+        const finalResult = [...state.output].reverse();
+        state.output = finalResult;
+        addSnapshot(collection, state, {
+          badge: "逆序",
+          title: "将临时输出整体逆序",
+          text: `逆序后得到前缀表达式：${finalResult.join(" ")}`,
+          processed
+        });
+
+        addSnapshot(collection, state, {
+          badge: "完成",
+          title: "前缀表达式生成完成",
+          text: `结果：${finalResult.join(" ")}`,
+          processed,
+          phase: "done"
+        });
+
+        return { steps: collection, result: finalResult };
+      }
+
+      function describeToken(token) {
+        if (isOperand(token)) return `${token} 是操作数，将直接进入输出序列。`;
+        if (token === "(" || token === ")") return `${token} 是括号，用于控制运算符弹栈边界。`;
+        return `${token} 是运算符，优先级为 ${precedence[token]}。`;
+      }
+
+      function computeAll(list) {
+        return {
+          postfix: buildPostfixSteps(list),
+          prefix: buildPrefixSteps(list)
+        };
+      }
+
+      function generate() {
+        pause();
+        hideError();
+
+        try {
+          tokens = tokenize(input.value);
+          const all = computeAll(tokens);
+          postfixResult.textContent = all.postfix.result.join(" ");
+          prefixResult.textContent = all.prefix.result.join(" ");
+          steps = mode === "postfix" ? all.postfix.steps : all.prefix.steps;
+          currentStep = 0;
+          render();
+        } catch (error) {
+          showError(error.message || "表达式解析失败。");
+          prefixResult.textContent = "—";
+          postfixResult.textContent = "—";
+          tokens = [];
+          steps = [];
+          currentStep = 0;
+          clearVisuals();
+        }
+      }
+
+      function render() {
+        if (!steps.length) {
+          clearVisuals();
+          return;
+        }
+
+        const step = steps[currentStep];
+        renderTokens(step);
+        renderStack(step.stack);
+        renderOutput(step.output);
+        actionBadge.textContent = step.badge;
+        actionTitle.textContent = step.title;
+        actionText.textContent = step.text;
+
+        const progress = steps.length <= 1 ? 100 : (currentStep / (steps.length - 1)) * 100;
+        progressBar.style.width = `${progress}%`;
+        stepCounter.textContent = `${currentStep + 1} / ${steps.length}`;
+        prevBtn.disabled = currentStep === 0;
+        nextBtn.disabled = currentStep === steps.length - 1;
+        playBtn.disabled = steps.length < 2;
+        playBtn.textContent = isPlaying ? "❚❚ 暂停" : "▶ 自动播放";
+        renderHistory();
+      }
+
+      function renderTokens(step) {
+        tokenTrack.innerHTML = "";
+        tokens.forEach((token, index) => {
+          const el = document.createElement("span");
+          el.className = `token ${tokenClass(token)}`;
+          el.textContent = token;
+          if (step.tokenIndex === index) el.classList.add("current");
+          if (step.processed.has(index) && step.tokenIndex !== index) el.classList.add("processed");
+          tokenTrack.appendChild(el);
+        });
+      }
+
+      function renderStack(stack) {
+        stackShell.innerHTML = "";
+        if (!stack.length) {
+          stackShell.innerHTML = '<div class="stack-empty">栈为空</div>';
+          return;
+        }
+
+        stack.forEach((item) => {
+          const el = document.createElement("div");
+          el.className = "stack-item";
+          el.textContent = item;
+          stackShell.appendChild(el);
+        });
+      }
+
+      function renderOutput(output) {
+        outputFlow.innerHTML = "";
+        if (!output.length) {
+          outputFlow.innerHTML = '<div class="empty-hint">输出序列为空</div>';
+          return;
+        }
+
+        output.forEach((item) => {
+          const el = document.createElement("span");
+          el.className = "output-item";
+          el.textContent = item;
+          outputFlow.appendChild(el);
+        });
+      }
+
+      function renderHistory() {
+        history.innerHTML = "";
+        const start = Math.max(0, currentStep - 12);
+        const end = Math.min(steps.length, currentStep + 7);
+
+        for (let i = start; i < end; i++) {
+          const row = document.createElement("div");
+          row.className = `history-item${i === currentStep ? " active" : ""}`;
+          row.innerHTML = `<span class="history-index">${i + 1}</span><span>${escapeHtml(steps[i].title)}</span>`;
+          row.addEventListener("click", () => {
+            pause();
+            currentStep = i;
+            render();
+          });
+          history.appendChild(row);
+        }
+
+        const active = history.querySelector(".active");
+        if (active) active.scrollIntoView({ block: "nearest" });
+      }
+
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, (char) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;"
+        })[char]);
+      }
+
+      function next() {
+        if (!steps.length) return;
+        if (currentStep < steps.length - 1) {
+          currentStep++;
+          render();
+        } else {
+          pause();
+        }
+      }
+
+      function prev() {
+        if (!steps.length) return;
+        pause();
+        currentStep = Math.max(0, currentStep - 1);
+        render();
+      }
+
+      function play() {
+        if (!steps.length) generate();
+        if (!steps.length) return;
+
+        if (isPlaying) {
+          pause();
+          return;
+        }
+
+        if (currentStep >= steps.length - 1) currentStep = 0;
+        isPlaying = true;
+        render();
+        timer = window.setInterval(() => {
+          if (currentStep >= steps.length - 1) {
+            pause();
+            return;
+          }
+          currentStep++;
+          render();
+        }, Number(speedRange.value));
+      }
+
+      function pause() {
+        if (timer) window.clearInterval(timer);
+        timer = null;
+        isPlaying = false;
+        if (steps.length) render();
+      }
+
+      function reset() {
+        pause();
+        currentStep = 0;
+        render();
+      }
+
+      function setMode(nextMode) {
+        if (mode === nextMode) return;
+        mode = nextMode;
+        postfixModeBtn.classList.toggle("active", mode === "postfix");
+        prefixModeBtn.classList.toggle("active", mode === "prefix");
+        directionText.textContent = mode === "postfix" ? "从左向右扫描 →" : "← 从右向左扫描";
+        outputTitle.textContent = mode === "postfix" ? "后缀输出序列" : "前缀输出序列";
+        outputHint.textContent = mode === "postfix" ? "直接从左向右读取" : "临时序列最终整体逆序";
+        renderRules();
+        generate();
+      }
+
+      function renderRules() {
+        const postfixRules = [
+          "操作数：直接加入输出序列。",
+          "左括号：压入栈；右括号：弹出到左括号为止。",
+          "运算符：先弹出优先级更高的栈顶运算符；同级时按结合性判断。",
+          "扫描结束：把栈中剩余运算符依次输出。"
+        ];
+
+        const prefixRules = [
+          "从右向左扫描，操作数先进入临时输出序列。",
+          "右括号压栈；遇到左括号时弹出到右括号为止。",
+          "同级运算符的弹栈判断与后缀转换相反。",
+          "扫描结束清空栈，再将临时输出整体逆序。"
+        ];
+
+        const rules = mode === "postfix" ? postfixRules : prefixRules;
+        ruleList.innerHTML = rules.map((rule) => `<div class="rule">${rule}</div>`).join("");
+      }
+
+      function clearVisuals() {
+        tokenTrack.innerHTML = '<div class="empty-hint">等待生成表达式记号</div>';
+        stackShell.innerHTML = '<div class="stack-empty">栈为空</div>';
+        outputFlow.innerHTML = '<div class="empty-hint">输出序列为空</div>';
+        history.innerHTML = '<div class="empty-hint">暂无步骤</div>';
+        actionBadge.textContent = "准备";
+        actionTitle.textContent = "输入表达式并生成步骤";
+        actionText.textContent = "支持操作数、括号以及 +、-、*、/、%、^ 运算符。";
+        progressBar.style.width = "0%";
+        stepCounter.textContent = "0 / 0";
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+        playBtn.disabled = true;
+      }
+
+      function showError(message) {
+        errorBox.textContent = message;
+        errorBox.classList.add("show");
+      }
+
+      function hideError() {
+        errorBox.textContent = "";
+        errorBox.classList.remove("show");
+      }
+
+      generateBtn.addEventListener("click", generate);
+      playBtn.addEventListener("click", play);
+      prevBtn.addEventListener("click", prev);
+      nextBtn.addEventListener("click", () => {
+        pause();
+        next();
+      });
+      resetBtn.addEventListener("click", reset);
+      postfixModeBtn.addEventListener("click", () => setMode("postfix"));
+      prefixModeBtn.addEventListener("click", () => setMode("prefix"));
+
+      speedRange.addEventListener("input", () => {
+        speedLabel.textContent = `${(Number(speedRange.value) / 1000).toFixed(2)} 秒`;
+        if (isPlaying) {
+          pause();
+          play();
+        }
+      });
+
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") generate();
+        if (event.code === "Space" && event.ctrlKey) {
+          event.preventDefault();
+          play();
+        }
+        if (event.key === "ArrowRight" && event.altKey) {
+          event.preventDefault();
+          pause();
+          next();
+        }
+        if (event.key === "ArrowLeft" && event.altKey) {
+          event.preventDefault();
+          prev();
+        }
+      });
+
+      document.querySelectorAll(".example-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+          input.value = button.textContent;
+          generate();
+        });
+      });
+
+      renderRules();
+      generate();
+    })();
+  </script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e"}' crossorigin="anonymous"></script>
+</body>
+</html>
