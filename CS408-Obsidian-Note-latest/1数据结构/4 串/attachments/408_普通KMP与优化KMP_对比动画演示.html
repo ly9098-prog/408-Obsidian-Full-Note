@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>考研408｜普通 KMP 与优化 KMP 对比动画</title>
+  <style>
+    :root{
+      --bg:#f4f7fb; --panel:#fff; --text:#162033; --muted:#667085;
+      --line:#d9e0ea; --blue:#3158d4; --blue-soft:#e8edff;
+      --green:#138a5b; --green-soft:#def7ea; --red:#d92d20;
+      --red-soft:#fee4e2; --amber:#b54708; --amber-soft:#fff0d5;
+      --purple:#7a4fd0; --purple-soft:#f0eaff; --shadow:0 12px 34px rgba(24,39,75,.08);
+      --cell:38px; --gap:5px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100vh; color:var(--text);
+      font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",system-ui,sans-serif;
+      background:
+        radial-gradient(circle at 5% 0%,#e7edff 0,transparent 28%),
+        radial-gradient(circle at 96% 4%,#e3fbf1 0,transparent 25%),var(--bg);
+    }
+    .page{max-width:1440px;margin:0 auto;padding:26px 18px 48px}
+    .hero{
+      border-radius:22px;padding:26px 30px;color:#fff;
+      background:linear-gradient(130deg,#233b97,#3158d4 53%,#178660);
+      box-shadow:var(--shadow);position:relative;overflow:hidden;
+    }
+    .hero:after{content:"";position:absolute;width:300px;height:300px;border-radius:50%;
+      right:-100px;top:-140px;background:rgba(255,255,255,.12)}
+    .tag{display:inline-block;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.16);
+      font-size:12px;margin-bottom:10px}
+    h1{margin:0 0 7px;font-size:clamp(25px,4vw,38px)}
+    .hero p{margin:0;opacity:.9;line-height:1.7}
+    .panel{
+      background:var(--panel);border:1px solid rgba(217,224,234,.9);border-radius:18px;
+      padding:18px;box-shadow:var(--shadow);margin-top:18px;
+    }
+    .title{display:flex;align-items:center;gap:9px;margin:0 0 14px;font-size:18px}
+    .dot{width:10px;height:10px;border-radius:50%;background:var(--blue)}
+    .config{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end}
+    label{display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px}
+    input[type=text]{
+      width:100%;height:42px;border:1px solid var(--line);border-radius:10px;
+      padding:0 12px;font-size:16px;outline:none;color:var(--text);background:#fff
+    }
+    input[type=text]:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft)}
+    button{
+      border:0;border-radius:10px;height:42px;padding:0 15px;font-family:inherit;
+      font-weight:800;font-size:14px;cursor:pointer;transition:.16s transform,.16s opacity;
+    }
+    button:hover{transform:translateY(-1px)}
+    button:disabled{opacity:.42;cursor:not-allowed;transform:none}
+    .primary{background:var(--blue);color:#fff}
+    .secondary{background:#edf1f6;color:var(--text)}
+    .error{color:var(--red);min-height:20px;margin-top:7px;font-size:13px}
+    .tip{
+      margin-top:11px;padding:11px 13px;border-radius:12px;background:#f8faff;
+      border:1px solid #e2e8f8;color:#475467;font-size:13px;line-height:1.7
+    }
+    .compare-head{
+      display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;margin-bottom:12px
+    }
+    .algo-name{
+      text-align:center;padding:11px;border-radius:12px;font-weight:900;font-size:17px;
+    }
+    .normal-name{background:var(--blue-soft);color:#2144a8}
+    .opt-name{background:var(--green-soft);color:#087047}
+    .versus{font-size:13px;font-weight:900;color:#98a2b3}
+    .columns{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .algo-panel{border:1px solid var(--line);border-radius:16px;padding:14px;min-width:0;background:#fcfdff}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:11px}
+    .stat{border:1px solid var(--line);border-radius:11px;padding:9px;background:#fff}
+    .stat .k{font-size:11px;color:var(--muted)}
+    .stat .v{font-size:17px;font-weight:900;margin-top:2px;min-height:23px}
+    .visual-scroll{overflow-x:auto;border:1px dashed #cbd5e1;border-radius:13px;background:#fff}
+    .visual{min-width:max-content;padding:10px}
+    .row{display:flex;align-items:center;margin:5px 0}
+    .row-label{width:62px;flex:0 0 62px;font-size:12px;font-weight:800;color:var(--muted)}
+    .grid{display:grid;gap:var(--gap);grid-auto-rows:var(--cell);align-items:center}
+    .cell{
+      width:var(--cell);height:var(--cell);border:1px solid var(--line);border-radius:8px;
+      display:flex;align-items:center;justify-content:center;background:#fff;font-size:17px;
+      font-weight:900;transition:.2s all
+    }
+    .idx{width:var(--cell);height:21px;display:flex;align-items:center;justify-content:center;
+      color:#98a2b3;font-size:10px}
+    .cell.matched{background:var(--green-soft);border-color:#70c99e;color:#087047}
+    .cell.current{background:var(--blue-soft);border-color:var(--blue);outline:3px solid rgba(49,88,212,.18)}
+    .cell.bad{background:var(--red-soft);border-color:var(--red);outline:3px solid rgba(217,45,32,.14);color:#a51c14}
+    .cell.done{background:#c8f0da;border-color:var(--green);color:#07663f}
+    .pointer{
+      width:var(--cell);height:23px;display:flex;align-items:center;justify-content:center;
+      font-size:11px;font-weight:900;color:var(--blue);white-space:nowrap
+    }
+    .msg{
+      margin-top:10px;min-height:92px;border-radius:12px;padding:12px 13px;line-height:1.65;
+      background:var(--blue-soft);border-left:5px solid var(--blue);font-size:13px
+    }
+    .msg strong{display:block;font-size:14px;margin-bottom:2px}
+    .msg.warn{background:var(--amber-soft);border-left-color:var(--amber)}
+    .msg.bad{background:var(--red-soft);border-left-color:var(--red)}
+    .msg.good{background:var(--green-soft);border-left-color:var(--green)}
+    .msg.skip{background:var(--purple-soft);border-left-color:var(--purple)}
+    .arrays{margin-top:10px;overflow-x:auto}
+    table{border-collapse:separate;border-spacing:4px}
+    th,td{min-width:34px;height:31px;text-align:center;border:1px solid var(--line);
+      border-radius:7px;padding:0 7px;background:#fff;font-size:12px}
+    th{background:#f0f3f8;color:var(--muted)}
+    td.active{background:var(--blue-soft);border-color:var(--blue);font-weight:900}
+    tr.opt-row td{background:#f4fff9}
+    .controls{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-top:14px;
+      padding-top:14px;border-top:1px solid var(--line)}
+    .spacer{flex:1}
+    .speed{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+    input[type=range]{accent-color:var(--blue);width:145px}
+    .progress{height:8px;border-radius:999px;background:#edf1f5;overflow:hidden;margin-top:12px}
+    .progress div{height:100%;background:linear-gradient(90deg,var(--blue),var(--green));
+      transition:.18s width}
+    .result{
+      display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px
+    }
+    .result-card{border:1px solid var(--line);border-radius:13px;padding:12px;background:#fff;text-align:center}
+    .result-card .k{font-size:12px;color:var(--muted)}
+    .result-card .v{font-size:22px;font-weight:900;margin-top:4px}
+    .saved{color:var(--green)}
+    .explain{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .ex-card{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fbfcfe}
+    .ex-card h3{margin:0 0 7px;font-size:15px}
+    .ex-card p{margin:0;color:#475467;line-height:1.75;font-size:13px}
+    code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#eef1f6;
+      border-radius:5px;padding:1px 5px}
+    kbd{background:#fff;border:1px solid #d0d5dd;border-bottom-width:2px;border-radius:5px;
+      padding:1px 5px;font-size:11px}
+    footer{text-align:center;color:#98a2b3;font-size:12px;margin-top:20px}
+    @media(max-width:980px){
+      .columns{grid-template-columns:1fr}
+      .compare-head{grid-template-columns:1fr}
+      .versus{display:none}
+      .config{grid-template-columns:1fr}
+    }
+    @media(max-width:620px){
+      .stats,.result,.explain{grid-template-columns:1fr 1fr}
+      :root{--cell:35px;--gap:4px}
+      .hero{padding:22px 19px}
+      .page{padding-left:10px;padding-right:10px}
+    }
+  </style>
+</head>
+<body>
+<main class="page">
+  <section class="hero">
+    <span class="tag">考研 408 · 王道数据结构 · 串</span>
+    <h1>普通 KMP 与优化 KMP 对比动画</h1>
+    <p>两种算法并排同步运行，直观看清 <b>next</b> 与 <b>nextval</b> 的跳转区别，以及优化算法如何跳过必然失配的重复比较。</p>
+  </section>
+
+  <section class="panel">
+    <h2 class="title"><span class="dot"></span>设置对比案例</h2>
+    <div class="config">
+      <div>
+        <label for="textInput">主串 T</label>
+        <input id="textInput" type="text" value="aaacaaaab" maxlength="36" />
+      </div>
+      <div>
+        <label for="patternInput">模式串 P</label>
+        <input id="patternInput" type="text" value="aaaab" maxlength="16" />
+      </div>
+      <button id="applyBtn" class="primary">应用并生成</button>
+    </div>
+    <div id="error" class="error"></div>
+    <div class="tip">
+      默认案例会在连续字符 <code>a</code> 中发生失配：普通 KMP 会让同一个主串字符重复与多个 <code>a</code> 比较；优化 KMP 通过 <code>nextval</code> 直接跳过这些必然失配。
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="compare-head">
+      <div class="algo-name normal-name">普通 KMP：j = next[j]</div>
+      <div class="versus">同步对比</div>
+      <div class="algo-name opt-name">优化 KMP：j = nextval[j]</div>
+    </div>
+
+    <div class="columns">
+      <article class="algo-panel">
+        <div class="stats">
+          <div class="stat"><div class="k">步骤</div><div class="v" id="nStep">—</div></div>
+          <div class="stat"><div class="k">主串指针 i</div><div class="v" id="nI">—</div></div>
+          <div class="stat"><div class="k">模式串指针 j</div><div class="v" id="nJ">—</div></div>
+          <div class="stat"><div class="k">字符比较</div><div class="v" id="nCount">0</div></div>
+        </div>
+        <div class="visual-scroll"><div id="normalVisual" class="visual"></div></div>
+        <div id="normalMsg" class="msg"></div>
+        <div id="normalArray" class="arrays"></div>
+      </article>
+
+      <article class="algo-panel">
+        <div class="stats">
+          <div class="stat"><div class="k">步骤</div><div class="v" id="oStep">—</div></div>
+          <div class="stat"><div class="k">主串指针 i</div><div class="v" id="oI">—</div></div>
+          <div class="stat"><div class="k">模式串指针 j</div><div class="v" id="oJ">—</div></div>
+          <div class="stat"><div class="k">字符比较</div><div class="v" id="oCount">0</div></div>
+        </div>
+        <div class="visual-scroll"><div id="optVisual" class="visual"></div></div>
+        <div id="optMsg" class="msg"></div>
+        <div id="optArray" class="arrays"></div>
+      </article>
+    </div>
+
+    <div class="progress"><div id="progressBar" style="width:0"></div></div>
+    <div class="controls">
+      <button id="restartBtn" class="secondary">↺ 重新开始</button>
+      <button id="prevBtn" class="secondary">← 上一轮</button>
+      <button id="playBtn" class="primary">▶ 自动播放</button>
+      <button id="nextBtn" class="secondary">下一轮 →</button>
+      <div class="spacer"></div>
+      <div class="speed">
+        <span>速度</span>
+        <input id="speedRange" type="range" min="1" max="5" value="3" />
+        <strong id="speedText">1.0×</strong>
+      </div>
+    </div>
+
+    <div class="result">
+      <div class="result-card"><div class="k">普通 KMP 总比较</div><div class="v" id="normalTotal">—</div></div>
+      <div class="result-card"><div class="k">优化 KMP 总比较</div><div class="v" id="optTotal">—</div></div>
+      <div class="result-card"><div class="k">减少比较次数</div><div class="v saved" id="savedTotal">—</div></div>
+      <div class="result-card"><div class="k">首次匹配位置</div><div class="v" id="matchPos">—</div></div>
+    </div>
+    <div style="margin-top:10px;color:#98a2b3;font-size:12px">
+      快捷键：<kbd>Space</kbd> 播放/暂停，<kbd>←</kbd> 上一轮，<kbd>→</kbd> 下一轮。
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 class="title"><span class="dot"></span>区别总结</h2>
+    <div class="explain">
+      <div class="ex-card">
+        <h3>普通 KMP</h3>
+        <p>失配时执行 <code>j = next[j]</code>。虽然主串指针 <code>i</code> 不回退，但若 <code>P[j] = P[next[j]]</code>，同一个主串字符会再次与相同字符比较，结果必然仍然失配。</p>
+      </div>
+      <div class="ex-card">
+        <h3>优化 KMP</h3>
+        <p>失配时执行 <code>j = nextval[j]</code>。当回退位置字符与当前失配字符相同时，继续沿跳转链前移，直接跳过必然失败的比较。两者最坏复杂度均为 <code>O(n+m)</code>。</p>
+      </div>
+    </div>
+  </section>
+  <footer>王道 1-based 数组展示 · 动画内部采用等价的 0-based 实现 · 单文件离线运行</footer>
+</main>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const speedMs = {1:1500,2:1100,3:780,4:480,5:260};
+  const speedLabel = {1:"0.5×",2:"0.75×",3:"1.0×",4:"1.5×",5:"2.0×"};
+
+  let T = [], P = [], normalSteps = [], optSteps = [];
+  let round = 0, maxRounds = 1, timer = null;
+  let normalMeta = {}, optMeta = {};
+
+  function buildNext(p){
+    const next = Array(p.length).fill(0);
+    if(!p.length) return next;
+    next[0] = -1;
+    let i = 0, j = -1;
+    while(i < p.length - 1){
+      if(j === -1 || p[i] === p[j]){
+        i++; j++; next[i] = j;
+      }else{
+        j = next[j];
+      }
+    }
+    return next;
+  }
+
+  function buildNextVal(p,next=buildNext(p)){
+    const nv = Array(p.length).fill(0);
+    if(!p.length) return nv;
+    nv[0] = -1;
+    for(let i=1;i<p.length;i++){
+      const j = next[i];
+      nv[i] = (j >= 0 && p[i] === p[j]) ? nv[j] : j;
+    }
+    return nv;
+  }
+
+  function state(data){
+    return Object.assign({
+      i:0,j:0,align:0,matched:0,compare:false,kind:"normal",
+      title:"",message:"",comparisons:0,activeIndex:null,done:false,found:false
+    },data);
+  }
+
+  function generate(pText,pPattern,optimized){
+    const next = buildNext(pPattern);
+    const nextval = buildNextVal(pPattern,next);
+    const jump = optimized ? nextval : next;
+    const arrayName = optimized ? "nextval" : "next";
+    const steps = [];
+    let i=0,j=0,count=0,foundAt=-1;
+
+    steps.push(state({
+      i:0,j:0,align:0,title:"初始化",
+      message:optimized
+        ? `计算 next 与 nextval，令 i = 0，j = 0。`
+        : `计算 next，令 i = 0，j = 0。`,
+      activeIndex:0
+    }));
+
+    while(i < pText.length && j < pPattern.length){
+      count++;
+      const equal = pText[i] === pPattern[j];
+      steps.push(state({
+        i,j,align:i-j,matched:equal?j+1:j,compare:true,
+        kind:equal?"match":"mismatch",
+        title:equal?"字符匹配":"发生失配",
+        message:equal
+          ? `第 ${count} 次比较：T[${i}] = “${pText[i]}”，P[${j}] = “${pPattern[j]}”，相等，i 与 j 同时后移。`
+          : `第 ${count} 次比较：T[${i}] = “${pText[i]}”，P[${j}] = “${pPattern[j]}”，不等，查询 ${arrayName}[${j}]。`,
+        comparisons:count,activeIndex:j
+      }));
+
+      if(equal){
+        i++; j++;
+        if(j === pPattern.length){
+          foundAt = i-j;
+          steps.push(state({
+            i:i-1,j:j-1,align:foundAt,matched:j,kind:"found",found:true,done:true,
+            title:"匹配成功",
+            message:`首次匹配位置为 ${foundAt}，共进行了 ${count} 次字符比较。`,
+            comparisons:count,activeIndex:j-1
+          }));
+          break;
+        }
+        continue;
+      }
+
+      const oldJ = j;
+      const newJ = jump[j];
+
+      if(newJ === -1){
+        i++; j=0;
+        const isSkip = optimized && oldJ > 0 && next[oldJ] !== -1;
+        steps.push(state({
+          i:i<pText.length?i:null,j:i<pText.length?0:null,align:i,
+          kind:isSkip?"skip":"jump",
+          title:isSkip?"nextval 跳过重复失配":"经过哨兵位置",
+          message:isSkip
+            ? `next[${oldJ}] = ${next[oldJ]}，但 P[${oldJ}] 与回退位置字符相同；nextval[${oldJ}] = -1，直接跳过整条必然失配链，使 i 前进到 ${i}。`
+            : `${arrayName}[${oldJ}] = -1，按哨兵规则使 i 前进到 ${i}，j 回到 0。`,
+          comparisons:count,activeIndex:oldJ
+        }));
+      }else{
+        j = newJ;
+        steps.push(state({
+          i,j,align:i-j,matched:j,kind:optimized?"skip":"jump",
+          title:optimized?"使用 nextval 回退":"使用 next 回退",
+          message:`i 保持 ${i} 不变，j 从 ${oldJ} 跳到 ${arrayName}[${oldJ}] = ${j}；本次跳转不进行字符比较。`,
+          comparisons:count,activeIndex:oldJ
+        }));
+      }
+    }
+
+    if(foundAt < 0){
+      steps.push(state({
+        i:null,j:null,align:Math.max(0,i-j),kind:"fail",done:true,
+        title:"匹配失败",message:`主串扫描结束，共进行了 ${count} 次字符比较。`,
+        comparisons:count
+      }));
+    }
+    return {steps,next,nextval,total:count,foundAt};
+  }
+
+  function validate(){
+    const t = Array.from($("textInput").value.trim());
+    const p = Array.from($("patternInput").value.trim());
+    if(!t.length || !p.length){
+      $("error").textContent="主串和模式串均不能为空。"; return null;
+    }
+    if(t.length>36 || p.length>16){
+      $("error").textContent="为保证动画清晰，主串最多 36 个字符，模式串最多 16 个字符。"; return null;
+    }
+    $("error").textContent="";
+    return {t,p};
+  }
+
+  function setup(){
+    stop();
+    const v=validate(); if(!v) return;
+    T=v.t; P=v.p;
+    normalMeta=generate(T,P,false);
+    optMeta=generate(T,P,true);
+    normalSteps=normalMeta.steps;
+    optSteps=optMeta.steps;
+    maxRounds=Math.max(normalSteps.length,optSteps.length);
+    round=0;
+    $("normalTotal").textContent=normalMeta.total;
+    $("optTotal").textContent=optMeta.total;
+    $("savedTotal").textContent=Math.max(0,normalMeta.total-optMeta.total);
+    $("matchPos").textContent=normalMeta.foundAt>=0?normalMeta.foundAt:"未找到";
+    render();
+  }
+
+  function currentStep(steps){
+    return steps[Math.min(round,steps.length-1)];
+  }
+
+  function renderVisual(targetId,st){
+    const target=$(targetId);
+    const total=Math.max(T.length,st.align+P.length,1);
+    target.innerHTML="";
+
+    const grid=()=>{const g=document.createElement("div");g.className="grid";
+      g.style.gridTemplateColumns=`repeat(${total},var(--cell))`;return g};
+    const row=(label,g)=>{const r=document.createElement("div");r.className="row";
+      const l=document.createElement("div");l.className="row-label";l.textContent=label;
+      r.append(l,g);target.appendChild(r)};
+
+    const ig=grid();
+    for(let k=0;k<total;k++){
+      const c=document.createElement("div");c.className="idx";c.textContent=k<T.length?k:"";ig.appendChild(c);
+    }
+    row("下标",ig);
+
+    const tg=grid();
+    for(let k=0;k<total;k++){
+      const c=document.createElement("div");
+      if(k<T.length){
+        c.className="cell";c.textContent=T[k];
+        if(k>=st.align && k<st.align+st.matched)c.classList.add(st.found?"done":"matched");
+        if(st.compare && k===st.i)c.classList.add(st.kind==="mismatch"?"bad":"current");
+      }else c.className="idx";
+      tg.appendChild(c);
+    }
+    row("主串 T",tg);
+
+    const pg=grid();
+    for(let k=0;k<P.length;k++){
+      const c=document.createElement("div");c.className="cell";c.textContent=P[k];
+      c.style.gridColumn=String(st.align+k+1);
+      if(k<st.matched)c.classList.add(st.found?"done":"matched");
+      if(st.compare && k===st.j)c.classList.add(st.kind==="mismatch"?"bad":"current");
+      pg.appendChild(c);
+    }
+    row("模式 P",pg);
+
+    const ptr=grid();
+    const same=st.i!==null&&st.j!==null&&st.i===st.align+st.j;
+    if(same){
+      const x=document.createElement("div");x.className="pointer";
+      x.style.gridColumn=String(st.i+1);x.textContent="↑ i,j";ptr.appendChild(x);
+    }else{
+      if(st.i!==null&&st.i>=0&&st.i<total){
+        const x=document.createElement("div");x.className="pointer";
+        x.style.gridColumn=String(st.i+1);x.textContent="↑ i";ptr.appendChild(x);
+      }
+      const jp=st.j===null?null:st.align+st.j;
+      if(jp!==null&&jp>=0&&jp<total){
+        const x=document.createElement("div");x.className="pointer";
+        x.style.gridColumn=String(jp+1);x.textContent="↑ j";ptr.appendChild(x);
+      }
+    }
+    row("指针",ptr);
+  }
+
+  function renderMessage(id,st){
+    const el=$(id);
+    el.className="msg";
+    if(st.kind==="mismatch"||st.kind==="fail")el.classList.add("bad");
+    if(st.kind==="jump")el.classList.add("warn");
+    if(st.kind==="found")el.classList.add("good");
+    if(st.kind==="skip")el.classList.add("skip");
+    el.innerHTML="";
+    const b=document.createElement("strong");b.textContent=st.title;
+    const s=document.createElement("span");s.textContent=st.message;
+    el.append(b,s);
+  }
+
+  function renderArray(id,meta,st,optimized){
+    const box=$(id);box.innerHTML="";
+    const table=document.createElement("table");
+    const rows=[
+      ["位置（王道）",...P.map((_,i)=>i+1)],
+      ["P",...P],
+      ["next",...meta.next.map(v=>v+1)]
+    ];
+    if(optimized)rows.push(["nextval",...meta.nextval.map(v=>v+1)]);
+    rows.forEach((r,ri)=>{
+      const tr=document.createElement("tr");
+      if(ri===3)tr.className="opt-row";
+      r.forEach((v,ci)=>{
+        const el=document.createElement(ri===0||ci===0?"th":"td");
+        el.textContent=v;
+        if(ci>0&&ci-1===st.activeIndex)el.classList.add("active");
+        tr.appendChild(el);
+      });
+      table.appendChild(tr);
+    });
+    box.appendChild(table);
+  }
+
+  function renderSide(prefix,steps,meta,visualId,msgId,arrayId,optimized){
+    const idx=Math.min(round,steps.length-1),st=steps[idx];
+    $(prefix+"Step").textContent=`${idx+1} / ${steps.length}`;
+    $(prefix+"I").textContent=st.i===null?"—":st.i;
+    $(prefix+"J").textContent=st.j===null?"—":st.j;
+    $(prefix+"Count").textContent=st.comparisons;
+    renderVisual(visualId,st);
+    renderMessage(msgId,st);
+    renderArray(arrayId,meta,st,optimized);
+  }
+
+  function render(){
+    renderSide("n",normalSteps,normalMeta,"normalVisual","normalMsg","normalArray",false);
+    renderSide("o",optSteps,optMeta,"optVisual","optMsg","optArray",true);
+    $("progressBar").style.width=`${((round+1)/maxRounds)*100}%`;
+    $("prevBtn").disabled=round===0;
+    $("restartBtn").disabled=round===0;
+    $("nextBtn").disabled=round>=maxRounds-1;
+    $("speedText").textContent=speedLabel[$("speedRange").value];
+  }
+
+  function next(){
+    if(round<maxRounds-1){round++;render()}else stop();
+  }
+  function prev(){stop();if(round>0){round--;render()}}
+  function restart(){stop();round=0;render()}
+  function play(){
+    if(timer){stop();return}
+    if(round>=maxRounds-1)round=0;
+    $("playBtn").textContent="⏸ 暂停";
+    timer=setInterval(()=>{if(round>=maxRounds-1){stop();return}next()},speedMs[$("speedRange").value]);
+  }
+  function stop(){
+    if(timer)clearInterval(timer);
+    timer=null;$("playBtn").textContent="▶ 自动播放";
+  }
+
+  $("applyBtn").addEventListener("click",setup);
+  $("restartBtn").addEventListener("click",restart);
+  $("prevBtn").addEventListener("click",prev);
+  $("nextBtn").addEventListener("click",()=>{stop();next()});
+  $("playBtn").addEventListener("click",play);
+  $("speedRange").addEventListener("input",()=>{render();if(timer){stop();play()}});
+  ["textInput","patternInput"].forEach(id=>$(id).addEventListener("keydown",e=>{if(e.key==="Enter")setup()}));
+  document.addEventListener("keydown",e=>{
+    if(e.target.tagName==="INPUT")return;
+    if(e.code==="Space"){e.preventDefault();play()}
+    if(e.key==="ArrowLeft"){e.preventDefault();prev()}
+    if(e.key==="ArrowRight"){e.preventDefault();stop();next()}
+  });
+  setup();
+})();
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e"}' crossorigin="anonymous"></script>
+</body>
+</html>
