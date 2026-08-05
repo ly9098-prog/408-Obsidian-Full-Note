@@ -1,0 +1,881 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>考研408｜树的三种存储表示学习动画</title>
+<style>
+:root{
+  --bg:#0d1512;
+  --panel:#17231e;
+  --panel2:#1d2b25;
+  --panel3:#101915;
+  --line:#35483f;
+  --text:#f2f7f4;
+  --muted:#a9bbb1;
+  --green:#a8df57;
+  --green2:#d2ff83;
+  --orange:#ff9f2f;
+  --cyan:#56d5c7;
+  --red:#ff7474;
+  --shadow:0 18px 55px rgba(0,0,0,.34);
+  --radius:22px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  min-height:100vh;
+  color:var(--text);
+  font-family:Inter,"PingFang SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  background:
+    radial-gradient(circle at 10% 0%,rgba(86,213,199,.09),transparent 30%),
+    radial-gradient(circle at 95% 5%,rgba(168,223,87,.08),transparent 30%),
+    var(--bg);
+}
+button,select{font:inherit}
+button{color:inherit}
+.app{width:min(1640px,calc(100% - 28px));margin:0 auto;padding:24px 0 58px}
+.hero{
+  padding:28px 30px 24px;border-radius:28px;
+  background:linear-gradient(135deg,rgba(31,45,38,.98),rgba(19,30,25,.98));
+  border:1px solid rgba(255,255,255,.08);box-shadow:var(--shadow)
+}
+.eyebrow{font-size:13px;color:var(--orange);font-weight:900;letter-spacing:.08em}
+h1{margin:9px 0 8px;font-size:clamp(31px,4vw,55px);line-height:1.08;letter-spacing:-.035em}
+.hero p{margin:0;color:var(--muted);font-size:clamp(14px,1.4vw,18px);line-height:1.7}
+.hero-chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:17px}
+.hero-chip{padding:8px 12px;border-radius:999px;background:#101914;border:1px solid rgba(255,255,255,.08);color:#cfddd6;font-size:13px}
+.hero-chip b{color:var(--green2)}
+
+.tabs-shell{
+  position:sticky;top:8px;z-index:20;margin:15px 0;padding:9px;
+  background:rgba(20,31,26,.94);backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.09);border-radius:18px;box-shadow:0 12px 30px rgba(0,0,0,.22)
+}
+.tabbar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;overflow:visible}
+.tab{
+  min-width:0;min-height:55px;padding:9px 12px;border:1px solid rgba(255,255,255,.08);
+  border-radius:13px;background:#223129;color:#b8c8c0;cursor:pointer;
+  font-weight:900;transition:.22s ease;white-space:normal;line-height:1.3
+}
+.tab span{display:block;font-size:12px;color:#7f9489;margin-bottom:3px}
+.tab:hover{border-color:rgba(210,255,131,.35);transform:translateY(-1px)}
+.tab.active{background:linear-gradient(135deg,var(--green),var(--green2));color:#18240f;border-color:transparent;box-shadow:0 8px 24px rgba(168,223,87,.2)}
+.tab.active span{color:#3b531c}
+
+.lesson-panel{
+  display:none;padding:22px;border-radius:26px;background:linear-gradient(180deg,rgba(28,42,35,.98),rgba(20,31,26,.98));
+  border:1px solid rgba(255,255,255,.08);box-shadow:var(--shadow)
+}
+.lesson-panel.active{display:block;animation:panelIn .35s ease}
+@keyframes panelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.block-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin:2px 2px 17px}
+.block-index{color:var(--orange);font-weight:900;font-size:13px;letter-spacing:.06em}
+.block-head h2{font-size:clamp(27px,3vw,40px);margin:7px 0 7px}
+.block-head p{margin:0;color:var(--muted);line-height:1.7}
+.method-badge{padding:9px 12px;border-radius:999px;background:#0e1713;border:1px solid rgba(255,255,255,.08);color:#c8d7cf;font-size:13px;white-space:nowrap}
+
+.block-grid{display:grid;grid-template-columns:minmax(0,1.22fr) minmax(390px,.78fr);gap:14px}
+.demo-card,.code-card{
+  min-width:0;border-radius:18px;overflow:hidden;background:#121d18;border:1px solid rgba(255,255,255,.07)
+}
+.card-bar{
+  height:46px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 15px;
+  background:#1f2d27;border-bottom:1px solid rgba(255,255,255,.07);font-weight:850;font-size:14px
+}
+.card-dot{display:inline-block;width:9px;height:9px;margin-right:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px rgba(168,223,87,.6)}
+.card-dot.orange{background:var(--orange);box-shadow:0 0 10px rgba(255,159,47,.55)}
+.status-pill,.code-lang{padding:5px 9px;border-radius:999px;background:#111a16;color:var(--muted);font-size:11px;font-weight:800}
+.visual-canvas{padding:12px;min-height:610px}
+.visual-split{height:100%;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(330px,.95fr);gap:11px}
+.visual-pane{
+  min-width:0;border-radius:14px;background:
+  linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px),#0f1915;
+  background-size:28px 28px;border:1px solid rgba(255,255,255,.06);overflow:hidden
+}
+.mini-title{
+  min-height:42px;padding:9px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  color:#d8e4de;font-size:13px;font-weight:850;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(25,38,32,.84)
+}
+.legend,.storage-hint,.cs-legend{color:#81958a;font-size:11px;font-weight:700}
+.legend i,.cs-legend i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:4px}
+.cs-legend i.ns{background:var(--orange);margin-left:8px}
+.logical-tree{width:100%;height:auto;max-height:515px;display:block}
+.grid-lines line{stroke:#3c4d45;stroke-width:1.2;stroke-dasharray:7 8;opacity:.34}
+.tree-edge{stroke:#64796e;stroke-width:3.2;stroke-linecap:round}
+.tree-node circle{fill:#26372f;stroke:#778c81;stroke-width:3}
+.tree-node text,.cs-node text{fill:#f4f8f6;font-size:20px;font-weight:950;text-anchor:middle;dominant-baseline:central}
+.tree-node.current circle,.tree-node.current-step circle{fill:#557a20;stroke:var(--green2);stroke-width:5;filter:drop-shadow(0 0 12px rgba(210,255,131,.72))}
+.tree-edge.current,.tree-edge.current-step{stroke:var(--green2);stroke-width:5;filter:drop-shadow(0 0 6px rgba(210,255,131,.55))}
+.storage-pane{padding-bottom:10px}
+.array-table,.field-table{margin:12px;border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden}
+.array-row{
+  display:grid;grid-template-columns:64px 1fr 1fr;min-height:40px;align-items:center;text-align:center;
+  border-bottom:1px solid rgba(255,255,255,.06);background:#17231e
+}
+.array-row:last-child{border-bottom:0}
+.array-head,.field-head{background:#27372f!important;color:#a9bbb1;font-size:12px;font-weight:900}
+.array-row .idx{color:#7f958a;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.array-row .data{font-size:17px;font-weight:950}
+.array-row .ptr{color:var(--orange);font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:900}
+.array-row.current-step,.child-row.current-step,.field-row.current-step{
+  background:rgba(168,223,87,.16);box-shadow:inset 4px 0 0 var(--green2)
+}
+.rule-card{
+  margin:11px 12px 0;padding:12px 13px;border-radius:12px;background:#16221d;
+  border-left:3px solid var(--orange);color:#bdcdc4;font-size:12px;line-height:1.65
+}
+.rule-card b{color:#fff}.rule-card code{color:var(--green2)}
+
+.child-list-table{padding:10px;display:grid;gap:7px}
+.child-row{
+  display:grid;grid-template-columns:76px 22px 1fr;align-items:center;min-height:43px;padding:6px 8px;
+  border-radius:10px;background:#18251f;border:1px solid rgba(255,255,255,.055)
+}
+.child-head{display:grid;grid-template-columns:25px 1fr;gap:6px;align-items:center}
+.child-head b{color:#859a8f;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.child-head em{font-style:normal;font-weight:950}
+.head-arrow,.chain-arrow{color:var(--orange);font-weight:950}
+.child-chain{display:flex;align-items:center;gap:5px;min-width:0;flex-wrap:wrap}
+.chain-node{padding:5px 8px;border-radius:8px;background:#284239;border:1px solid rgba(86,213,199,.32);color:#dffaf6;font-size:12px;font-weight:850}
+.null-node{color:#71867b;font-size:18px}
+
+.cs-edge{fill:none;stroke-width:3.5}
+.cs-edge.first-child{stroke:var(--green)}
+.cs-edge.sibling{stroke:var(--orange);stroke-dasharray:8 6}
+.cs-edge.current-step{stroke-width:6;filter:drop-shadow(0 0 7px rgba(210,255,131,.65))}
+.cs-edge.sibling.current-step{filter:drop-shadow(0 0 7px rgba(255,159,47,.65))}
+.cs-node rect{fill:#26372f;stroke:#71877b;stroke-width:3}
+.cs-node.current-step rect{fill:#4f6c23;stroke:var(--green2);stroke-width:5;filter:drop-shadow(0 0 10px rgba(210,255,131,.6))}
+.field-row{display:grid;grid-template-columns:72px 1fr 1fr;min-height:38px;align-items:center;text-align:center;border-bottom:1px solid rgba(255,255,255,.055);background:#17231e;font-size:12px}
+.field-row:last-child{border-bottom:0}
+.field-row span:first-child{font-size:15px;font-weight:950}
+.field-row span:nth-child(2){color:var(--green2)}
+.field-row span:nth-child(3){color:var(--orange)}
+
+
+/* 修复版：孩子兄弟表示法教材风 + 站内统一主题 */
+
+@keyframes csPulseStroke{
+  0%,100%{filter:drop-shadow(0 0 2px rgba(210,255,131,.18));}
+  50%{filter:drop-shadow(0 0 10px rgba(210,255,131,.72));}
+}
+@keyframes csLinePulse{
+  0%,100%{opacity:1}
+  50%{opacity:.62}
+}
+.cs-box-node.current-step .cell,
+.cs-box-node.current-step .data-cell{
+  animation:csPulseStroke 1s ease-in-out infinite;
+}
+.cs-box-link.current-step path,
+.cs-box-link.current-step line{
+  animation:csLinePulse .95s ease-in-out infinite;
+}
+.cs-tree-fixed .caption-note{
+  fill:#9bb0a5;
+  font-size:12px;
+  font-weight:800;
+}
+
+.cs-tree-fixed{max-height:540px}
+.cs-box-node .cell{
+  fill:#223129;
+  stroke:#a8bbb0;
+  stroke-width:2.3;
+}
+.cs-box-node .data-cell{
+  fill:#eff6f2;
+  stroke:#eff6f2;
+}
+.cs-box-node text{
+  fill:#102019;
+  font-size:18px;
+  font-weight:950;
+  text-anchor:middle;
+  dominant-baseline:central;
+}
+.cs-box-node .ptr-mark{
+  fill:#a8bbb0;
+  opacity:.9;
+}
+.cs-box-node.current-step .cell{
+  stroke:var(--green2);
+  stroke-width:3.2;
+  filter:drop-shadow(0 0 6px rgba(210,255,131,.45));
+}
+.cs-box-node.current-step .data-cell{
+  fill:#f5ffd7;
+  stroke:var(--green2);
+}
+.cs-box-link path,.cs-box-link line{
+  fill:none;
+  stroke-width:3.3;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.cs-box-link.fc path,.cs-box-link.fc line{stroke:var(--green)}
+.cs-box-link.ns path,.cs-box-link.ns line{stroke:var(--orange);stroke-dasharray:8 7}
+.cs-box-link.current-step path,.cs-box-link.current-step line{
+  stroke-width:5.2;
+  filter:drop-shadow(0 0 6px rgba(255,255,255,.18));
+}
+.cs-bg-note{fill:#7d9186;font-size:12px;font-weight:700}
+
+.reveal-item{opacity:0;transition:opacity .35s ease,background .35s ease,box-shadow .35s ease,stroke .35s ease,filter .35s ease}
+.html-reveal{transform:translateY(7px);transition:opacity .35s ease,transform .35s ease,background .35s ease,box-shadow .35s ease}
+.reveal-item.shown{opacity:1}
+.html-reveal.shown{transform:none}
+
+.code-card{display:flex;flex-direction:column;min-height:610px}
+.step-explain{padding:15px 16px 13px;background:linear-gradient(135deg,rgba(168,223,87,.09),rgba(86,213,199,.035));border-bottom:1px solid rgba(255,255,255,.07)}
+.step-label{display:inline-block;padding:5px 8px;border-radius:999px;background:#101a15;color:var(--orange);font-size:11px;font-weight:900}
+.step-explain h3{margin:10px 0 5px;font-size:20px}
+.step-explain p{margin:0;color:#bbc9c2;line-height:1.65;font-size:13px;min-height:43px}
+.code-window{height:475px;overflow:auto;padding:10px 0 18px;background:#0e1613;scrollbar-color:#42584d transparent;scrollbar-width:thin}
+.code-line{
+  display:grid;grid-template-columns:44px minmax(0,1fr);min-height:28px;align-items:start;
+  border-left:3px solid transparent;color:#a9b9b1;font-size:12.5px;line-height:1.55;transition:.18s ease
+}
+.code-line .line-no{padding:4px 9px 4px 0;text-align:right;color:#566a60;user-select:none}
+.code-line code{padding:4px 12px 4px 8px;white-space:pre-wrap;overflow-wrap:anywhere;font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+.code-line.past{color:#d5e0da}
+.code-line.active{background:rgba(255,159,47,.11);border-left-color:var(--orange);color:#fff}
+.code-line.active .line-no{color:var(--orange)}
+.code-line.active code{font-weight:800}
+
+.control-deck{
+  display:grid;grid-template-columns:auto minmax(190px,1fr) auto;gap:14px;align-items:center;
+  margin-top:14px;padding:11px;border-radius:16px;background:#111b17;border:1px solid rgba(255,255,255,.07)
+}
+.button-group{display:flex;gap:7px;flex-wrap:wrap}
+.ctrl-btn{
+  min-height:42px;padding:0 13px;border-radius:11px;border:1px solid rgba(255,255,255,.1);
+  background:#24342c;color:#eaf2ee;font-weight:850;cursor:pointer;transition:.18s ease
+}
+.ctrl-btn:hover{transform:translateY(-1px);border-color:rgba(210,255,131,.4)}
+.ctrl-btn.play{background:var(--green);color:#17230e;border-color:transparent;min-width:92px}
+.ctrl-btn.ghost{background:transparent;color:#aebdb5}
+.progress-group{display:grid;grid-template-columns:minmax(100px,1fr) 58px;gap:9px;align-items:center}
+.progress-track{position:relative;height:11px;padding:0;border:0;border-radius:999px;background:#0a110e;overflow:hidden;cursor:pointer}
+.progress-fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:inherit;background:linear-gradient(90deg,var(--green),var(--green2));transition:width .3s ease}
+.step-count{color:#9aacA2;font-size:12px;text-align:right;font-variant-numeric:tabular-nums}
+.speed-control{display:flex;align-items:center;gap:8px;color:#9dafA5;font-size:12px;white-space:nowrap}
+.speed-control select{height:38px;padding:0 30px 0 11px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#24342c;color:#fff;font-weight:850;cursor:pointer}
+
+.footer{padding:20px 4px 0;text-align:center;color:#75877e;font-size:12px}
+kbd{padding:2px 6px;border:1px solid rgba(255,255,255,.13);border-bottom-width:2px;border-radius:5px;background:#19241f;color:#cbd8d1}
+
+@media(max-width:1180px){
+  .block-grid{grid-template-columns:1fr}
+  .visual-canvas,.code-card{min-height:auto}
+  .code-window{height:440px}
+}
+@media(max-width:820px){
+  .app{width:min(100% - 14px,1640px);padding-top:8px}
+  .hero{padding:21px 18px;border-radius:20px}
+  .tabs-shell{top:4px;margin:10px 0;padding:6px}
+  .tabbar{gap:6px}
+  .tab{padding:8px 6px;min-height:57px;font-size:12px}
+  .lesson-panel{padding:13px;border-radius:19px}
+  .block-head{display:block}
+  .method-badge{display:inline-block;margin-top:10px}
+  .visual-split{grid-template-columns:1fr}
+  .logical-tree{max-height:430px}
+  .control-deck{grid-template-columns:1fr}
+  .button-group{display:grid;grid-template-columns:repeat(4,1fr)}
+  .ctrl-btn{padding:0 7px}.ctrl-btn span{display:none}
+  .speed-control{justify-content:space-between}
+}
+@media(max-width:520px){
+  .tab{font-size:11px}
+  .tab span{font-size:10px}
+  .visual-canvas{padding:7px}
+  .array-row{grid-template-columns:50px 1fr 1fr}
+  .field-row{grid-template-columns:55px 1fr 1fr}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+}
+
+/* 更贴近教材原图的孩子兄弟表示法绘制 */
+.cs-textbook-tree{max-height:620px}
+.cs-paper-bg{fill:#fbfbf8;stroke:#d8ded9;stroke-width:1.4}
+.cs-paper-shadow{fill:rgba(0,0,0,.12)}
+.cs-caption-head{fill:#222;font-size:14px;font-weight:700}
+.cs-caption-sub{fill:#555;font-size:12px;font-weight:600}
+.cs-book-title{fill:#111;font-size:15px;font-weight:800}
+.cs-book-sub{fill:#444;font-size:13px;font-weight:700}
+.cs-book-label{fill:#111;font-size:16px;font-weight:900}
+.cs-book-node .ptr-box,.cs-book-node .data-box{fill:#fff;stroke:#111;stroke-width:2}
+.cs-book-node .data-box{fill:#fff}
+.cs-book-node text{fill:#111;text-anchor:middle;dominant-baseline:central;font-weight:900;font-size:18px}
+.cs-book-node .ptr-dot{fill:#111}
+.cs-book-node .ptr-null{fill:#111;font-size:17px;font-weight:900}
+.cs-book-line{fill:none;stroke:#111;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
+.cs-step-group.current-step .cs-book-line{stroke:var(--orange);stroke-width:3.3;filter:drop-shadow(0 0 6px rgba(255,159,47,.45))}
+.cs-step-group.current-step .ptr-box,.cs-step-group.current-step .data-box{stroke:var(--orange);stroke-width:2.6;filter:drop-shadow(0 0 4px rgba(255,159,47,.35))}
+.cs-step-group.current-step .data-box{fill:#fff9ea}
+.cs-step-group.current-step .ptr-dot,.cs-step-group.current-step .ptr-null,.cs-step-group.current-step text{fill:#8f5200}
+.cs-inset-note{fill:#666;font-size:12px;font-weight:700}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hero">
+    <div class="eyebrow">考研 408 · 数据结构 · 树的存储结构</div>
+    <h1>树的三种表示方法｜交互学习动画</h1>
+    <p>同一棵树分别用双亲数组、孩子链表和孩子兄弟二叉链表表示。左侧观察结构如何逐步生成，右侧同步跟随代码执行。</p>
+    <div class="hero-chips">
+      <span class="hero-chip"><b>自动</b>：播放至当前方法末尾</span>
+      <span class="hero-chip"><b>手动</b>：上一步 / 下一步 / 点击进度条</span>
+      <span class="hero-chip"><b>倍速</b>：0.5×—2×</span>
+      <span class="hero-chip"><b>快捷键</b>：1/2/3 切换，←/→ 步进，Space 播放</span>
+    </div>
+  </header>
+
+  <nav class="tabs-shell" aria-label="三种树的存储方法">
+    <div class="tabbar" role="tablist">
+      <button class="tab active" id="tab-parent" role="tab" aria-selected="true" aria-controls="panel-parent" data-tab="parent"><span>BLOCK 01</span>双亲表示法</button>
+      <button class="tab" id="tab-child" role="tab" aria-selected="false" aria-controls="panel-child" data-tab="child"><span>BLOCK 02</span>孩子表示法</button>
+      <button class="tab" id="tab-cs" role="tab" aria-selected="false" aria-controls="panel-cs" data-tab="cs"><span>BLOCK 03</span>孩子兄弟表示法</button>
+    </div>
+  </nav>
+
+  
+    <section class="lesson-panel" id="panel-parent" data-lesson="parent" aria-labelledby="tab-parent">
+      <div class="block-head">
+        <div>
+          <div class="block-index">01 · 树的存储结构</div>
+          <h2>双亲表示法</h2>
+          <p>找双亲快：O(1)；找孩子需要扫描数组。</p>
+        </div>
+        <div class="method-badge">连续数组 + 双亲下标</div>
+      </div>
+
+      <div class="block-grid">
+        <article class="demo-card">
+          <div class="card-bar">
+            <div><span class="card-dot"></span>左侧动画演示</div>
+            <span class="status-pill" data-role="status">手动模式</span>
+          </div>
+          <div class="visual-canvas">
+<div class="visual-split">
+  <div class="visual-pane tree-pane">
+    <div class="mini-title"><span>逻辑树同步构造</span><span class="legend"><i></i> 当前写入</span></div>
+    <svg class="logical-tree" viewBox="0 0 660 420" role="img" aria-label="逻辑树同步构造">
+      <g class="grid-lines">
+        <line x1="30" y1="95" x2="635" y2="95"/><line x1="30" y1="205" x2="635" y2="205"/>
+        <line x1="30" y1="315" x2="635" y2="315"/>
+      </g>
+      <g><line class="tree-edge svg-reveal reveal-item" data-reveal-step="2" x1="330" y1="77" x2="145" y2="120" /><line class="tree-edge svg-reveal reveal-item" data-reveal-step="3" x1="330" y1="77" x2="330" y2="120" /><line class="tree-edge svg-reveal reveal-item" data-reveal-step="4" x1="330" y1="77" x2="515" y2="120" /><line class="tree-edge svg-reveal reveal-item" data-reveal-step="5" x1="145" y1="170" x2="85" y2="235" /><line class="tree-edge svg-reveal reveal-item" data-reveal-step="6" x1="145" y1="170" x2="205" y2="235" /><line class="tree-edge svg-reveal reveal-item" data-reveal-step="7" x1="515" y1="170" x2="515" y2="235" /><line class="tree-edge svg-reveal reveal-item" data-reveal-step="8" x1="515" y1="285" x2="415" y2="340" /><line class="tree-edge svg-reveal reveal-item" data-reveal-step="9" x1="515" y1="285" x2="515" y2="340" /><line class="tree-edge svg-reveal reveal-item" data-reveal-step="10" x1="515" y1="285" x2="615" y2="340" /></g>
+      <g><g class="tree-node svg-reveal reveal-item" data-reveal-step="1" data-node="R" transform="translate(330 52)"><circle r="27"/><text>R</text></g><g class="tree-node svg-reveal reveal-item" data-reveal-step="2" data-node="A" transform="translate(145 145)"><circle r="27"/><text>A</text></g><g class="tree-node svg-reveal reveal-item" data-reveal-step="3" data-node="B" transform="translate(330 145)"><circle r="27"/><text>B</text></g><g class="tree-node svg-reveal reveal-item" data-reveal-step="4" data-node="C" transform="translate(515 145)"><circle r="27"/><text>C</text></g><g class="tree-node svg-reveal reveal-item" data-reveal-step="5" data-node="D" transform="translate(85 260)"><circle r="27"/><text>D</text></g><g class="tree-node svg-reveal reveal-item" data-reveal-step="6" data-node="E" transform="translate(205 260)"><circle r="27"/><text>E</text></g><g class="tree-node svg-reveal reveal-item" data-reveal-step="7" data-node="F" transform="translate(515 260)"><circle r="27"/><text>F</text></g><g class="tree-node svg-reveal reveal-item" data-reveal-step="8" data-node="G" transform="translate(415 365)"><circle r="27"/><text>G</text></g><g class="tree-node svg-reveal reveal-item" data-reveal-step="9" data-node="H" transform="translate(515 365)"><circle r="27"/><text>H</text></g><g class="tree-node svg-reveal reveal-item" data-reveal-step="10" data-node="K" transform="translate(615 365)"><circle r="27"/><text>K</text></g></g>
+    </svg>
+    </div>
+  <div class="visual-pane storage-pane">
+    <div class="mini-title"><span>连续数组 PTNode[]</span><span class="storage-hint">parent 存双亲下标</span></div>
+    <div class="array-table">
+      <div class="array-row array-head"><span>下标</span><span>data</span><span>parent</span></div>
+      <div class="array-row reveal-item html-reveal" data-reveal-step="1"><span class="idx">0</span><span class="data">R</span><span class="ptr">-1</span></div><div class="array-row reveal-item html-reveal" data-reveal-step="2"><span class="idx">1</span><span class="data">A</span><span class="ptr">0</span></div><div class="array-row reveal-item html-reveal" data-reveal-step="3"><span class="idx">2</span><span class="data">B</span><span class="ptr">0</span></div><div class="array-row reveal-item html-reveal" data-reveal-step="4"><span class="idx">3</span><span class="data">C</span><span class="ptr">0</span></div><div class="array-row reveal-item html-reveal" data-reveal-step="5"><span class="idx">4</span><span class="data">D</span><span class="ptr">1</span></div><div class="array-row reveal-item html-reveal" data-reveal-step="6"><span class="idx">5</span><span class="data">E</span><span class="ptr">1</span></div><div class="array-row reveal-item html-reveal" data-reveal-step="7"><span class="idx">6</span><span class="data">F</span><span class="ptr">3</span></div><div class="array-row reveal-item html-reveal" data-reveal-step="8"><span class="idx">7</span><span class="data">G</span><span class="ptr">6</span></div><div class="array-row reveal-item html-reveal" data-reveal-step="9"><span class="idx">8</span><span class="data">H</span><span class="ptr">6</span></div><div class="array-row reveal-item html-reveal" data-reveal-step="10"><span class="idx">9</span><span class="data">K</span><span class="ptr">6</span></div>
+    </div>
+    <div class="rule-card"><b>反向找根：</b>从当前结点不断读取 <code>parent</code>，直到值为 <code>-1</code>。</div>
+  </div>
+</div>
+</div>
+        </article>
+
+        <article class="code-card">
+          <div class="card-bar">
+            <div><span class="card-dot orange"></span>右侧逐行代码</div>
+            <span class="code-lang">C / 伪代码</span>
+          </div>
+          <div class="step-explain">
+            <span class="step-label" data-role="step-label">步骤 1</span>
+            <h3 data-role="step-title"></h3>
+            <p data-role="step-desc"></p>
+          </div>
+          <div class="code-window" data-role="code-window"><div class="code-line" data-code-line="0"><span class="line-no">1</span><code>typedef char ElemType;</code></div><div class="code-line" data-code-line="1"><span class="line-no">2</span><code>typedef struct {</code></div><div class="code-line" data-code-line="2"><span class="line-no">3</span><code>    ElemType data;</code></div><div class="code-line" data-code-line="3"><span class="line-no">4</span><code>    int parent;</code></div><div class="code-line" data-code-line="4"><span class="line-no">5</span><code>} PTNode;</code></div><div class="code-line" data-code-line="5"><span class="line-no">6</span><code> </code></div><div class="code-line" data-code-line="6"><span class="line-no">7</span><code>typedef struct {</code></div><div class="code-line" data-code-line="7"><span class="line-no">8</span><code>    PTNode nodes[10];</code></div><div class="code-line" data-code-line="8"><span class="line-no">9</span><code>    int n;</code></div><div class="code-line" data-code-line="9"><span class="line-no">10</span><code>} PTree;</code></div><div class="code-line" data-code-line="10"><span class="line-no">11</span><code> </code></div><div class="code-line" data-code-line="11"><span class="line-no">12</span><code>PTree t = {0};</code></div><div class="code-line" data-code-line="12"><span class="line-no">13</span><code>t.nodes[0] = (PTNode){&#x27;R&#x27;, -1};</code></div><div class="code-line" data-code-line="13"><span class="line-no">14</span><code>t.nodes[1] = (PTNode){&#x27;A&#x27;,  0};</code></div><div class="code-line" data-code-line="14"><span class="line-no">15</span><code>t.nodes[2] = (PTNode){&#x27;B&#x27;,  0};</code></div><div class="code-line" data-code-line="15"><span class="line-no">16</span><code>t.nodes[3] = (PTNode){&#x27;C&#x27;,  0};</code></div><div class="code-line" data-code-line="16"><span class="line-no">17</span><code>t.nodes[4] = (PTNode){&#x27;D&#x27;,  1};</code></div><div class="code-line" data-code-line="17"><span class="line-no">18</span><code>t.nodes[5] = (PTNode){&#x27;E&#x27;,  1};</code></div><div class="code-line" data-code-line="18"><span class="line-no">19</span><code>t.nodes[6] = (PTNode){&#x27;F&#x27;,  3};</code></div><div class="code-line" data-code-line="19"><span class="line-no">20</span><code>t.nodes[7] = (PTNode){&#x27;G&#x27;,  6};</code></div><div class="code-line" data-code-line="20"><span class="line-no">21</span><code>t.nodes[8] = (PTNode){&#x27;H&#x27;,  6};</code></div><div class="code-line" data-code-line="21"><span class="line-no">22</span><code>t.nodes[9] = (PTNode){&#x27;K&#x27;,  6};</code></div><div class="code-line" data-code-line="22"><span class="line-no">23</span><code>t.n = 10;</code></div></div>
+        </article>
+      </div>
+
+      <div class="control-deck">
+        <div class="button-group">
+          <button class="ctrl-btn" data-action="prev" aria-label="上一步">← <span>上一步</span></button>
+          <button class="ctrl-btn play" data-action="play" aria-label="播放或暂停">▶ <span>播放</span></button>
+          <button class="ctrl-btn" data-action="next" aria-label="下一步"><span>下一步</span> →</button>
+          <button class="ctrl-btn ghost" data-action="reset" aria-label="重置">↺ <span>重置</span></button>
+        </div>
+        <div class="progress-group">
+          <button class="progress-track" data-action="seek" aria-label="点击跳转动画步骤">
+            <span class="progress-fill" data-role="progress"></span>
+          </button>
+          <span class="step-count" data-role="step-count"></span>
+        </div>
+        <label class="speed-control">
+          <span>播放倍速</span>
+          <select data-action="speed" aria-label="播放倍速">
+            <option value="0.5">0.5×</option>
+            <option value="1" selected>1×</option>
+            <option value="1.5">1.5×</option>
+            <option value="2">2×</option>
+          </select>
+        </label>
+      </div>
+    </section>
+    
+
+    <section class="lesson-panel" id="panel-child" data-lesson="child" aria-labelledby="tab-child">
+      <div class="block-head">
+        <div>
+          <div class="block-index">02 · 树的存储结构</div>
+          <h2>孩子表示法</h2>
+          <p>找直接孩子方便；每个结点可拥有任意数量的孩子。</p>
+        </div>
+        <div class="method-badge">头数组 + 孩子单链表</div>
+      </div>
+
+      <div class="block-grid">
+        <article class="demo-card">
+          <div class="card-bar">
+            <div><span class="card-dot"></span>左侧动画演示</div>
+            <span class="status-pill" data-role="status">手动模式</span>
+          </div>
+          <div class="visual-canvas">
+<div class="visual-split">
+  <div class="visual-pane tree-pane">
+    <div class="mini-title"><span>逻辑树同步构造</span><span class="legend"><i></i> 当前写入</span></div>
+    <svg class="logical-tree" viewBox="0 0 660 420" role="img" aria-label="逻辑树同步构造">
+      <g class="grid-lines">
+        <line x1="30" y1="95" x2="635" y2="95"/><line x1="30" y1="205" x2="635" y2="205"/>
+        <line x1="30" y1="315" x2="635" y2="315"/>
+      </g>
+      <g><line class="tree-edge svg-reveal reveal-item" data-reveal-step="2" x1="330" y1="77" x2="145" y2="120" /><line class="tree-edge svg-reveal reveal-item" data-reveal-step="2" x1="330" y1="77" x2="330" y2="120" /><line class="tree-edge svg-reveal reveal-item" data-reveal-step="2" x1="330" y1="77" x2="515" y2="120" /><line class="tree-edge svg-reveal reveal-item" data-reveal-step="3" x1="145" y1="170" x2="85" y2="235" /><line class="tree-edge svg-reveal reveal-item" data-reveal-step="3" x1="145" y1="170" x2="205" y2="235" /><line class="tree-edge svg-reveal reveal-item" data-reveal-step="5" x1="515" y1="170" x2="515" y2="235" /><line class="tree-edge svg-reveal reveal-item" data-reveal-step="7" x1="515" y1="285" x2="415" y2="340" /><line class="tree-edge svg-reveal reveal-item" data-reveal-step="7" x1="515" y1="285" x2="515" y2="340" /><line class="tree-edge svg-reveal reveal-item" data-reveal-step="7" x1="515" y1="285" x2="615" y2="340" /></g>
+      <g><g class="tree-node svg-reveal reveal-item" data-reveal-step="1" data-node="R" transform="translate(330 52)"><circle r="27"/><text>R</text></g><g class="tree-node svg-reveal reveal-item" data-reveal-step="2" data-node="A" transform="translate(145 145)"><circle r="27"/><text>A</text></g><g class="tree-node svg-reveal reveal-item" data-reveal-step="2" data-node="B" transform="translate(330 145)"><circle r="27"/><text>B</text></g><g class="tree-node svg-reveal reveal-item" data-reveal-step="2" data-node="C" transform="translate(515 145)"><circle r="27"/><text>C</text></g><g class="tree-node svg-reveal reveal-item" data-reveal-step="3" data-node="D" transform="translate(85 260)"><circle r="27"/><text>D</text></g><g class="tree-node svg-reveal reveal-item" data-reveal-step="3" data-node="E" transform="translate(205 260)"><circle r="27"/><text>E</text></g><g class="tree-node svg-reveal reveal-item" data-reveal-step="5" data-node="F" transform="translate(515 260)"><circle r="27"/><text>F</text></g><g class="tree-node svg-reveal reveal-item" data-reveal-step="7" data-node="G" transform="translate(415 365)"><circle r="27"/><text>G</text></g><g class="tree-node svg-reveal reveal-item" data-reveal-step="7" data-node="H" transform="translate(515 365)"><circle r="27"/><text>H</text></g><g class="tree-node svg-reveal reveal-item" data-reveal-step="7" data-node="K" transform="translate(615 365)"><circle r="27"/><text>K</text></g></g>
+    </svg>
+    </div>
+  <div class="visual-pane storage-pane">
+    <div class="mini-title"><span>结点头数组 + 孩子单链表</span><span class="storage-hint">每行只列直接孩子</span></div>
+    <div class="child-list-table"><div class="child-row reveal-item html-reveal" data-reveal-step="2"><span class="child-head"><b>0</b><em>R</em></span><span class="head-arrow">→</span><span class="child-chain"><span class="chain-node">1(A)</span><span class="chain-arrow">→</span><span class="chain-node">2(B)</span><span class="chain-arrow">→</span><span class="chain-node">3(C)</span></span></div><div class="child-row reveal-item html-reveal" data-reveal-step="3"><span class="child-head"><b>1</b><em>A</em></span><span class="head-arrow">→</span><span class="child-chain"><span class="chain-node">4(D)</span><span class="chain-arrow">→</span><span class="chain-node">5(E)</span></span></div><div class="child-row reveal-item html-reveal" data-reveal-step="4"><span class="child-head"><b>2</b><em>B</em></span><span class="head-arrow">→</span><span class="child-chain"><span class="null-node">∅</span></span></div><div class="child-row reveal-item html-reveal" data-reveal-step="5"><span class="child-head"><b>3</b><em>C</em></span><span class="head-arrow">→</span><span class="child-chain"><span class="chain-node">6(F)</span></span></div><div class="child-row reveal-item html-reveal" data-reveal-step="6"><span class="child-head"><b>4</b><em>D</em></span><span class="head-arrow">→</span><span class="child-chain"><span class="null-node">∅</span></span></div><div class="child-row reveal-item html-reveal" data-reveal-step="6"><span class="child-head"><b>5</b><em>E</em></span><span class="head-arrow">→</span><span class="child-chain"><span class="null-node">∅</span></span></div><div class="child-row reveal-item html-reveal" data-reveal-step="7"><span class="child-head"><b>6</b><em>F</em></span><span class="head-arrow">→</span><span class="child-chain"><span class="chain-node">7(G)</span><span class="chain-arrow">→</span><span class="chain-node">8(H)</span><span class="chain-arrow">→</span><span class="chain-node">9(K)</span></span></div><div class="child-row reveal-item html-reveal" data-reveal-step="8"><span class="child-head"><b>7</b><em>G</em></span><span class="head-arrow">→</span><span class="child-chain"><span class="null-node">∅</span></span></div><div class="child-row reveal-item html-reveal" data-reveal-step="8"><span class="child-head"><b>8</b><em>H</em></span><span class="head-arrow">→</span><span class="child-chain"><span class="null-node">∅</span></span></div><div class="child-row reveal-item html-reveal" data-reveal-step="8"><span class="child-head"><b>9</b><em>K</em></span><span class="head-arrow">→</span><span class="child-chain"><span class="null-node">∅</span></span></div></div>
+    <div class="rule-card"><b>向下遍历：</b>先定位父结点头项，再顺着孩子链依次访问所有直接孩子。</div>
+  </div>
+</div>
+</div>
+        </article>
+
+        <article class="code-card">
+          <div class="card-bar">
+            <div><span class="card-dot orange"></span>右侧逐行代码</div>
+            <span class="code-lang">C / 伪代码</span>
+          </div>
+          <div class="step-explain">
+            <span class="step-label" data-role="step-label">步骤 1</span>
+            <h3 data-role="step-title"></h3>
+            <p data-role="step-desc"></p>
+          </div>
+          <div class="code-window" data-role="code-window"><div class="code-line" data-code-line="0"><span class="line-no">1</span><code>typedef struct ChildNode {</code></div><div class="code-line" data-code-line="1"><span class="line-no">2</span><code>    int child;</code></div><div class="code-line" data-code-line="2"><span class="line-no">3</span><code>    struct ChildNode *next;</code></div><div class="code-line" data-code-line="3"><span class="line-no">4</span><code>} ChildNode;</code></div><div class="code-line" data-code-line="4"><span class="line-no">5</span><code> </code></div><div class="code-line" data-code-line="5"><span class="line-no">6</span><code>typedef struct {</code></div><div class="code-line" data-code-line="6"><span class="line-no">7</span><code>    char data;</code></div><div class="code-line" data-code-line="7"><span class="line-no">8</span><code>    ChildNode *first;</code></div><div class="code-line" data-code-line="8"><span class="line-no">9</span><code>} CHead;</code></div><div class="code-line" data-code-line="9"><span class="line-no">10</span><code> </code></div><div class="code-line" data-code-line="10"><span class="line-no">11</span><code>typedef struct {</code></div><div class="code-line" data-code-line="11"><span class="line-no">12</span><code>    CHead nodes[10];</code></div><div class="code-line" data-code-line="12"><span class="line-no">13</span><code>    int n;</code></div><div class="code-line" data-code-line="13"><span class="line-no">14</span><code>} CTree;</code></div><div class="code-line" data-code-line="14"><span class="line-no">15</span><code> </code></div><div class="code-line" data-code-line="15"><span class="line-no">16</span><code>CTree t = initTree(&quot;RABCDEFGHK&quot;);</code></div><div class="code-line" data-code-line="16"><span class="line-no">17</span><code> </code></div><div class="code-line" data-code-line="17"><span class="line-no">18</span><code>addChild(&amp;t, 0, 1);  // R -&gt; A</code></div><div class="code-line" data-code-line="18"><span class="line-no">19</span><code>addChild(&amp;t, 0, 2);  // R -&gt; B</code></div><div class="code-line" data-code-line="19"><span class="line-no">20</span><code>addChild(&amp;t, 0, 3);  // R -&gt; C</code></div><div class="code-line" data-code-line="20"><span class="line-no">21</span><code>addChild(&amp;t, 1, 4);  // A -&gt; D</code></div><div class="code-line" data-code-line="21"><span class="line-no">22</span><code>addChild(&amp;t, 1, 5);  // A -&gt; E</code></div><div class="code-line" data-code-line="22"><span class="line-no">23</span><code>// B 的孩子链为空</code></div><div class="code-line" data-code-line="23"><span class="line-no">24</span><code>addChild(&amp;t, 3, 6);  // C -&gt; F</code></div><div class="code-line" data-code-line="24"><span class="line-no">25</span><code>// D、E 的孩子链为空</code></div><div class="code-line" data-code-line="25"><span class="line-no">26</span><code>addChild(&amp;t, 6, 7);  // F -&gt; G</code></div><div class="code-line" data-code-line="26"><span class="line-no">27</span><code>addChild(&amp;t, 6, 8);  // F -&gt; H</code></div><div class="code-line" data-code-line="27"><span class="line-no">28</span><code>addChild(&amp;t, 6, 9);  // F -&gt; K</code></div><div class="code-line" data-code-line="28"><span class="line-no">29</span><code>// G、H、K 的孩子链为空</code></div><div class="code-line" data-code-line="29"><span class="line-no">30</span><code>t.n = 10;</code></div></div>
+        </article>
+      </div>
+
+      <div class="control-deck">
+        <div class="button-group">
+          <button class="ctrl-btn" data-action="prev" aria-label="上一步">← <span>上一步</span></button>
+          <button class="ctrl-btn play" data-action="play" aria-label="播放或暂停">▶ <span>播放</span></button>
+          <button class="ctrl-btn" data-action="next" aria-label="下一步"><span>下一步</span> →</button>
+          <button class="ctrl-btn ghost" data-action="reset" aria-label="重置">↺ <span>重置</span></button>
+        </div>
+        <div class="progress-group">
+          <button class="progress-track" data-action="seek" aria-label="点击跳转动画步骤">
+            <span class="progress-fill" data-role="progress"></span>
+          </button>
+          <span class="step-count" data-role="step-count"></span>
+        </div>
+        <label class="speed-control">
+          <span>播放倍速</span>
+          <select data-action="speed" aria-label="播放倍速">
+            <option value="0.5">0.5×</option>
+            <option value="1" selected>1×</option>
+            <option value="1.5">1.5×</option>
+            <option value="2">2×</option>
+          </select>
+        </label>
+      </div>
+    </section>
+    
+
+    <section class="lesson-panel" id="panel-cs" data-lesson="cs" aria-labelledby="tab-cs">
+      <div class="block-head">
+        <div>
+          <div class="block-index">03 · 树的存储结构</div>
+          <h2>孩子兄弟表示法</h2>
+          <p>把任意树转换为二叉链表结构，空间统一。</p>
+        </div>
+        <div class="method-badge">firstChild + nextSibling</div>
+      </div>
+
+      <div class="block-grid">
+        <article class="demo-card">
+          <div class="card-bar">
+            <div><span class="card-dot"></span>左侧动画演示</div>
+            <span class="status-pill" data-role="status">手动模式</span>
+          </div>
+          <div class="visual-canvas">
+<div class="visual-split cs-layout">
+  <div class="visual-pane tree-pane">
+    <div class="mini-title"><span>指针网络（教材风）</span>
+      <span class="storage-hint">斜线箭头 · 三格结点</span>
+    </div>
+    
+
+
+
+<svg class="logical-tree cs-textbook-tree" viewBox="0 0 620 735" role="img" aria-label="孩子兄弟表示法指针网络">
+  <defs>
+    <marker id="csBlackArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#111"/>
+    </marker>
+  </defs>
+
+  <rect class="cs-paper-shadow" x="62" y="34" width="478" height="680" rx="10"/>
+  <rect class="cs-paper-bg" x="56" y="28" width="478" height="680" rx="10"/>
+
+  <!-- 1. R.firstChild = A -->
+  <g class="cs-step-group svg-reveal reveal-item" data-reveal-step="1">
+    <g class="cs-book-node" transform="translate(430 215)">
+      <rect class="ptr-box" x="-40" y="-16" width="20" height="32"/>
+      <rect class="data-box" x="-20" y="-16" width="40" height="32"/>
+      <rect class="ptr-box" x="20" y="-16" width="20" height="32"/>
+      <circle class="ptr-dot" cx="-30" cy="0" r="4"/>
+      <text x="0" y="0">R</text>
+      <text class="ptr-null" x="30" y="1">^</text>
+    </g>
+
+    <g class="cs-book-node" transform="translate(335 285)">
+      <rect class="ptr-box" x="-40" y="-16" width="20" height="32"/>
+      <rect class="data-box" x="-20" y="-16" width="40" height="32"/>
+      <rect class="ptr-box" x="20" y="-16" width="20" height="32"/>
+      <circle class="ptr-dot" cx="-30" cy="0" r="4"/>
+      <text x="0" y="0">A</text>
+      <circle class="ptr-dot" cx="30" cy="0" r="4"/>
+    </g>
+
+    <path class="cs-book-line" d="M420 215 L385 240 L348 272" marker-end="url(#csBlackArrow)"/>
+  </g>
+
+  <!-- 2. A.nextSibling = B -->
+  <g class="cs-step-group svg-reveal reveal-item" data-reveal-step="2">
+    <g class="cs-book-node" transform="translate(430 285)">
+      <rect class="ptr-box" x="-40" y="-16" width="20" height="32"/>
+      <rect class="data-box" x="-20" y="-16" width="40" height="32"/>
+      <rect class="ptr-box" x="20" y="-16" width="20" height="32"/>
+      <text class="ptr-null" x="-30" y="1">^</text>
+      <text x="0" y="0">B</text>
+      <circle class="ptr-dot" cx="30" cy="0" r="4"/>
+    </g>
+
+    <path class="cs-book-line" d="M365 285 L406 285" marker-end="url(#csBlackArrow)"/>
+  </g>
+
+  <!-- 3. B.nextSibling = C -->
+  <g class="cs-step-group svg-reveal reveal-item" data-reveal-step="3">
+    <g class="cs-book-node" transform="translate(482 355)">
+      <rect class="ptr-box" x="-40" y="-16" width="20" height="32"/>
+      <rect class="data-box" x="-20" y="-16" width="40" height="32"/>
+      <rect class="ptr-box" x="20" y="-16" width="20" height="32"/>
+      <circle class="ptr-dot" cx="-30" cy="0" r="4"/>
+      <text x="0" y="0">C</text>
+      <text class="ptr-null" x="30" y="1">^</text>
+    </g>
+
+    <path class="cs-book-line" d="M460 285 L492 315 L492 338" marker-end="url(#csBlackArrow)"/>
+  </g>
+
+  <!-- 4. A.firstChild = D -->
+  <g class="cs-step-group svg-reveal reveal-item" data-reveal-step="4">
+    <g class="cs-book-node" transform="translate(190 355)">
+      <rect class="ptr-box" x="-40" y="-16" width="20" height="32"/>
+      <rect class="data-box" x="-20" y="-16" width="40" height="32"/>
+      <rect class="ptr-box" x="20" y="-16" width="20" height="32"/>
+      <text class="ptr-null" x="-30" y="1">^</text>
+      <text x="0" y="0">D</text>
+      <circle class="ptr-dot" cx="30" cy="0" r="4"/>
+    </g>
+
+    <path class="cs-book-line" d="M325 285 L260 322 L204 343" marker-end="url(#csBlackArrow)"/>
+  </g>
+
+  <!-- 5. D.nextSibling = E -->
+  <g class="cs-step-group svg-reveal reveal-item" data-reveal-step="5">
+    <g class="cs-book-node" transform="translate(285 420)">
+      <rect class="ptr-box" x="-40" y="-16" width="20" height="32"/>
+      <rect class="data-box" x="-20" y="-16" width="40" height="32"/>
+      <rect class="ptr-box" x="20" y="-16" width="20" height="32"/>
+      <text class="ptr-null" x="-30" y="1">^</text>
+      <text x="0" y="0">E</text>
+      <text class="ptr-null" x="30" y="1">^</text>
+    </g>
+
+    <path class="cs-book-line" d="M220 355 L248 378 L273 406" marker-end="url(#csBlackArrow)"/>
+  </g>
+
+  <!-- 6. C.firstChild = F -->
+  <g class="cs-step-group svg-reveal reveal-item" data-reveal-step="6">
+    <g class="cs-book-node" transform="translate(390 482)">
+      <rect class="ptr-box" x="-40" y="-16" width="20" height="32"/>
+      <rect class="data-box" x="-20" y="-16" width="40" height="32"/>
+      <rect class="ptr-box" x="20" y="-16" width="20" height="32"/>
+      <circle class="ptr-dot" cx="-30" cy="0" r="4"/>
+      <text x="0" y="0">F</text>
+      <text class="ptr-null" x="30" y="1">^</text>
+    </g>
+
+    <path class="cs-book-line" d="M472 355 L445 408 L404 468" marker-end="url(#csBlackArrow)"/>
+  </g>
+
+  <!-- 7. F.firstChild = G -->
+  <g class="cs-step-group svg-reveal reveal-item" data-reveal-step="7">
+    <g class="cs-book-node" transform="translate(255 548)">
+      <rect class="ptr-box" x="-40" y="-16" width="20" height="32"/>
+      <rect class="data-box" x="-20" y="-16" width="40" height="32"/>
+      <rect class="ptr-box" x="20" y="-16" width="20" height="32"/>
+      <text class="ptr-null" x="-30" y="1">^</text>
+      <text x="0" y="0">G</text>
+      <circle class="ptr-dot" cx="30" cy="0" r="4"/>
+    </g>
+
+    <path class="cs-book-line" d="M380 482 L345 515 L270 536" marker-end="url(#csBlackArrow)"/>
+  </g>
+
+  <!-- 8. G.nextSibling = H -->
+  <g class="cs-step-group svg-reveal reveal-item" data-reveal-step="8">
+    <g class="cs-book-node" transform="translate(355 603)">
+      <rect class="ptr-box" x="-40" y="-16" width="20" height="32"/>
+      <rect class="data-box" x="-20" y="-16" width="40" height="32"/>
+      <rect class="ptr-box" x="20" y="-16" width="20" height="32"/>
+      <text class="ptr-null" x="-30" y="1">^</text>
+      <text x="0" y="0">H</text>
+      <circle class="ptr-dot" cx="30" cy="0" r="4"/>
+    </g>
+
+    <path class="cs-book-line" d="M285 548 L319 574 L342 590" marker-end="url(#csBlackArrow)"/>
+  </g>
+
+  <!-- 9. H.nextSibling = K -->
+  <g class="cs-step-group svg-reveal reveal-item" data-reveal-step="9">
+    <g class="cs-book-node" transform="translate(435 658)">
+      <rect class="ptr-box" x="-40" y="-16" width="20" height="32"/>
+      <rect class="data-box" x="-20" y="-16" width="40" height="32"/>
+      <rect class="ptr-box" x="20" y="-16" width="20" height="32"/>
+      <text class="ptr-null" x="-30" y="1">^</text>
+      <text x="0" y="0">K</text>
+      <text class="ptr-null" x="30" y="1">^</text>
+    </g>
+
+    <path class="cs-book-line" d="M385 603 L407 626 L423 644" marker-end="url(#csBlackArrow)"/>
+  </g>
+
+  <text class="cs-book-label" x="205" y="695">(b) 孩子兄弟表示法</text>
+</svg>
+
+
+
+
+  </div>
+  <div class="visual-pane storage-pane">
+    <div class="mini-title"><span>每个结点的两个指针域</span><span class="storage-hint">左孩子 · 右兄弟</span></div>
+    <div class="field-table">
+      <div class="field-row field-head"><span>data</span><span>firstChild</span><span>nextSibling</span></div>
+      <div class="field-row reveal-item html-reveal" data-reveal-step="1"><span>R</span><span>A</span><span>∅</span></div><div class="field-row reveal-item html-reveal" data-reveal-step="2"><span>A</span><span>D</span><span>B</span></div><div class="field-row reveal-item html-reveal" data-reveal-step="3"><span>B</span><span>∅</span><span>C</span></div><div class="field-row reveal-item html-reveal" data-reveal-step="6"><span>C</span><span>F</span><span>∅</span></div><div class="field-row reveal-item html-reveal" data-reveal-step="5"><span>D</span><span>∅</span><span>E</span></div><div class="field-row reveal-item html-reveal" data-reveal-step="5"><span>E</span><span>∅</span><span>∅</span></div><div class="field-row reveal-item html-reveal" data-reveal-step="7"><span>F</span><span>G</span><span>∅</span></div><div class="field-row reveal-item html-reveal" data-reveal-step="8"><span>G</span><span>∅</span><span>H</span></div><div class="field-row reveal-item html-reveal" data-reveal-step="9"><span>H</span><span>∅</span><span>K</span></div><div class="field-row reveal-item html-reveal" data-reveal-step="9"><span>K</span><span>∅</span><span>∅</span></div>
+    </div>
+    <div class="rule-card"><b>二叉链表化：</b><code>firstChild</code> 看作左孩子，<code>nextSibling</code> 看作右孩子。</div>
+  </div>
+</div>
+</div>
+        </article>
+
+        <article class="code-card">
+          <div class="card-bar">
+            <div><span class="card-dot orange"></span>右侧逐行代码</div>
+            <span class="code-lang">C / 伪代码</span>
+          </div>
+          <div class="step-explain">
+            <span class="step-label" data-role="step-label">步骤 1</span>
+            <h3 data-role="step-title"></h3>
+            <p data-role="step-desc"></p>
+          </div>
+          <div class="code-window" data-role="code-window"><div class="code-line" data-code-line="0"><span class="line-no">1</span><code>typedef struct CSNode {</code></div><div class="code-line" data-code-line="1"><span class="line-no">2</span><code>    char data;</code></div><div class="code-line" data-code-line="2"><span class="line-no">3</span><code>    struct CSNode *firstChild;</code></div><div class="code-line" data-code-line="3"><span class="line-no">4</span><code>    struct CSNode *nextSibling;</code></div><div class="code-line" data-code-line="4"><span class="line-no">5</span><code>} CSNode;</code></div><div class="code-line" data-code-line="5"><span class="line-no">6</span><code> </code></div><div class="code-line" data-code-line="6"><span class="line-no">7</span><code>CSNode R = {&#x27;R&#x27;, NULL, NULL};</code></div><div class="code-line" data-code-line="7"><span class="line-no">8</span><code>CSNode A = {&#x27;A&#x27;, NULL, NULL};</code></div><div class="code-line" data-code-line="8"><span class="line-no">9</span><code>CSNode B = {&#x27;B&#x27;, NULL, NULL};</code></div><div class="code-line" data-code-line="9"><span class="line-no">10</span><code>CSNode C = {&#x27;C&#x27;, NULL, NULL};</code></div><div class="code-line" data-code-line="10"><span class="line-no">11</span><code>CSNode D = {&#x27;D&#x27;, NULL, NULL};</code></div><div class="code-line" data-code-line="11"><span class="line-no">12</span><code>CSNode E = {&#x27;E&#x27;, NULL, NULL};</code></div><div class="code-line" data-code-line="12"><span class="line-no">13</span><code>CSNode F = {&#x27;F&#x27;, NULL, NULL};</code></div><div class="code-line" data-code-line="13"><span class="line-no">14</span><code>CSNode G = {&#x27;G&#x27;, NULL, NULL};</code></div><div class="code-line" data-code-line="14"><span class="line-no">15</span><code>CSNode H = {&#x27;H&#x27;, NULL, NULL};</code></div><div class="code-line" data-code-line="15"><span class="line-no">16</span><code>CSNode K = {&#x27;K&#x27;, NULL, NULL};</code></div><div class="code-line" data-code-line="16"><span class="line-no">17</span><code> </code></div><div class="code-line" data-code-line="17"><span class="line-no">18</span><code>R.firstChild  = &amp;A;</code></div><div class="code-line" data-code-line="18"><span class="line-no">19</span><code>A.nextSibling = &amp;B;</code></div><div class="code-line" data-code-line="19"><span class="line-no">20</span><code>B.nextSibling = &amp;C;</code></div><div class="code-line" data-code-line="20"><span class="line-no">21</span><code>A.firstChild  = &amp;D;</code></div><div class="code-line" data-code-line="21"><span class="line-no">22</span><code>D.nextSibling = &amp;E;</code></div><div class="code-line" data-code-line="22"><span class="line-no">23</span><code>C.firstChild  = &amp;F;</code></div><div class="code-line" data-code-line="23"><span class="line-no">24</span><code>F.firstChild  = &amp;G;</code></div><div class="code-line" data-code-line="24"><span class="line-no">25</span><code>G.nextSibling = &amp;H;</code></div><div class="code-line" data-code-line="25"><span class="line-no">26</span><code>H.nextSibling = &amp;K;</code></div></div>
+        </article>
+      </div>
+
+      <div class="control-deck">
+        <div class="button-group">
+          <button class="ctrl-btn" data-action="prev" aria-label="上一步">← <span>上一步</span></button>
+          <button class="ctrl-btn play" data-action="play" aria-label="播放或暂停">▶ <span>播放</span></button>
+          <button class="ctrl-btn" data-action="next" aria-label="下一步"><span>下一步</span> →</button>
+          <button class="ctrl-btn ghost" data-action="reset" aria-label="重置">↺ <span>重置</span></button>
+        </div>
+        <div class="progress-group">
+          <button class="progress-track" data-action="seek" aria-label="点击跳转动画步骤">
+            <span class="progress-fill" data-role="progress"></span>
+          </button>
+          <span class="step-count" data-role="step-count"></span>
+        </div>
+        <label class="speed-control">
+          <span>播放倍速</span>
+          <select data-action="speed" aria-label="播放倍速">
+            <option value="0.5">0.5×</option>
+            <option value="1" selected>1×</option>
+            <option value="1.5">1.5×</option>
+            <option value="2">2×</option>
+          </select>
+        </label>
+      </div>
+    </section>
+    
+
+  <div class="footer">建议：先用 1× 自动播放建立整体印象，再暂停并用 <kbd>←</kbd> <kbd>→</kbd> 逐步复述每个指针或下标的含义。</div>
+</div>
+
+<script>
+const LESSONS = {"parent": {"title": "双亲表示法", "steps": [{"title": "定义双亲结点结构", "desc": "每个结点只保存自身数据和双亲在数组中的下标。连续数组便于按下标直接访问。", "code": [1, 2, 3, 4, 5]}, {"title": "写入根结点 R", "desc": "根没有双亲，所以约定 parent = -1。", "code": [12]}, {"title": "写入 A", "desc": "A 的双亲是 R，R 位于 0 号单元，因此 parent(A)=0。", "code": [13]}, {"title": "写入 B", "desc": "B 与 A 同为 R 的孩子，所以 parent(B)=0。", "code": [14]}, {"title": "写入 C", "desc": "C 的双亲仍是 R，保存下标 0。", "code": [15]}, {"title": "写入 D", "desc": "D 的双亲是 A；A 的数组下标为 1。", "code": [16]}, {"title": "写入 E", "desc": "E 的双亲也是 A，因此 parent(E)=1。", "code": [17]}, {"title": "写入 F", "desc": "F 的双亲是 C；C 的数组下标为 3。", "code": [18]}, {"title": "写入 G", "desc": "G 的双亲是 F；F 的数组下标为 6。", "code": [19]}, {"title": "写入 H", "desc": "H 与 G 同属 F 的孩子，因此 parent(H)=6。", "code": [20]}, {"title": "写入 K 并完成", "desc": "K 的双亲也是 F。最终数组共存储 10 个结点。", "code": [21, 22]}]}, "child": {"title": "孩子表示法", "steps": [{"title": "定义孩子链结点", "desc": "孩子结点只需保存“孩子下标”和 next 指针；每个树结点头项保存第一孩子指针。", "code": [0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12, 13]}, {"title": "初始化结点头数组", "desc": "连续数组保存 R、A、B…K；所有 first 指针先置空。", "code": [15]}, {"title": "建立 R 的孩子链", "desc": "R 的直接孩子依次是 A、B、C，所以 0 号头项连接 1→2→3。", "code": [17, 18, 19]}, {"title": "建立 A 的孩子链", "desc": "A 的直接孩子是 D、E，所以 1 号头项连接 4→5。", "code": [20, 21]}, {"title": "确认 B 为叶结点", "desc": "B 没有直接孩子，first 保持 NULL。", "code": [22]}, {"title": "建立 C 的孩子链", "desc": "C 只有一个孩子 F，因此 3 号头项只连接 6。", "code": [23]}, {"title": "确认 D、E 为叶结点", "desc": "D、E 的孩子链都为空。", "code": [24]}, {"title": "建立 F 的孩子链", "desc": "F 的直接孩子是 G、H、K，所以 6 号头项连接 7→8→9。", "code": [25, 26, 27]}, {"title": "确认 G、H、K 为叶结点", "desc": "三个结点的 first 均为 NULL，孩子表示构造完成。", "code": [28, 29]}]}, "cs": {"title": "孩子兄弟表示法", "steps": [{"title": "定义两个指针域", "desc": "firstChild 指向第一个孩子；nextSibling 指向下一个兄弟。", "code": [0, 1, 2, 3, 4]}, {"title": "连接 R 的第一个孩子 A", "desc": "R.firstChild = A。根的其余孩子将通过 A 的兄弟链找到。", "code": [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17]}, {"title": "连接 A 的兄弟 B", "desc": "A.nextSibling = B，把同层兄弟串起来。", "code": [18]}, {"title": "连接 B 的兄弟 C", "desc": "B.nextSibling = C，此时 R 的孩子链为 A→B→C。", "code": [19]}, {"title": "连接 A 的第一个孩子 D", "desc": "A.firstChild = D。D 是 A 的第一个直接孩子。", "code": [20]}, {"title": "连接 D 的兄弟 E", "desc": "D.nextSibling = E，于是 A 的孩子链为 D→E。", "code": [21]}, {"title": "连接 C 的第一个孩子 F", "desc": "C.firstChild = F。C 只有一个直接孩子。", "code": [22]}, {"title": "连接 F 的第一个孩子 G", "desc": "F.firstChild = G，随后再用兄弟指针串起 H、K。", "code": [23]}, {"title": "连接 G 的兄弟 H", "desc": "G.nextSibling = H。", "code": [24]}, {"title": "连接 H 的兄弟 K", "desc": "H.nextSibling = K，全部指针关系构造完成。", "code": [25]}]}};
+const order = ["parent","child","cs"];
+const state = {
+  active:"parent",
+  speed:1,
+  timers:{parent:null,child:null,cs:null},
+  step:{parent:0,child:0,cs:0}
+};
+
+const $ = (s,root=document)=>root.querySelector(s);
+const $$ = (s,root=document)=>[...root.querySelectorAll(s)];
+
+function panelOf(key){ return document.getElementById(`panel-${key}`); }
+
+function stop(key){
+  if(state.timers[key]){
+    clearInterval(state.timers[key]);
+    state.timers[key]=null;
+  }
+  const panel=panelOf(key);
+  const play=$('[data-action="play"]',panel);
+  const status=$('[data-role="status"]',panel);
+  play.innerHTML='▶ <span>播放</span>';
+  status.textContent='手动模式';
+}
+
+function stopAll(){ order.forEach(stop); }
+
+function render(key){
+  const panel=panelOf(key);
+  const lesson=LESSONS[key];
+  const stepIndex=state.step[key];
+  const step=lesson.steps[stepIndex];
+
+  $$('[data-reveal-step]',panel).forEach(el=>{
+    const reveal=Number(el.dataset.revealStep);
+    el.classList.toggle('shown',reveal<=stepIndex);
+    el.classList.toggle('current-step',reveal===stepIndex);
+  });
+
+  const activeLines=new Set(step.code || []);
+  $$('.code-line',panel).forEach((line,i)=>{
+    line.classList.toggle('active',activeLines.has(i));
+    line.classList.toggle('past',i < Math.min(...activeLines));
+  });
+
+  $('[data-role="step-label"]',panel).textContent=`步骤 ${stepIndex+1} / ${lesson.steps.length}`;
+  $('[data-role="step-title"]',panel).textContent=step.title;
+  $('[data-role="step-desc"]',panel).textContent=step.desc;
+  $('[data-role="step-count"]',panel).textContent=`${stepIndex+1} / ${lesson.steps.length}`;
+  $('[data-role="progress"]',panel).style.width=`${((stepIndex+1)/lesson.steps.length)*100}%`;
+
+  const codeWindow=$('[data-role="code-window"]',panel);
+  const firstActive=$('.code-line.active',panel);
+  if(firstActive && codeWindow){
+    const target=firstActive.offsetTop-codeWindow.clientHeight*.32;
+    codeWindow.scrollTo({top:Math.max(0,target),behavior:'smooth'});
+  }
+}
+
+function setStep(key,next){
+  const max=LESSONS[key].steps.length-1;
+  state.step[key]=Math.max(0,Math.min(max,next));
+  render(key);
+}
+
+function play(key){
+  if(state.timers[key]){ stop(key); return; }
+  const max=LESSONS[key].steps.length-1;
+  if(state.step[key]>=max) setStep(key,0);
+  const panel=panelOf(key);
+  $('[data-action="play"]',panel).innerHTML='Ⅱ <span>暂停</span>';
+  $('[data-role="status"]',panel).textContent=`自动播放 · ${state.speed}×`;
+  const delay=Math.max(450,1800/state.speed);
+  state.timers[key]=setInterval(()=>{
+    if(state.step[key]>=max){ stop(key); return; }
+    setStep(key,state.step[key]+1);
+  },delay);
+}
+
+function switchTab(key){
+  if(!order.includes(key)) return;
+  stopAll();
+  state.active=key;
+  $$('.tab').forEach(tab=>{
+    const on=tab.dataset.tab===key;
+    tab.classList.toggle('active',on);
+    tab.setAttribute('aria-selected',String(on));
+  });
+  $$('.lesson-panel').forEach(panel=>panel.classList.toggle('active',panel.dataset.lesson===key));
+  render(key);
+}
+
+$$('.tab').forEach(tab=>tab.addEventListener('click',()=>switchTab(tab.dataset.tab)));
+
+$$('.lesson-panel').forEach(panel=>{
+  const key=panel.dataset.lesson;
+  panel.addEventListener('click',e=>{
+    const action=e.target.closest('[data-action]')?.dataset.action;
+    if(!action) return;
+    if(action==='prev'){ stop(key); setStep(key,state.step[key]-1); }
+    if(action==='next'){ stop(key); setStep(key,state.step[key]+1); }
+    if(action==='play'){ play(key); }
+    if(action==='reset'){ stop(key); setStep(key,0); }
+    if(action==='seek'){
+      stop(key);
+      const track=e.target.closest('[data-action="seek"]');
+      const rect=track.getBoundingClientRect();
+      const ratio=Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width));
+      const target=Math.round(ratio*(LESSONS[key].steps.length-1));
+      setStep(key,target);
+    }
+  });
+
+  const speed=$('[data-action="speed"]',panel);
+  speed.addEventListener('change',()=>{
+    state.speed=Number(speed.value);
+    $$('[data-action="speed"]').forEach(sel=>sel.value=String(state.speed));
+    if(state.timers[key]){ stop(key); play(key); }
+  });
+});
+
+document.addEventListener('keydown',e=>{
+  const tag=document.activeElement?.tagName;
+  if(['INPUT','TEXTAREA','SELECT'].includes(tag)) return;
+  if(e.key==='1') switchTab('parent');
+  if(e.key==='2') switchTab('child');
+  if(e.key==='3') switchTab('cs');
+  if(e.key==='ArrowLeft'){ e.preventDefault(); stop(state.active); setStep(state.active,state.step[state.active]-1); }
+  if(e.key==='ArrowRight'){ e.preventDefault(); stop(state.active); setStep(state.active,state.step[state.active]+1); }
+  if(e.code==='Space'){ e.preventDefault(); play(state.active); }
+});
+
+order.forEach(render);
+switchTab('parent');
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e"}' crossorigin="anonymous"></script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e"}' crossorigin="anonymous"></script>
+</body>
+</html>
