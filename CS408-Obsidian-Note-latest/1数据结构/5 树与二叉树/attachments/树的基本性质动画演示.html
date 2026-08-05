@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>考研408｜树的基本术语·视觉动画复习（无滚动条版）（增强版）</title>
+<style>
+  :root{
+    --bg:#111815;
+    --panel:#1b2521;
+    --panel-2:#212d28;
+    --panel-3:#27352f;
+    --line:#3e5148;
+    --text:#eef5f1;
+    --muted:#aab9b1;
+    --green:#9ccb45;
+    --green-2:#c7ef73;
+    --orange:#ff991f;
+    --cyan:#53d3c2;
+    --red:#ff6b6b;
+    --shadow:0 18px 50px rgba(0,0,0,.28);
+    --radius:22px;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    color:var(--text);
+    font-family:Inter,"PingFang SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(83,211,194,.10), transparent 35%),
+      radial-gradient(circle at 90% 15%, rgba(156,203,69,.09), transparent 34%),
+      var(--bg);
+    min-height:100vh;
+  }
+
+  button{font:inherit}
+  .app{width:min(1480px, calc(100% - 28px)); margin:0 auto; padding:26px 0 64px}
+
+  .hero{
+    position:relative; overflow:hidden;
+    border:1px solid rgba(255,255,255,.08);
+    background:linear-gradient(135deg, rgba(39,53,47,.96), rgba(25,35,31,.94));
+    border-radius:28px; padding:30px 32px 28px; box-shadow:var(--shadow);
+  }
+  .hero::after{
+    content:""; position:absolute; width:320px; height:320px; right:-100px; top:-160px;
+    border:42px solid rgba(156,203,69,.08); border-radius:50%;
+  }
+  .eyebrow{color:var(--orange); font-weight:800; letter-spacing:.08em; font-size:13px}
+  h1{margin:10px 0 8px; font-size:clamp(30px,4vw,56px); line-height:1.05; letter-spacing:-.03em}
+  .hero p{margin:0; color:var(--muted); font-size:clamp(15px,1.5vw,19px)}
+  .hero-tags{display:flex; gap:10px; flex-wrap:wrap; margin-top:20px}
+  .tag{
+    padding:8px 12px; border-radius:999px; border:1px solid rgba(255,255,255,.09);
+    background:rgba(10,16,13,.28); color:#d8e6df; font-size:13px;
+  }
+  .tag strong{color:var(--green-2)}
+
+  .learning-grid{
+    display:grid; grid-template-columns:minmax(0,1.35fr) minmax(340px,.65fr);
+    gap:18px; margin-top:18px; align-items:stretch;
+  }
+  .card{
+    background:linear-gradient(180deg, rgba(31,43,38,.96), rgba(25,35,31,.96));
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:var(--radius); box-shadow:var(--shadow);
+  }
+
+  .stage-card{padding:18px; min-height:680px; display:flex; flex-direction:column}
+  .stage-head{display:flex; justify-content:space-between; gap:16px; align-items:center; margin:2px 2px 12px}
+  .stage-title{font-weight:900; font-size:19px}
+  .stage-tip{font-size:13px; color:var(--muted)}
+  .stage{
+    position:relative; flex:1; min-height:520px; overflow:hidden;
+    border-radius:18px; border:1px solid rgba(255,255,255,.07);
+    background:
+      linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+      #151e1a;
+    background-size:34px 34px;
+  }
+  #treeSvg{width:100%; height:100%; display:block}
+  .edge{
+    stroke:#52665c; stroke-width:4; fill:none; stroke-linecap:round;
+    stroke-dasharray:1; stroke-dashoffset:1;
+    transition:stroke .35s, opacity .35s, stroke-width .35s, filter .35s;
+    animation:drawEdge .75s ease forwards;
+  }
+  .edge:nth-of-type(2){animation-delay:.08s}
+  .edge:nth-of-type(3){animation-delay:.16s}
+  .edge:nth-of-type(4){animation-delay:.24s}
+  .edge:nth-of-type(5){animation-delay:.32s}
+  .edge:nth-of-type(6){animation-delay:.40s}
+  .edge:nth-of-type(7){animation-delay:.48s}
+  .edge:nth-of-type(8){animation-delay:.56s}
+  .edge:nth-of-type(9){animation-delay:.64s}
+  @keyframes drawEdge{to{stroke-dashoffset:0}}
+
+  .node{cursor:pointer; opacity:1}
+  .node circle{
+    transform-box:fill-box; transform-origin:center;
+    fill:#26362f; stroke:#667b70; stroke-width:3;
+    transition:.3s ease; filter:drop-shadow(0 8px 10px rgba(0,0,0,.28));
+  }
+  .node text{fill:#f5faf7; font-size:19px; font-weight:900; text-anchor:middle; dominant-baseline:central; pointer-events:none}
+  .node .mini{font-size:11px; fill:#b8c7bf; font-weight:700}
+  .node:hover circle{stroke:var(--green-2); transform:scale(1.06)}
+  .node.active circle{fill:#496722; stroke:var(--green-2); stroke-width:5; filter:drop-shadow(0 0 14px rgba(199,239,115,.45))}
+  .node.secondary circle{fill:#244b46; stroke:var(--cyan)}
+  .node.leaf circle{fill:#513315; stroke:var(--orange)}
+  .node.dim{opacity:.18 !important}
+  .edge.active{stroke:var(--green-2); stroke-width:6; filter:drop-shadow(0 0 7px rgba(199,239,115,.45))}
+  .edge.secondary{stroke:var(--cyan); stroke-width:5}
+  .edge.dim{opacity:.12}
+
+  .level-line{stroke:#66766e; stroke-width:1.5; stroke-dasharray:7 9; opacity:.35}
+  .level-label{fill:#90a29a; font-size:13px; font-weight:700}
+  .level-band{fill:rgba(156,203,69,.0); transition:fill .35s}
+  .level-band.active{fill:rgba(156,203,69,.08)}
+
+  .forest-box{
+    fill:rgba(83,211,194,.035); stroke:var(--cyan); stroke-width:2; stroke-dasharray:8 7;
+    opacity:0; transition:opacity .35s;
+  }
+  .forest-box.show{opacity:.75}
+  .forest-label{fill:var(--cyan); font-size:13px; font-weight:800; opacity:0; transition:opacity .35s}
+  .forest-label.show{opacity:1}
+
+  .node-tooltip{
+    position:absolute; pointer-events:none; z-index:4; min-width:170px;
+    padding:12px 14px; border-radius:14px; background:rgba(8,13,11,.92);
+    border:1px solid rgba(255,255,255,.12); box-shadow:0 14px 28px rgba(0,0,0,.35);
+    opacity:0; transform:translate(-50%,-108%) scale(.96); transition:.2s ease;
+  }
+  .node-tooltip.show{opacity:1; transform:translate(-50%,-108%) scale(1)}
+  .node-tooltip.below{transform:translate(-50%,12px) scale(.96)}
+  .node-tooltip.below.show{transform:translate(-50%,12px) scale(1)}
+  .node-tooltip strong{color:var(--green-2); font-size:16px}
+  .node-tooltip small{display:block; color:var(--muted); line-height:1.65; margin-top:4px}
+
+  .controls{
+    display:grid; grid-template-columns:auto auto auto minmax(120px,1fr) auto auto;
+    gap:9px; align-items:center; margin-top:12px
+  }
+  .control-btn{
+    min-width:44px; height:42px; border:1px solid rgba(255,255,255,.1); border-radius:12px;
+    color:var(--text); background:#24322c; cursor:pointer; transition:.2s ease; padding:0 13px; font-weight:800;
+  }
+  .control-btn:hover{transform:translateY(-1px); border-color:rgba(199,239,115,.45)}
+  .control-btn.primary{background:var(--green); color:#15200d; border-color:transparent}
+  .progress-wrap{height:10px; border-radius:999px; background:#101814; overflow:hidden}
+  .progress{height:100%; width:11.11%; background:linear-gradient(90deg,var(--green),var(--green-2)); border-radius:inherit; transition:width .4s ease}
+  .counter{font-size:13px; color:var(--muted); min-width:48px; text-align:right}
+  .speed-control{
+    height:42px; display:flex; align-items:center; gap:7px; padding:0 9px 0 12px;
+    border:1px solid rgba(255,255,255,.1); border-radius:12px; background:#1b2822;
+    color:var(--muted); font-size:12px; font-weight:800; white-space:nowrap;
+  }
+  .speed-control select{
+    border:0; outline:0; color:var(--text); background:#111a16; border-radius:8px;
+    padding:6px 23px 6px 8px; font-weight:900; cursor:pointer;
+  }
+
+  .step-tabs-shell{
+    position:sticky; top:8px; z-index:30; margin-top:14px; padding:8px;
+    border-radius:18px; border:1px solid rgba(255,255,255,.09);
+    background:rgba(18,27,23,.90); box-shadow:0 12px 34px rgba(0,0,0,.22);
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  }
+  .step-tabs{
+    display:grid;
+    grid-template-columns:repeat(9,minmax(0,1fr));
+    gap:8px;
+    padding:2px;
+    overflow:visible;
+  }
+  .step-tab{
+    min-width:0; min-height:40px; padding:8px 8px;
+    border:1px solid rgba(255,255,255,.08); border-radius:12px; cursor:pointer;
+    color:#b8c8c0; background:#202d27; font-weight:850; transition:.2s ease;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .step-tab:hover{border-color:rgba(199,239,115,.38); color:#eef5f1}
+  .step-tab.active{
+    color:#17200f; background:linear-gradient(135deg,var(--green),var(--green-2));
+    border-color:transparent; box-shadow:0 0 18px rgba(199,239,115,.18);
+  }
+  .step-tab span{opacity:.72; margin-right:5px; font-size:11px}
+
+  .lesson-card{padding:22px; display:flex; flex-direction:column; min-height:680px}
+  .lesson-top{display:flex; justify-content:space-between; gap:10px; align-items:center}
+  .lesson-kicker{font-size:13px; color:var(--orange); font-weight:900; letter-spacing:.06em}
+  .lesson-badge{font-size:12px; color:var(--muted); padding:7px 9px; background:#121a17; border-radius:999px}
+  .lesson-title{font-size:clamp(26px,3vw,38px); line-height:1.1; margin:20px 0 10px}
+  .lesson-definition{font-size:17px; color:#d7e2dc; line-height:1.8; min-height:95px}
+  .lesson-definition em{font-style:normal; color:var(--green-2); font-weight:900}
+  .formula{
+    padding:17px 18px; border-radius:16px; background:#121b17; border-left:4px solid var(--orange);
+    font-size:18px; font-weight:900; letter-spacing:.01em; margin:14px 0;
+  }
+  .formula span{color:var(--orange)}
+  .explain-list{display:grid; gap:10px; margin-top:6px}
+  .explain-row{
+    display:grid; grid-template-columns:28px 1fr; gap:10px; align-items:start;
+    padding:11px 12px; border-radius:13px; background:rgba(255,255,255,.035);
+  }
+  .explain-row b{
+    display:grid; place-items:center; width:25px; height:25px; border-radius:50%;
+    background:rgba(156,203,69,.14); color:var(--green-2); font-size:13px;
+  }
+  .explain-row div{color:#cbd8d1; line-height:1.55; font-size:14px}
+  .memory{
+    margin-top:auto; padding:15px 16px; border-radius:16px;
+    background:linear-gradient(135deg, rgba(156,203,69,.13), rgba(83,211,194,.08));
+    border:1px solid rgba(199,239,115,.18);
+  }
+  .memory strong{color:var(--green-2)}
+  .memory p{margin:6px 0 0; color:#d8e4de; font-size:14px; line-height:1.65}
+  .micro-demo{display:flex; gap:10px; margin-top:12px}
+  .micro-box{
+    flex:1; min-height:78px; border-radius:13px; background:#121a17; border:1px solid rgba(255,255,255,.07);
+    padding:10px; font-size:12px; color:var(--muted); text-align:center;
+  }
+  .micro-box strong{display:block; color:#fff; margin-bottom:7px}
+  .micro-order{display:flex; align-items:center; justify-content:center; gap:7px}
+  .dot{width:22px; height:22px; border-radius:50%; display:grid; place-items:center; background:#33473e; color:#fff; font-weight:900}
+  .arrow{color:var(--orange)}
+
+  .section{margin-top:18px; padding:22px}
+  .section-head{display:flex; align-items:end; justify-content:space-between; gap:16px; margin-bottom:16px}
+  .section h2{font-size:25px; margin:0}
+  .section-sub{color:var(--muted); font-size:14px}
+
+  .term-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
+  .term{
+    position:relative; overflow:hidden; padding:17px 17px 15px; min-height:145px;
+    border-radius:16px; background:#202c27; border:1px solid rgba(255,255,255,.07);
+    transition:.22s ease;
+  }
+  .term:hover{transform:translateY(-3px); border-color:rgba(199,239,115,.30)}
+  .term::after{content:""; position:absolute; width:82px; height:82px; border-radius:50%; right:-26px; top:-30px; background:rgba(156,203,69,.06)}
+  .term-name{color:var(--orange); font-weight:900; font-size:17px}
+  .term p{color:#becbc4; margin:8px 0 0; line-height:1.65; font-size:14px}
+  .term code{color:var(--green-2); background:#131c18; padding:2px 6px; border-radius:6px}
+
+  .depth-panel{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
+  .depth-card{padding:18px; border-radius:16px; background:#202c27; border:1px solid rgba(255,255,255,.07)}
+  .depth-card .icon{font-size:28px}
+  .depth-card h3{margin:8px 0 6px; font-size:18px; color:var(--green-2)}
+  .depth-card p{color:#becbc4; margin:0; line-height:1.7; font-size:14px}
+
+  .quiz-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
+  .quiz{
+    min-height:205px; perspective:1000px; cursor:pointer;
+  }
+  .quiz-inner{
+    position:relative; height:100%; min-height:205px; transition:transform .55s cubic-bezier(.2,.8,.2,1); transform-style:preserve-3d;
+  }
+  .quiz.flipped .quiz-inner{transform:rotateY(180deg)}
+  .quiz-face{
+    position:absolute; inset:0; backface-visibility:hidden; border-radius:16px;
+    padding:18px; border:1px solid rgba(255,255,255,.08); background:#202c27;
+  }
+  .quiz-back{transform:rotateY(180deg); background:linear-gradient(145deg,#293a32,#1c2823)}
+  .quiz-num{color:var(--orange); font-size:12px; font-weight:900}
+  .quiz h3{font-size:18px; line-height:1.55; margin:12px 0}
+  .quiz small{color:var(--muted)}
+  .answer{font-size:28px; color:var(--green-2); font-weight:950; margin-top:12px}
+  .answer-detail{color:#c7d5ce; font-size:14px; line-height:1.65; margin-top:8px}
+
+  .footer{margin-top:18px; text-align:center; color:#82938a; font-size:13px}
+  kbd{padding:2px 7px; border:1px solid rgba(255,255,255,.16); border-bottom-width:2px; border-radius:6px; background:#1a241f; color:#cbd8d1}
+
+  .pulse{animation:pulseGlow 1.1s ease-in-out infinite alternate}
+  @keyframes pulseGlow{from{filter:drop-shadow(0 0 2px rgba(199,239,115,.2))}to{filter:drop-shadow(0 0 14px rgba(199,239,115,.75))}}
+
+  @media (max-width:1050px){
+    .learning-grid{grid-template-columns:1fr}
+    .stage-card,.lesson-card{min-height:auto}
+    .stage{min-height:560px}
+    .term-grid{grid-template-columns:repeat(2,1fr)}
+  }
+  @media (max-width:1180px){
+    .step-tabs{grid-template-columns:repeat(5,minmax(0,1fr))}
+  }
+  @media (max-width:820px){
+    .step-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
+  }
+  @media (max-width:680px){
+    .app{width:min(100% - 16px,1480px); padding-top:8px}
+    .hero{padding:22px 20px; border-radius:20px}
+    .stage-card,.lesson-card,.section{padding:14px; border-radius:18px}
+    .stage{min-height:490px}
+    .controls{grid-template-columns:repeat(3,1fr)}
+    .progress-wrap{grid-column:1/3}
+    .counter{grid-column:3; grid-row:2}
+    .speed-control{grid-column:1/4; justify-content:space-between}
+    .step-tabs-shell{top:4px; border-radius:15px}
+    .step-tabs{grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px}
+    .step-tab{padding:8px 6px}
+    .term-grid,.depth-panel,.quiz-grid{grid-template-columns:1fr}
+    .section-head{display:block}
+    .section-sub{margin-top:5px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hero">
+    <div class="eyebrow">考研 408 · 数据结构</div>
+    <h1>树的基本术语｜视觉动画复习</h1>
+    <p>用一棵树串联 9 个高频概念：看动画、点结点、做闪卡，快速形成“定义—图像—计算”的对应关系。</p>
+    <div class="hero-tags">
+      <span class="tag">核心约定：根结点 <strong>深度 0、层次 1</strong></span>
+      <span class="tag">交互：点击任意结点查看信息</span>
+      <span class="tag">快捷键：<strong>← →</strong> 切换，<strong>Space</strong> 播放</span>
+    </div>
+  </header>
+
+  <nav class="step-tabs-shell" aria-label="知识点快速跳转">
+    <div class="step-tabs" id="stepTabs" role="tablist"></div>
+  </nav>
+
+  <main class="learning-grid">
+    <section class="card stage-card" aria-label="树结构交互动画">
+      <div class="stage-head">
+        <div>
+          <div class="stage-title">交互树：A—J</div>
+          <div class="stage-tip">沿着高亮路径观察概念，不要只背文字。</div>
+        </div>
+        <div class="lesson-badge" id="modeBadge">讲解模式</div>
+      </div>
+
+      <div class="stage" id="stage">
+        <svg id="treeSvg" viewBox="0 0 850 560" role="img" aria-label="用于讲解树基本术语的示例树">
+          <g id="levelBands">
+            <rect class="level-band" id="band1" x="0" y="20" width="850" height="105"/>
+            <rect class="level-band" id="band2" x="0" y="135" width="850" height="105"/>
+            <rect class="level-band" id="band3" x="0" y="250" width="850" height="125"/>
+            <rect class="level-band" id="band4" x="0" y="405" width="850" height="120"/>
+          </g>
+          <g>
+            <line class="level-line" x1="70" y1="95" x2="820" y2="95"/><text class="level-label" x="16" y="100">第1层</text>
+            <line class="level-line" x1="70" y1="210" x2="820" y2="210"/><text class="level-label" x="16" y="215">第2层</text>
+            <line class="level-line" x1="70" y1="340" x2="820" y2="340"/><text class="level-label" x="16" y="345">第3层</text>
+            <line class="level-line" x1="70" y1="475" x2="820" y2="475"/><text class="level-label" x="16" y="480">第4层</text>
+          </g>
+
+          <g id="forestOverlays">
+            <rect id="forestB" class="forest-box" x="70" y="150" rx="24" width="260" height="235"/>
+            <text id="forestBT" class="forest-label" x="90" y="176">树 1</text>
+            <rect id="forestC" class="forest-box" x="335" y="150" rx="24" width="190" height="370"/>
+            <text id="forestCT" class="forest-label" x="355" y="176">树 2</text>
+            <rect id="forestD" class="forest-box" x="540" y="150" rx="24" width="265" height="235"/>
+            <text id="forestDT" class="forest-label" x="560" y="176">树 3</text>
+          </g>
+
+          <g id="edges">
+            <path pathLength="1" id="eAB" class="edge" d="M425 90 L205 205"/>
+            <path pathLength="1" id="eAC" class="edge" d="M425 90 L425 205"/>
+            <path pathLength="1" id="eAD" class="edge" d="M425 90 L650 205"/>
+            <path pathLength="1" id="eBE" class="edge" d="M205 205 L135 335"/>
+            <path pathLength="1" id="eBF" class="edge" d="M205 205 L275 335"/>
+            <path pathLength="1" id="eCG" class="edge" d="M425 205 L425 335"/>
+            <path pathLength="1" id="eDH" class="edge" d="M650 205 L585 335"/>
+            <path pathLength="1" id="eDI" class="edge" d="M650 205 L720 335"/>
+            <path pathLength="1" id="eGJ" class="edge" d="M425 335 L425 470"/>
+          </g>
+
+          <g id="nodes">
+            <g class="node" id="nodeA" data-key="A" transform="translate(425 90)">
+              <circle r="34"/><text y="-4">A</text><text class="mini" y="18">根</text>
+            </g>
+            <g class="node" id="nodeB" data-key="B" transform="translate(205 205)">
+              <circle r="32"/><text>B</text>
+            </g>
+            <g class="node" id="nodeC" data-key="C" transform="translate(425 205)">
+              <circle r="32"/><text>C</text>
+            </g>
+            <g class="node" id="nodeD" data-key="D" transform="translate(650 205)">
+              <circle r="32"/><text>D</text>
+            </g>
+            <g class="node" id="nodeE" data-key="E" transform="translate(135 335)">
+              <circle r="30"/><text>E</text>
+            </g>
+            <g class="node" id="nodeF" data-key="F" transform="translate(275 335)">
+              <circle r="30"/><text>F</text>
+            </g>
+            <g class="node" id="nodeG" data-key="G" transform="translate(425 335)">
+              <circle r="30"/><text>G</text>
+            </g>
+            <g class="node" id="nodeH" data-key="H" transform="translate(585 335)">
+              <circle r="30"/><text>H</text>
+            </g>
+            <g class="node" id="nodeI" data-key="I" transform="translate(720 335)">
+              <circle r="30"/><text>I</text>
+            </g>
+            <g class="node" id="nodeJ" data-key="J" transform="translate(425 470)">
+              <circle r="30"/><text>J</text>
+            </g>
+          </g>
+        </svg>
+        <div class="node-tooltip" id="tooltip" role="status"></div>
+      </div>
+
+      <div class="controls">
+        <button class="control-btn" id="prevBtn" title="上一步">←</button>
+        <button class="control-btn primary" id="playBtn" title="自动播放">▶ 播放</button>
+        <button class="control-btn" id="nextBtn" title="下一步">→</button>
+        <div class="progress-wrap" aria-label="学习进度"><div class="progress" id="progress"></div></div>
+        <div class="counter" id="counter">1 / 9</div>
+        <label class="speed-control" for="speedSelect">
+          <span>播放倍速</span>
+          <select id="speedSelect" title="调节自动播放倍速">
+            <option value="0.5">0.5×</option>
+            <option value="1" selected>1×</option>
+            <option value="1.5">1.5×</option>
+            <option value="2">2×</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <aside class="card lesson-card" aria-live="polite">
+      <div class="lesson-top">
+        <div class="lesson-kicker" id="lessonKicker">01 · 建立坐标系</div>
+        <div class="lesson-badge" id="lessonBadge">必会</div>
+      </div>
+      <h2 class="lesson-title" id="lessonTitle">根、深度与层次</h2>
+      <div class="lesson-definition" id="lessonDefinition"></div>
+      <div class="formula" id="formula"></div>
+      <div class="explain-list" id="explainList"></div>
+      <div id="microDemo"></div>
+      <div class="memory">
+        <strong>记忆钩子</strong>
+        <p id="memoryText"></p>
+      </div>
+    </aside>
+  </main>
+
+  <section class="card section">
+    <div class="section-head">
+      <div>
+        <h2>九个术语，一屏速记</h2>
+        <div class="section-sub">先看关键词，再在脑中定位到上方示例树。</div>
+      </div>
+    </div>
+    <div class="term-grid">
+      <article class="term"><div class="term-name">结点的度</div><p>该结点拥有的<strong>子树数</strong>。例：A 有 3 个孩子，所以 <code>degree(A)=3</code>。</p></article>
+      <article class="term"><div class="term-name">叶子</div><p>度为 0 的结点。示例中 E、F、H、I、J 都是叶结点。</p></article>
+      <article class="term"><div class="term-name">分支结点</div><p>度不为 0 的结点。只要还能“向下分叉”，就是分支结点。</p></article>
+      <article class="term"><div class="term-name">树的度</div><p>树中所有结点度数的<strong>最大值</strong>。本树最大为 3，因此树的度是 3。</p></article>
+      <article class="term"><div class="term-name">层次</div><p>根结点层次为 1；其余结点层次等于双亲层次加 1。</p></article>
+      <article class="term"><div class="term-name">树的高度</div><p>树中结点的最大层次。本树共 4 层，所以树高为 4。</p></article>
+      <article class="term"><div class="term-name">无序树</div><p>兄弟子树之间的次序不重要，交换位置后仍视为同一棵树。</p></article>
+      <article class="term"><div class="term-name">有序树</div><p>兄弟子树之间的次序有意义，交换位置可能得到不同的树。</p></article>
+      <article class="term"><div class="term-name">森林</div><p>由 0 棵或多棵互不相交的树组成；删除一棵树的根可得到一个森林。</p></article>
+    </div>
+  </section>
+
+  <section class="card section">
+    <div class="section-head">
+      <div>
+        <h2>高度、深度、层次：最容易混的三件事</h2>
+        <div class="section-sub">方向不同，计数起点也不同。</div>
+      </div>
+    </div>
+    <div class="depth-panel">
+      <article class="depth-card"><div class="icon">⬇</div><h3>结点高度</h3><p>从该结点<strong>向下</strong>到叶结点的最长路径长度，按“边数”计。叶结点高度为 0。</p></article>
+      <article class="depth-card"><div class="icon">⬆</div><h3>结点深度</h3><p>从根结点<strong>向下走到该结点</strong>所经过的边数。根结点深度为 0。</p></article>
+      <article class="depth-card"><div class="icon">≡</div><h3>结点层次</h3><p><code>层次 = 深度 + 1</code>。因此根结点层次为 1，而不是 0。</p></article>
+    </div>
+  </section>
+
+  <section class="card section">
+    <div class="section-head">
+      <div>
+        <h2>30 秒自测闪卡</h2>
+        <div class="section-sub">点击卡片翻面，强迫自己先算再看答案。</div>
+      </div>
+    </div>
+    <div class="quiz-grid">
+      <article class="quiz" tabindex="0" aria-label="自测题1，点击翻面">
+        <div class="quiz-inner">
+          <div class="quiz-face quiz-front"><div class="quiz-num">题 1</div><h3>示例树中，结点 C 的度、深度、层次分别是多少？</h3><small>点击查看答案</small></div>
+          <div class="quiz-face quiz-back"><div class="quiz-num">答案</div><div class="answer">1，1，2</div><div class="answer-detail">C 只有一个孩子 G；根到 C 经过 1 条边；层次 = 深度 + 1。</div></div>
+        </div>
+      </article>
+      <article class="quiz" tabindex="0" aria-label="自测题2，点击翻面">
+        <div class="quiz-inner">
+          <div class="quiz-face quiz-front"><div class="quiz-num">题 2</div><h3>结点 G 的高度是多少？整棵树的高度是多少？</h3><small>点击查看答案</small></div>
+          <div class="quiz-face quiz-back"><div class="quiz-num">答案</div><div class="answer">1，4</div><div class="answer-detail">G 到叶子 J 的最长路径有 1 条边；树的最大层次为 4。</div></div>
+        </div>
+      </article>
+      <article class="quiz" tabindex="0" aria-label="自测题3，点击翻面">
+        <div class="quiz-inner">
+          <div class="quiz-face quiz-front"><div class="quiz-num">题 3</div><h3>删除根结点 A 及其相连边后，会得到几棵树组成的森林？</h3><small>点击查看答案</small></div>
+          <div class="quiz-face quiz-back"><div class="quiz-num">答案</div><div class="answer">3 棵</div><div class="answer-detail">分别以 B、C、D 为根。原根有几个孩子，删除根后通常就得到几棵子树。</div></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <div class="footer">建议复习顺序：先自动播放一遍 → 手动逐步复述定义 → 最后做闪卡。键盘可用 <kbd>←</kbd> <kbd>→</kbd> <kbd>Space</kbd>。</div>
+</div>
+
+<script>
+const nodeInfo = {
+  A:{degree:3,depth:0,level:1,height:3,type:"根结点 / 分支结点"},
+  B:{degree:2,depth:1,level:2,height:1,type:"分支结点"},
+  C:{degree:1,depth:1,level:2,height:2,type:"分支结点"},
+  D:{degree:2,depth:1,level:2,height:1,type:"分支结点"},
+  E:{degree:0,depth:2,level:3,height:0,type:"叶结点"},
+  F:{degree:0,depth:2,level:3,height:0,type:"叶结点"},
+  G:{degree:1,depth:2,level:3,height:1,type:"分支结点"},
+  H:{degree:0,depth:2,level:3,height:0,type:"叶结点"},
+  I:{degree:0,depth:2,level:3,height:0,type:"叶结点"},
+  J:{degree:0,depth:3,level:4,height:0,type:"叶结点"}
+};
+
+const steps = [
+  {
+    kicker:"01 · 建立坐标系", badge:"必会",
+    title:"根、深度与层次",
+    definition:"根结点 A 是整棵树的起点。考研 408 常用约定：根的<em>深度为 0</em>，根的<em>层次为 1</em>。",
+    formula:"<span>层次 = 深度 + 1</span>",
+    bullets:["深度按“从根到该结点的边数”计算。","层次按“第几层”计算，所以从 1 开始。","A：深度 0，层次 1。"],
+    memory:"看到“边数”想深度；看到“第几层”想层次。",
+    nodes:{active:["A"],secondary:[],leaf:[]}, edges:{active:[],secondary:[]}, bands:["band1"]
+  },
+  {
+    kicker:"02 · 向下数孩子", badge:"高频",
+    title:"结点的度",
+    definition:"结点的度，等于该结点拥有的<em>子树数</em>，也就是它的直接孩子个数。",
+    formula:"degree(B) = <span>2</span>",
+    bullets:["B 的直接孩子是 E、F。","只数直接孩子，不数孙子结点。","因此 B 的度为 2。"],
+    memory:"度就是“向下分了几叉”。",
+    nodes:{active:["B"],secondary:["E","F"],leaf:[]}, edges:{active:["eBE","eBF"],secondary:[]}, bands:["band2","band3"]
+  },
+  {
+    kicker:"03 · 找到末梢", badge:"基础",
+    title:"叶结点与分支结点",
+    definition:"度为 0 的结点叫<em>叶结点</em>；度不为 0 的结点叫<em>分支结点</em>。",
+    formula:"叶子 ⇔ <span>度 = 0</span>",
+    bullets:["叶结点：E、F、H、I、J。","分支结点：A、B、C、D、G。","根结点也可能是分支结点。"],
+    memory:"还能继续向下走的是分支；走到尽头的是叶子。",
+    nodes:{active:[],secondary:[],leaf:["E","F","H","I","J"]}, edges:{active:[],secondary:[]}, bands:["band3","band4"]
+  },
+  {
+    kicker:"04 · 全树取最大", badge:"易考",
+    title:"树的度",
+    definition:"树的度，是整棵树中所有结点度数的<em>最大值</em>。",
+    formula:"max{3,2,1,2,…} = <span>3</span>",
+    bullets:["A 的度为 3，是全树最大值。","B、D 的度为 2；C、G 的度为 1。","因此整棵树的度为 3。"],
+    memory:"结点的度看自己；树的度看全局最大。",
+    nodes:{active:["A"],secondary:["B","C","D","G"],leaf:[]}, edges:{active:["eAB","eAC","eAD"],secondary:[]}, bands:[]
+  },
+  {
+    kicker:"05 · 沿根路径计数", badge:"必会",
+    title:"结点的深度与层次",
+    definition:"从根 A 到结点 J 的路径是 A→C→G→J，共经过 3 条边，所以 J 的<em>深度为 3</em>、<em>层次为 4</em>。",
+    formula:"depth(J)=3，level(J)=<span>4</span>",
+    bullets:["路径结点有 4 个，但路径边只有 3 条。","深度数边：3。","层次数所在层：4。"],
+    memory:"路径上“结点数 = 边数 + 1”，正好对应“层次 = 深度 + 1”。",
+    nodes:{active:["A","C","G","J"],secondary:[],leaf:[]}, edges:{active:["eAC","eCG","eGJ"],secondary:[]}, bands:["band1","band2","band3","band4"]
+  },
+  {
+    kicker:"06 · 从结点向下看", badge:"易混",
+    title:"结点的高度",
+    definition:"结点高度是该结点到叶结点的<em>最长路径</em>，按边数计算。C 到 J 最长要走 C→G→J 两条边。",
+    formula:"height(C) = <span>2</span>",
+    bullets:["叶结点高度统一为 0。","G 的高度为 1。","C 的高度为 2；A 的高度为 3。"],
+    memory:"深度从根往下量；高度从结点往叶子量。",
+    nodes:{active:["C","G","J"],secondary:[],leaf:[]}, edges:{active:["eCG","eGJ"],secondary:[]}, bands:[]
+  },
+  {
+    kicker:"07 · 找最大层次", badge:"高频",
+    title:"树的高度",
+    definition:"树的高度等于树中结点的<em>最大层次</em>。示例树最深结点 J 位于第 4 层。",
+    formula:"树高 = 最大层次 = <span>4</span>",
+    bullets:["本页采用“根层次为 1”的教材约定。","最长根—叶路径有 3 条边。","因此：树高 4，而根结点高度 3。"],
+    memory:"树的高度按“层”数；根结点的高度按“边”数，二者相差 1。",
+    nodes:{active:["J"],secondary:["A","C","G"],leaf:[]}, edges:{active:["eAC","eCG","eGJ"],secondary:[]}, bands:["band4"]
+  },
+  {
+    kicker:"08 · 兄弟顺序是否重要", badge:"理解",
+    title:"有序树与无序树",
+    definition:"若兄弟子树之间的次序有意义，就是<em>有序树</em>；若交换位置仍视为同一棵树，就是<em>无序树</em>。",
+    formula:"顺序重要 → <span>有序树</span>",
+    bullets:["有序树中，“左孩子、右孩子”不能随便互换。","无序树只关心父子关系，不关心兄弟排列。","二叉树通常按有序树处理。"],
+    memory:"问“能不能交换兄弟位置”：能，无序；不能，有序。",
+    nodes:{active:["B"],secondary:["E","F"],leaf:[]}, edges:{active:["eBE","eBF"],secondary:[]}, bands:[],
+    micro:`<div class="micro-demo">
+      <div class="micro-box"><strong>无序：交换仍等价</strong><div class="micro-order"><span class="dot">E</span><span class="arrow">↔</span><span class="dot">F</span></div></div>
+      <div class="micro-box"><strong>有序：位置带含义</strong><div class="micro-order"><span class="dot">左</span><span class="arrow">≠</span><span class="dot">右</span></div></div>
+    </div>`
+  },
+  {
+    kicker:"09 · 一棵树拆成多棵", badge:"综合",
+    title:"森林",
+    definition:"森林由 0 棵或多棵互不相交的树组成。删除根 A 以及 A 与孩子之间的边，会得到以 B、C、D 为根的<em>3 棵树</em>。",
+    formula:"删除根 A → <span>3 棵子树</span>",
+    bullets:["B 子树、C 子树、D 子树彼此不相交。","它们合起来就是一个森林。","森林也可以反向加一个新根，变回一棵树。"],
+    memory:"根有几个孩子，删根后通常就分成几棵树。",
+    nodes:{active:["B","C","D"],secondary:["E","F","G","H","I","J"],leaf:[]}, edges:{active:[],secondary:["eBE","eBF","eCG","eGJ","eDH","eDI"]}, bands:[], forest:true, dim:["A"], dimEdges:["eAB","eAC","eAD"]
+  }
+];
+
+const tabLabels = ["根与层次","结点的度","叶子/分支","树的度","深度/层次","结点高度","树的高度","有序/无序","森林"];
+let current = 0;
+let timer = null;
+const baseInterval = 3600;
+let playbackSpeed = 1;
+let tooltipTimer = null;
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+
+function buildStepTabs(){
+  const wrap = $("#stepTabs");
+  wrap.innerHTML = tabLabels.map((label,i)=>
+    `<button class="step-tab" type="button" role="tab" data-index="${i}" aria-selected="${i===0}"><span>${String(i+1).padStart(2,"0")}</span>${label}</button>`
+  ).join("");
+  $$(".step-tab").forEach(btn=>btn.addEventListener("click",()=>{
+    setPlaying(false);
+    renderStep(Number(btn.dataset.index));
+  }));
+}
+
+function updateStepTabs(){
+  $$(".step-tab").forEach((btn,i)=>{
+    const active = i===current;
+    btn.classList.toggle("active",active);
+    btn.setAttribute("aria-selected",String(active));
+    btn.tabIndex = active ? 0 : -1;
+  });
+  const active = $(".step-tab.active");
+  if(active){
+    active.focus({preventScroll:true});
+  }
+}
+
+function clearVisuals(){
+  $$(".node").forEach(n => n.classList.remove("active","secondary","leaf","dim","pulse"));
+  $$(".edge").forEach(e => e.classList.remove("active","secondary","dim","pulse"));
+  $$(".level-band").forEach(b => b.classList.remove("active"));
+  $$(".forest-box,.forest-label").forEach(x => x.classList.remove("show"));
+}
+
+function renderStep(index){
+  current = (index + steps.length) % steps.length;
+  const s = steps[current];
+  clearVisuals();
+
+  (s.nodes.active || []).forEach(k => $("#node"+k).classList.add("active","pulse"));
+  (s.nodes.secondary || []).forEach(k => $("#node"+k).classList.add("secondary"));
+  (s.nodes.leaf || []).forEach(k => $("#node"+k).classList.add("leaf"));
+  (s.edges.active || []).forEach(k => $("#"+k).classList.add("active","pulse"));
+  (s.edges.secondary || []).forEach(k => $("#"+k).classList.add("secondary"));
+  (s.bands || []).forEach(k => $("#"+k).classList.add("active"));
+  (s.dim || []).forEach(k => $("#node"+k).classList.add("dim"));
+  (s.dimEdges || []).forEach(k => $("#"+k).classList.add("dim"));
+
+  if(s.forest){
+    $$(".forest-box,.forest-label").forEach(x => x.classList.add("show"));
+  }
+
+  $("#lessonKicker").textContent = s.kicker;
+  $("#lessonBadge").textContent = s.badge;
+  $("#lessonTitle").textContent = s.title;
+  $("#lessonDefinition").innerHTML = s.definition;
+  $("#formula").innerHTML = s.formula;
+  $("#explainList").innerHTML = s.bullets.map((b,i)=>`<div class="explain-row"><b>${i+1}</b><div>${b}</div></div>`).join("");
+  $("#memoryText").textContent = s.memory;
+  $("#microDemo").innerHTML = s.micro || "";
+  $("#progress").style.width = `${((current+1)/steps.length)*100}%`;
+  $("#counter").textContent = `${current+1} / ${steps.length}`;
+  updateStepTabs();
+  tooltip.classList.remove("show","below");
+}
+
+function setPlaying(on){
+  if(on){
+    if(timer) clearInterval(timer);
+    $("#playBtn").textContent = "Ⅱ 暂停";
+    $("#modeBadge").textContent = `自动播放 · ${playbackSpeed}×`;
+    timer = setInterval(()=>renderStep(current+1), baseInterval/playbackSpeed);
+  }else{
+    clearInterval(timer);
+    timer = null;
+    $("#playBtn").textContent = "▶ 播放";
+    $("#modeBadge").textContent = "讲解模式";
+  }
+}
+
+$("#prevBtn").addEventListener("click",()=>{setPlaying(false);renderStep(current-1)});
+$("#nextBtn").addEventListener("click",()=>{setPlaying(false);renderStep(current+1)});
+$("#playBtn").addEventListener("click",()=>setPlaying(!timer));
+$("#speedSelect").addEventListener("change",e=>{
+  playbackSpeed = Number(e.target.value) || 1;
+  if(timer) setPlaying(true);
+});
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowLeft"){e.preventDefault();setPlaying(false);renderStep(current-1)}
+  if(e.key==="ArrowRight"){e.preventDefault();setPlaying(false);renderStep(current+1)}
+  if(e.code==="Space" && !["INPUT","TEXTAREA","BUTTON"].includes(document.activeElement.tagName)){e.preventDefault();setPlaying(!timer)}
+});
+
+const tooltip = $("#tooltip");
+function showNodeTooltip(node, temporary=false){
+  clearTimeout(tooltipTimer);
+  const key = node.dataset.key, info = nodeInfo[key];
+  const nodeRect = node.getBoundingClientRect();
+  const stageRect = $("#stage").getBoundingClientRect();
+  tooltip.classList.remove("show","below");
+  tooltip.innerHTML = `<strong>结点 ${key}</strong><small>${info.type}<br>度 ${info.degree} · 深度 ${info.depth} · 层次 ${info.level} · 高度 ${info.height}</small>`;
+
+  const rawX = nodeRect.left - stageRect.left + nodeRect.width/2;
+  const topSpace = nodeRect.top - stageRect.top;
+  const placeBelow = topSpace < 105;
+  const rawY = placeBelow
+    ? nodeRect.bottom - stageRect.top
+    : nodeRect.top - stageRect.top - 8;
+
+  tooltip.classList.toggle("below", placeBelow);
+  tooltip.style.left = rawX + "px";
+  tooltip.style.top = rawY + "px";
+  tooltip.classList.add("show");
+
+  requestAnimationFrame(()=>{
+    const tipWidth = tooltip.offsetWidth;
+    const safeX = Math.min(stageRect.width-tipWidth/2-10, Math.max(tipWidth/2+10, rawX));
+    tooltip.style.left = safeX + "px";
+  });
+  if(temporary) tooltipTimer = setTimeout(()=>tooltip.classList.remove("show","below"),2200);
+}
+
+$$(".node").forEach(node=>{
+  node.addEventListener("mouseenter",()=>showNodeTooltip(node));
+  node.addEventListener("click",e=>{e.stopPropagation();showNodeTooltip(node,true)});
+  node.addEventListener("mouseleave",()=>tooltip.classList.remove("show","below"));
+});
+$("#stage").addEventListener("click",()=>tooltip.classList.remove("show","below"));
+
+$$(".quiz").forEach(card=>{
+  const flip=()=>card.classList.toggle("flipped");
+  card.addEventListener("click",flip);
+  card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.code==="Space"){e.preventDefault();flip()}});
+});
+
+buildStepTabs();
+renderStep(0);
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e"}' crossorigin="anonymous"></script>
+</body>
+</html>
