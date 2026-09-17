@@ -1,11 +1,12 @@
 {
 	"nodes":[
-		{"id":"28a3be3971232d59","type":"text","text":"![[8.0 排序总结]]","x":-1357,"y":-1954,"width":1757,"height":1834,"color":"4"},
-		{"id":"bad6c3837c4d1c63","type":"text","text":"![[8.2 插入排序]]","x":-1357,"y":0,"width":1937,"height":1440,"color":"4"},
-		{"id":"8d8bf26010439886","type":"text","text":"![[8.3 交换排序]]","x":-1357,"y":1540,"width":1897,"height":1940,"color":"4"},
-		{"id":"7f4b8ff991c2342c","type":"text","text":"![[8.4 选择排序]]","x":-1357,"y":3600,"width":1997,"height":1400,"color":"4"},
-		{"id":"7b28537ad17c9dbb","type":"text","text":"![[8.5 归并排序、基数排序和计数排序]]","x":-1357,"y":5120,"width":1897,"height":960,"color":"4"},
-		{"id":"575cdbec192e61d0","type":"text","text":"![[8.7 外部排序]]\n","x":-1357,"y":6140,"width":1357,"height":740,"color":"4"}
+		{"id":"28a3be3971232d59","type":"text","text":"![[8.0 排序总结]]","x":-1357,"y":-1954,"width":1757,"height":1994,"color":"4"},
+		{"id":"bad6c3837c4d1c63","type":"text","text":"![[8.2 插入排序]]","x":-1357,"y":100,"width":1937,"height":1440,"color":"4"},
+		{"id":"8d8bf26010439886","type":"text","text":"![[8.3 交换排序]]","x":-1357,"y":1680,"width":1897,"height":1940,"color":"4"},
+		{"id":"7b28537ad17c9dbb","type":"text","text":"![[8.5 归并排序、基数排序和计数排序]]","x":-1300,"y":5500,"width":1897,"height":960,"color":"4"},
+		{"id":"7f4b8ff991c2342c","type":"text","text":"![[8.4 选择排序]]","x":-1357,"y":3780,"width":1997,"height":1400,"color":"4"},
+		{"id":"575cdbec192e61d0","type":"text","text":"![[8.7 外部排序]]\n","x":-1300,"y":6680,"width":1357,"height":740,"color":"4"},
+		{"id":"405cb5e9ae25b669","type":"file","file":"CS408-Obsidian-Note-latest/1数据结构/8 排序/直接插入排序&简单选择排序动画.md","x":-2080,"y":1420,"width":568,"height":120}
 	],
 	"edges":[
 		{"id":"41c6e91fb7f3acb1","fromNode":"28a3be3971232d59","fromSide":"bottom","toNode":"bad6c3837c4d1c63","toSide":"top"},
