@@ -4,24 +4,24 @@
     "type": "split",
     "children": [
       {
-        "id": "e319119a1edd21aa",
+        "id": "0bcedf7da0161477",
         "type": "tabs",
         "children": [
           {
-            "id": "0253ca803b160a08",
+            "id": "c955f58cb28c11bd",
             "type": "leaf",
             "state": {
               "type": "canvas",
               "state": {
-                "file": "CS408-Obsidian-Note-latest/1数据结构/8 排序/8 排序.canvas",
+                "file": "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/2 进程与线程.canvas",
                 "viewState": {
-                  "x": -143.76053341926,
-                  "y": 1455.828397955482,
-                  "zoom": -0.9762514568671716
+                  "x": 1848,
+                  "y": 2242.5,
+                  "zoom": -2.9279146823491407
                 }
               },
               "icon": "lucide-layout-dashboard",
-              "title": "8 排序"
+              "title": "2 进程与线程"
             }
           }
         ]
@@ -199,28 +199,37 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "0253ca803b160a08",
+  "active": "c955f58cb28c11bd",
   "lastOpenFiles": [
-    "CS408-Obsidian-Note-latest/1数据结构/8 排序/直接插入排序&简单选择排序动画.md",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/8 排序.canvas",
-    "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/preview.html",
+    "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/直接插入排序力例图.png",
+    "CS408-Obsidian-Note-latest/1数据结构/8 排序/8.5 归并排序、基数排序和计数排序.md",
+    "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/基数排序&二路归并排序-详细版-动画.html",
+    "CS408-Obsidian-Note-latest/1数据结构/4 串/4 串.canvas",
+    "CS408-Obsidian-Note-latest/1数据结构/4 串/4.2 串的模式匹配.md",
+    "CS408-Obsidian-Note-latest/1数据结构/7 查找/7 查找.canvas",
+    "CS408-Obsidian-Note-latest/1数据结构/7 查找/7.4.1 B树及其基本操作.md",
+    "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/基数排序&二路归并排序-省略版-动画.html",
+    "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/基数排序&二路归并排序-省略版.html",
+    "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/2 进程与线程.canvas",
+    "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/2.3.5 经典同步问题.md",
+    "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/attachments/408_操作系统经典同步问题_动画演示.html",
+    "CS408-Obsidian-Note-latest/1数据结构/3 栈、队列和数组/3 栈、队列和数组.canvas",
     "CS408-Obsidian-Note-latest/1数据结构/6 图/6 图.canvas",
     "CS408-Obsidian-Note-latest/1数据结构/5 树与二叉树/5 树与二叉树.canvas",
+    "CS408-Obsidian-Note-latest/1数据结构/8 排序/直接插入排序&简单选择排序动画.md",
+    "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/sort_svg_animation_v2.html",
+    "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/preview.html",
     "CS408-Obsidian-Note-latest/2计算机组成原理/4 指令系统/4 指令系统.canvas",
-    "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/2 进程与线程.canvas",
     "CS408-Obsidian-Note-latest/2计算机组成原理/1 计算机系统概述/1 计算机系统概述.canvas",
     "CS408-Obsidian-Note-latest/1数据结构/5 树与二叉树/哈夫曼编码相关概念.md",
-    "CS408-Obsidian-Note-latest/1数据结构/7 查找/7 查找.canvas",
     "CS408-Obsidian-Note-latest/2计算机组成原理/3 存储系统/3 存储系统.canvas",
-    "CS408-Obsidian-Note-latest/2计算机组成原理/2 数据的表示和运算/2 数据的表示和运算.canvas",
     "CS408-Obsidian-Note-latest/1数据结构/数据结构.md",
     "CS408-Obsidian-Note-latest/1数据结构/二叉树相关结论.md",
     "CS408-Obsidian-Note-latest/1数据结构/二叉树常考结论.md",
     "CS408-Obsidian-Note-latest/1数据结构/背诵知识点.md",
     "CS408-Obsidian-Note-latest/1数据结构/7 查找/attachments/B树求结点类题型.png",
-    "CS408-Obsidian-Note-latest/1数据结构/7 查找/7.4.1 B树及其基本操作.md",
     "CS408-Obsidian-Note-latest/1数据结构/7 查找/attachments/B树动画演示.html",
-    "CS408-Obsidian-Note-latest/3操作系统/1 计算机系统概述/1 计算机系统概述.canvas",
     "CS408-Obsidian-Note-latest/1数据结构/6 图/6.1 图的基本概念.md",
     "CS408-Obsidian-Note-latest/1数据结构/6 图/attachments/多重图.png",
     "CS408-Obsidian-Note-latest/1数据结构/6 图/完全图示例图.md",
@@ -241,20 +250,11 @@
     "CS408-Obsidian-Note-latest/1数据结构/5 树与二叉树/attachments/所有节点的度数之和 + 1.png",
     "CS408-Obsidian-Note-latest/1数据结构/5 树与二叉树/5.1.2 树的基本术语.md",
     "CS408-Obsidian-Note-latest/1数据结构/5 树与二叉树/树的高度、深度、层.md",
-    "CS408-Obsidian-Note-latest/1数据结构/5 树与二叉树/attachments/树的基本性质动画演示.html",
     "CS408-Obsidian-Note-latest/1数据结构/5 树与二叉树/5.1.3 树的性质.md",
     "CS408-Obsidian-Note-latest/1数据结构/2 线性表/头插法建立单链表.md",
-    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/attachments/408_单链表插入教学版_带头结点_vs_不带头结点_v4.html",
-    "CS408-Obsidian-Note-latest/1数据结构/4 串/4.2 串的模式匹配.md",
-    "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/408_KMP_next数组计算_学习动画演示.html",
-    "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/408_交换式与挖坑式快速排序_动画演示.html",
-    "CS408-Obsidian-Note-latest/1数据结构/4 串/attachments/408_普通KMP与优化KMP_对比动画演示.html",
     "CS408-Obsidian-Note-latest/1数据结构/3 栈、队列和数组/3.3.2 栈在表达式求值中的应用.md",
     "CS408-Obsidian-Note-latest/1数据结构/3 栈、队列和数组/循环队列的实现.md",
-    "CS408-Obsidian-Note-latest/1数据结构/3 栈、队列和数组/attachments/循环队列的实现.jpeg",
     "CS408-Obsidian-Note-latest/README.md",
-    "CS408-Obsidian-Note-latest/1数据结构/3 栈、队列和数组/attachments/未命名.md",
-    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/C的初始动态分配语句.md",
-    "CS408-Obsidian-Note-latest/1数据结构/2 线性表/C++的初始动态分配语句.md"
+    "CS408-Obsidian-Note-latest/1数据结构/3 栈、队列和数组/attachments/未命名.md"
   ]
 }

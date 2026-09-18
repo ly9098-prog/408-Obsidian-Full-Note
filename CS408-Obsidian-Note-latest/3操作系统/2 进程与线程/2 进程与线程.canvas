@@ -11,7 +11,7 @@
 		{"id":"c975ef41959afed4","type":"text","text":"![[2.3.0 同步与互斥选择题常考的点]]","x":1480,"y":-1355,"width":1020,"height":275,"color":"4"},
 		{"id":"f59a3726ddc0043d","type":"text","text":"![[2.3.1 同步与互斥的基本概念]]","x":1480,"y":-1000,"width":1380,"height":700,"color":"4"},
 		{"id":"373b65309e43e50e","type":"text","text":"![[2.3.2 进程同步与互斥机制]]","x":1480,"y":-200,"width":1540,"height":4220,"color":"4"},
-		{"id":"351ca252228b09ea","type":"text","text":"![[2.3.5 经典同步问题]]","x":1480,"y":4100,"width":2240,"height":1620,"color":"4"},
+		{"id":"351ca252228b09ea","type":"text","text":"![[2.3.5 经典同步问题]]","x":1480,"y":4100,"width":2240,"height":1740,"color":"4"},
 		{"id":"40a198a5184f89fc","type":"text","text":"![[2.4 死锁常考点]]","x":3840,"y":-1355,"width":940,"height":375,"color":"4"},
 		{"id":"d5ffaf892cc6693e","type":"text","text":"![[2.4 死锁]]","x":3840,"y":-920,"width":1420,"height":2240,"color":"4"},
 		{"id":"bfbb9334bc2587ea","type":"text","text":"![[安全性算法和银行家算法举例]]","x":3840,"y":1400,"width":2040,"height":840},

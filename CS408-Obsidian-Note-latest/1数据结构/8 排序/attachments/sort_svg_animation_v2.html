@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>排序可视化</title>
+<style>
+:root{
+  color-scheme: dark;
+  --bg:#06070a;
+  --text:rgba(255,255,255,.95);
+  --muted:rgba(235,240,255,.52);
+  --muted-2:rgba(235,240,255,.32);
+  --hairline:rgba(255,255,255,.10);
+  --hairline-strong:rgba(255,255,255,.16);
+  --panel:rgba(18,20,26,.78);
+  --panel-solid:#111318;
+  --glass:rgba(32,34,42,.54);
+  --glass-strong:rgba(43,45,54,.68);
+  --blue:#6ea8ff;
+  --cyan:#7bdff6;
+  --mint:#75e6b5;
+  --amber:#ffd77a;
+  --pink:#ff8daf;
+  --radius:26px;
+  --pill:999px;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{
+  margin:0;
+  min-width:320px;
+  min-height:100%;
+  overflow-x:hidden;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 15% -10%, rgba(70,105,255,.20), transparent 34%),
+    radial-gradient(circle at 85% 10%, rgba(116,220,255,.12), transparent 26%),
+    radial-gradient(circle at 50% 115%, rgba(255,110,168,.10), transparent 34%),
+    var(--bg);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+button,input{font:inherit}
+button{-webkit-tap-highlight-color:transparent}
+.app{
+  width:min(1420px,calc(100% - 36px));
+  margin:0 auto;
+  padding:32px 0 42px;
+}
+.topbar{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:18px;
+  margin:0 2px 20px;
+  opacity:0;
+  transform:translateY(12px);
+  animation:reveal .7s var(--ease) .05s forwards;
+}
+.title{
+  margin:0;
+  font-size:clamp(28px,3.5vw,46px);
+  line-height:.98;
+  letter-spacing:-.045em;
+  font-weight:700;
+}
+.speed-control{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-height:44px;
+  padding:7px 8px 7px 14px;
+  border:1px solid var(--hairline);
+  border-radius:var(--pill);
+  background:var(--glass);
+  backdrop-filter:blur(22px) saturate(150%);
+  -webkit-backdrop-filter:blur(22px) saturate(150%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 10px 34px rgba(0,0,0,.18);
+}
+.speed-control span{
+  color:var(--muted);
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.02em;
+}
+.speed-control input{
+  width:92px;
+  accent-color:#fff;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px;
+}
+.sort-card{
+  min-width:0;
+  overflow:hidden;
+  border:1px solid var(--hairline);
+  border-radius:var(--radius);
+  background:linear-gradient(180deg,rgba(19,21,27,.88),rgba(12,14,18,.92));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055),0 24px 70px rgba(0,0,0,.28);
+  opacity:0;
+  transform:translateY(20px) scale(.985);
+  animation:cardIn .82s var(--ease) forwards;
+}
+.sort-card:nth-child(1){animation-delay:.12s}
+.sort-card:nth-child(2){animation-delay:.20s}
+.card-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:19px 20px 12px;
+}
+.card-title{
+  margin:0;
+  font-size:17px;
+  letter-spacing:-.018em;
+  font-weight:650;
+}
+.step-count{
+  flex:none;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:650;
+  font-variant-numeric:tabular-nums;
+}
+.stage{
+  position:relative;
+  margin:0 12px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.065);
+  border-radius:20px;
+  background:
+    radial-gradient(circle at 50% 15%,rgba(255,255,255,.055),transparent 35%),
+    linear-gradient(180deg,rgba(255,255,255,.018),rgba(255,255,255,.006));
+}
+.stage::after{
+  content:"";
+  pointer-events:none;
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+svg{
+  display:block;
+  width:100%;
+  height:auto;
+  aspect-ratio:16/8.5;
+}
+.status-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-height:44px;
+  padding:10px 20px 8px;
+}
+.status{
+  flex:1;
+  min-width:0;
+  overflow:hidden;
+  color:rgba(255,255,255,.72);
+  font-size:12px;
+  font-weight:560;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.progress{
+  width:68px;
+  height:3px;
+  overflow:hidden;
+  border-radius:999px;
+  background:rgba(255,255,255,.09);
+}
+.progress > i{
+  display:block;
+  width:0;
+  height:100%;
+  border-radius:inherit;
+  background:rgba(255,255,255,.82);
+  transition:width .5s var(--ease);
+}
+.controls{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:9px 12px 12px;
+}
+.glass-tray{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  width:100%;
+  padding:6px;
+  border:1px solid var(--hairline);
+  border-radius:19px;
+  background:var(--glass);
+  backdrop-filter:blur(24px) saturate(145%);
+  -webkit-backdrop-filter:blur(24px) saturate(145%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    inset 0 -1px 0 rgba(255,255,255,.025),
+    0 12px 34px rgba(0,0,0,.20);
+}
+.control-btn{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  min-width:44px;
+  height:44px;
+  padding:0 14px;
+  border:1px solid transparent;
+  border-radius:14px;
+  color:rgba(255,255,255,.88);
+  background:transparent;
+  font-size:13px;
+  font-weight:650;
+  cursor:pointer;
+  transition:
+    transform .24s var(--ease),
+    background .24s var(--ease),
+    border-color .24s var(--ease),
+    opacity .2s ease;
+}
+.control-btn.icon-only{padding:0;width:44px}
+.control-btn.primary{
+  margin:0 2px;
+  color:#08090b;
+  background:rgba(255,255,255,.93);
+  box-shadow:0 3px 12px rgba(0,0,0,.18),inset 0 1px 0 #fff;
+}
+.control-btn.utility{margin-left:auto;color:var(--muted)}
+.control-btn:disabled{opacity:.30;cursor:default}
+.control-btn:focus-visible{
+  outline:2px solid rgba(142,190,255,.9);
+  outline-offset:2px;
+}
+@media (hover:hover) and (pointer:fine){
+  .control-btn:not(:disabled):hover{
+    background:rgba(255,255,255,.08);
+    border-color:rgba(255,255,255,.07);
+  }
+  .control-btn.primary:not(:disabled):hover{
+    background:#fff;
+    transform:translateY(-1px);
+  }
+  .control-btn:not(:disabled):active{transform:scale(.965)}
+}
+.separator{
+  width:1px;
+  height:24px;
+  flex:none;
+  margin:0 2px;
+  background:rgba(255,255,255,.09);
+}
+.glyph{
+  width:16px;
+  font-size:15px;
+  line-height:1;
+  text-align:center;
+}
+.label{line-height:1}
+.bar-group{will-change:transform}
+.bar-body{
+  fill:rgba(170,183,209,.38);
+  stroke:rgba(255,255,255,.16);
+  stroke-width:1;
+  transition:fill .32s var(--ease),stroke .32s var(--ease),filter .32s var(--ease),opacity .32s ease;
+}
+.bar-value{
+  fill:rgba(255,255,255,.92);
+  font-size:14px;
+  font-weight:700;
+  text-anchor:middle;
+  dominant-baseline:middle;
+  font-variant-numeric:tabular-nums;
+  pointer-events:none;
+}
+.bar-index{
+  fill:rgba(255,255,255,.28);
+  font-size:10px;
+  font-weight:600;
+  text-anchor:middle;
+  font-variant-numeric:tabular-nums;
+}
+.bar-group.sorted .bar-body{
+  fill:rgba(117,230,181,.44);
+  stroke:rgba(140,242,198,.62);
+}
+.bar-group.compare .bar-body{
+  fill:rgba(255,215,122,.48);
+  stroke:rgba(255,228,160,.75);
+  filter:drop-shadow(0 6px 12px rgba(255,196,74,.12));
+}
+.bar-group.key .bar-body{
+  fill:rgba(255,141,175,.53);
+  stroke:rgba(255,182,204,.82);
+  filter:drop-shadow(0 7px 16px rgba(255,95,153,.18));
+}
+.bar-group.min .bar-body{
+  fill:rgba(123,223,246,.50);
+  stroke:rgba(161,237,255,.84);
+  filter:drop-shadow(0 7px 16px rgba(80,204,238,.17));
+}
+.floor{
+  stroke:rgba(255,255,255,.10);
+  stroke-width:1;
+}
+.sorted-line{
+  stroke:rgba(117,230,181,.7);
+  stroke-width:2.5;
+  stroke-linecap:round;
+  transition:x2 .45s var(--ease),opacity .3s ease;
+}
+.sorted-label{
+  fill:rgba(139,234,194,.72);
+  font-size:10px;
+  font-weight:650;
+}
+.marker{
+  font-size:10px;
+  font-weight:700;
+  text-anchor:middle;
+  letter-spacing:.01em;
+}
+.marker.key{fill:rgba(255,170,197,.92)}
+.marker.compare{fill:rgba(255,224,150,.92)}
+.marker.min{fill:rgba(152,235,255,.93)}
+.ripple{
+  position:absolute;
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  pointer-events:none;
+  background:rgba(255,255,255,.16);
+  transform:translate(-50%,-50%) scale(0);
+  animation:ripple .55s ease-out forwards;
+}
+@keyframes reveal{to{opacity:1;transform:none}}
+@keyframes cardIn{to{opacity:1;transform:none}}
+@keyframes ripple{to{opacity:0;transform:translate(-50%,-50%) scale(8)}}
+@media (max-width:920px){
+  .grid{grid-template-columns:1fr}
+  .sort-card{max-width:760px;width:100%;margin:0 auto}
+}
+@media (max-width:620px){
+  .app{width:min(100% - 20px,1420px);padding-top:22px}
+  .topbar{align-items:flex-start;flex-direction:column;margin-bottom:14px}
+  .speed-control{align-self:flex-end}
+  .card-head{padding:16px 16px 10px}
+  .status-row{padding-left:16px;padding-right:16px}
+  .control-btn{padding:0 11px}
+  .control-btn .label{display:none}
+  .control-btn.primary .label{display:inline}
+  .control-btn.utility{margin-left:auto}
+  svg{aspect-ratio:16/9.8}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    scroll-behavior:auto!important;
+    transition-duration:.001ms!important;
+  }
+  .topbar,.sort-card{opacity:1;transform:none}
+}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .speed-control,.glass-tray{background:rgba(38,40,48,.94)}
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="topbar">
+    <h1 class="title">排序可视化</h1>
+    <label class="speed-control" aria-label="动画速度">
+      <span>速度</span>
+      <input id="globalSpeed" type="range" min="1" max="5" value="3" step="1">
+    </label>
+  </header>
+
+  <section class="grid">
+    <article class="sort-card" data-kind="insertion">
+      <div class="card-head">
+        <h2 class="card-title">直接插入排序</h2>
+        <div class="step-count" aria-live="polite">0 / 0</div>
+      </div>
+      <div class="stage">
+        <svg viewBox="0 0 640 340" role="img" aria-label="直接插入排序动画"></svg>
+      </div>
+      <div class="status-row">
+        <div class="status" aria-live="polite">准备</div>
+        <div class="progress" aria-hidden="true"><i></i></div>
+      </div>
+      <div class="controls">
+        <div class="glass-tray" role="group" aria-label="直接插入排序控制">
+          <button class="control-btn prev" type="button" aria-label="上一步">
+            <span class="glyph">‹</span><span class="label">上一步</span>
+          </button>
+          <button class="control-btn primary play" type="button" aria-label="播放">
+            <span class="glyph">▶</span><span class="label">播放</span>
+          </button>
+          <button class="control-btn next" type="button" aria-label="下一步">
+            <span class="label">下一步</span><span class="glyph">›</span>
+          </button>
+          <span class="separator" aria-hidden="true"></span>
+          <button class="control-btn icon-only reset" type="button" aria-label="重置" title="重置">
+            <span class="glyph">↺</span>
+          </button>
+          <button class="control-btn icon-only utility shuffle" type="button" aria-label="随机数据" title="随机数据">
+            <span class="glyph">⤨</span>
+          </button>
+        </div>
+      </div>
+    </article>
+
+    <article class="sort-card" data-kind="selection">
+      <div class="card-head">
+        <h2 class="card-title">简单选择排序</h2>
+        <div class="step-count" aria-live="polite">0 / 0</div>
+      </div>
+      <div class="stage">
+        <svg viewBox="0 0 640 340" role="img" aria-label="简单选择排序动画"></svg>
+      </div>
+      <div class="status-row">
+        <div class="status" aria-live="polite">准备</div>
+        <div class="progress" aria-hidden="true"><i></i></div>
+      </div>
+      <div class="controls">
+        <div class="glass-tray" role="group" aria-label="简单选择排序控制">
+          <button class="control-btn prev" type="button" aria-label="上一步">
+            <span class="glyph">‹</span><span class="label">上一步</span>
+          </button>
+          <button class="control-btn primary play" type="button" aria-label="播放">
+            <span class="glyph">▶</span><span class="label">播放</span>
+          </button>
+          <button class="control-btn next" type="button" aria-label="下一步">
+            <span class="label">下一步</span><span class="glyph">›</span>
+          </button>
+          <span class="separator" aria-hidden="true"></span>
+          <button class="control-btn icon-only reset" type="button" aria-label="重置" title="重置">
+            <span class="glyph">↺</span>
+          </button>
+          <button class="control-btn icon-only utility shuffle" type="button" aria-label="随机数据" title="随机数据">
+            <span class="glyph">⤨</span>
+          </button>
+        </div>
+      </div>
+    </article>
+  </section>
+</main>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg";
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const speedInput = document.getElementById("globalSpeed");
+  const initial = [7,3,8,2,6,4,5,1];
+
+  const svgEl = (name, attrs = {}) => {
+    const node = document.createElementNS(NS, name);
+    Object.entries(attrs).forEach(([k,v]) => node.setAttribute(k,String(v)));
+    return node;
+  };
+
+  const cloneItems = arr => arr.map(x => ({id:x.id,value:x.value}));
+
+  function randomUnique(count=8){
+    const pool = [1,2,3,4,5,6,7,8,9];
+    for(let i=pool.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [pool[i],pool[j]]=[pool[j],pool[i]];
+    }
+    return pool.slice(0,count);
+  }
+
+  function makeInsertionSteps(values){
+    const a = values.map((value,id)=>({id,value}));
+    const steps = [{
+      items:cloneItems(a), sortedEnd:0, key:null, compare:[], min:null,
+      label:"准备", kind:"idle"
+    }];
+
+    for(let i=1;i<a.length;i++){
+      let j=i;
+      const keyId=a[i].id;
+      steps.push({
+        items:cloneItems(a), sortedEnd:i-1, key:keyId, compare:[], min:null,
+        label:`取出 ${a[i].value}`, kind:"key"
+      });
+
+      while(j>0){
+        steps.push({
+          items:cloneItems(a), sortedEnd:i-1, key:keyId,
+          compare:[a[j-1].id,keyId], min:null,
+          label:`比较 ${a[j-1].value} 与 ${a[j].value}`, kind:"compare"
+        });
+        if(a[j-1].value <= a[j].value) break;
+
+        const movedLeft=a[j].id;
+        const movedRight=a[j-1].id;
+        [a[j-1],a[j]]=[a[j],a[j-1]];
+        j--;
+        steps.push({
+          items:cloneItems(a), sortedEnd:i, key:keyId,
+          compare:[movedLeft,movedRight], min:null,
+          label:`${a[j+1].value} 右移`, kind:"shift"
+        });
+      }
+
+      steps.push({
+        items:cloneItems(a), sortedEnd:i, key:keyId, compare:[], min:null,
+        label:`插入 ${a[j].value}`, kind:"insert"
+      });
+    }
+
+    steps.push({
+      items:cloneItems(a), sortedEnd:a.length-1, key:null, compare:[], min:null,
+      label:"完成", kind:"done"
+    });
+    return steps;
+  }
+
+  function makeSelectionSteps(values){
+    const a = values.map((value,id)=>({id,value}));
+    const steps = [{
+      items:cloneItems(a), sortedEnd:-1, key:null, compare:[], min:null,
+      label:"准备", kind:"idle"
+    }];
+
+    for(let i=0;i<a.length-1;i++){
+      let min=i;
+      steps.push({
+        items:cloneItems(a), sortedEnd:i-1, key:null, compare:[], min:a[min].id,
+        label:`最小值 ${a[min].value}`, kind:"min"
+      });
+
+      for(let j=i+1;j<a.length;j++){
+        steps.push({
+          items:cloneItems(a), sortedEnd:i-1, key:null,
+          compare:[a[min].id,a[j].id], min:a[min].id,
+          label:`比较 ${a[min].value} 与 ${a[j].value}`, kind:"compare"
+        });
+        if(a[j].value<a[min].value){
+          min=j;
+          steps.push({
+            items:cloneItems(a), sortedEnd:i-1, key:null,
+            compare:[], min:a[min].id,
+            label:`更新最小值 ${a[min].value}`, kind:"min"
+          });
+        }
+      }
+
+      if(min!==i){
+        const left=a[i].id, right=a[min].id;
+        [a[i],a[min]]=[a[min],a[i]];
+        steps.push({
+          items:cloneItems(a), sortedEnd:i, key:null,
+          compare:[left,right], min:a[i].id,
+          label:`交换 ${a[min].value} 与 ${a[i].value}`, kind:"swap"
+        });
+      }else{
+        steps.push({
+          items:cloneItems(a), sortedEnd:i, key:null,
+          compare:[], min:a[i].id,
+          label:`${a[i].value} 就位`, kind:"settle"
+        });
+      }
+    }
+
+    steps.push({
+      items:cloneItems(a), sortedEnd:a.length-1, key:null, compare:[], min:null,
+      label:"完成", kind:"done"
+    });
+    return steps;
+  }
+
+  class Visualizer {
+    constructor(card, kind, values){
+      this.card=card;
+      this.kind=kind;
+      this.svg=card.querySelector("svg");
+      this.status=card.querySelector(".status");
+      this.count=card.querySelector(".step-count");
+      this.progress=card.querySelector(".progress > i");
+      this.prevBtn=card.querySelector(".prev");
+      this.nextBtn=card.querySelector(".next");
+      this.playBtn=card.querySelector(".play");
+      this.resetBtn=card.querySelector(".reset");
+      this.shuffleBtn=card.querySelector(".shuffle");
+      this.values=[...values];
+      this.steps=[];
+      this.index=0;
+      this.playing=false;
+      this.animating=false;
+      this.playToken=0;
+      this.groups=new Map();
+      this.lastState=null;
+      this.renderToken=0;
+
+      this.build();
+      this.bind();
+    }
+
+    duration(){
+      if(reduceMotion) return 1;
+      const levels=[900,720,560,410,280];
+      return levels[Number(speedInput.value)-1] || 560;
+    }
+
+    build(){
+      this.playToken++;
+      this.playing=false;
+      this.index=0;
+      this.steps=this.kind==="insertion"
+        ? makeInsertionSteps(this.values)
+        : makeSelectionSteps(this.values);
+      this.drawBase();
+      this.lastState=this.steps[0];
+      this.applyState(this.steps[0], true);
+      this.updateUI();
+      this.renderEntrance();
+    }
+
+    drawBase(){
+      this.svg.innerHTML="";
+      this.groups.clear();
+
+      const defs=svgEl("defs");
+      const grad=svgEl("linearGradient",{id:`barGrad-${this.kind}`,x1:"0",y1:"0",x2:"0",y2:"1"});
+      grad.append(svgEl("stop",{offset:"0%","stop-color":"rgba(255,255,255,.18)"}));
+      grad.append(svgEl("stop",{offset:"100%","stop-color":"rgba(255,255,255,.02)"}));
+      defs.append(grad);
+      this.svg.append(defs);
+
+      this.svg.append(svgEl("line",{x1:27,y1:262,x2:613,y2:262,class:"floor"}));
+
+      this.sortedLine=svgEl("line",{x1:32,y1:292,x2:32,y2:292,class:"sorted-line",opacity:"0"});
+      this.svg.append(this.sortedLine);
+
+      this.sortedLabel=svgEl("text",{x:32,y:311,class:"sorted-label",opacity:"0"});
+      this.sortedLabel.textContent="已排序";
+      this.svg.append(this.sortedLabel);
+
+      this.markerLayer=svgEl("g");
+      this.svg.append(this.markerLayer);
+
+      this.barLayer=svgEl("g");
+      this.svg.append(this.barLayer);
+
+      const unique = new Map();
+      this.steps[0].items.forEach(item=>unique.set(item.id,item));
+      unique.forEach(item=>{
+        const g=svgEl("g",{class:"bar-group"});
+        g.dataset.id=String(item.id);
+        const h=this.barHeight(item.value);
+        const rect=svgEl("rect",{
+          x:0,y:262-h,width:48,height:h,rx:12,class:"bar-body"
+        });
+        const shine=svgEl("rect",{
+          x:1,y:263-h,width:46,height:Math.max(12,h*.22),rx:11,
+          fill:`url(#barGrad-${this.kind})`,opacity:".55","pointer-events":"none"
+        });
+        const text=svgEl("text",{x:24,y:262-h/2,class:"bar-value"});
+        text.textContent=String(item.value);
+        g.append(rect,shine,text);
+        this.barLayer.append(g);
+        this.groups.set(item.id,g);
+      });
+
+      this.indexLayer=svgEl("g");
+      this.svg.append(this.indexLayer);
+      for(let i=0;i<8;i++){
+        const t=svgEl("text",{x:this.slotX(i)+24,y:280,class:"bar-index"});
+        t.textContent=String(i);
+        this.indexLayer.append(t);
+      }
+    }
+
+    slotX(i){ return 32 + i*73.2; }
+    barHeight(v){ return 42 + v*19; }
+
+    stateIndexMap(state){
+      const m=new Map();
+      state.items.forEach((item,i)=>m.set(item.id,i));
+      return m;
+    }
+
+    bind(){
+      this.prevBtn.addEventListener("click",()=>this.step(-1));
+      this.nextBtn.addEventListener("click",()=>this.step(1));
+      this.playBtn.addEventListener("click",()=>this.togglePlay());
+      this.resetBtn.addEventListener("click",()=>this.reset());
+      this.shuffleBtn.addEventListener("click",()=>{
+        this.values=randomUnique(8);
+        this.build();
+      });
+
+      this.card.querySelectorAll(".control-btn").forEach(btn=>{
+        btn.addEventListener("pointerdown",(e)=>{
+          if(reduceMotion || btn.disabled) return;
+          const r=btn.getBoundingClientRect();
+          const dot=document.createElement("span");
+          dot.className="ripple";
+          dot.style.left=`${e.clientX-r.left}px`;
+          dot.style.top=`${e.clientY-r.top}px`;
+          btn.append(dot);
+          setTimeout(()=>dot.remove(),600);
+        });
+      });
+    }
+
+    renderEntrance(){
+      if(reduceMotion) return;
+      const state=this.steps[0];
+      const pos=this.stateIndexMap(state);
+      state.items.forEach((item,idx)=>{
+        const g=this.groups.get(item.id);
+        const x=this.slotX(pos.get(item.id));
+        g.setAttribute("transform",`translate(${x} 22)`);
+        g.style.opacity="0";
+        setTimeout(()=>{
+          g.style.transition=`opacity .55s var(--ease)`;
+          g.style.opacity="1";
+          this.animateGroup(g,x,22,x,0,460,0);
+        },80+idx*45);
+      });
+    }
+
+    setClassState(state){
+      const sortedIds=new Set(
+        state.items.slice(0,Math.max(0,state.sortedEnd+1)).map(x=>x.id)
+      );
+      const compareIds=new Set(state.compare||[]);
+
+      this.groups.forEach((g,id)=>{
+        g.classList.toggle("sorted",sortedIds.has(id));
+        g.classList.toggle("compare",compareIds.has(id));
+        g.classList.toggle("key",state.key===id);
+        g.classList.toggle("min",state.min===id);
+      });
+
+      this.markerLayer.innerHTML="";
+      const idx=this.stateIndexMap(state);
+      const markers=[];
+      if(state.key!==null && state.key!==undefined) markers.push([state.key,"key","key"]);
+      if(state.min!==null && state.min!==undefined) markers.push([state.min,"min","min"]);
+      (state.compare||[]).forEach(id=>{
+        if(id!==state.key && id!==state.min) markers.push([id,"比较","compare"]);
+      });
+      markers.slice(0,3).forEach(([id,text,cls])=>{
+        if(!idx.has(id)) return;
+        const t=svgEl("text",{
+          x:this.slotX(idx.get(id))+24,y:28,class:`marker ${cls}`
+        });
+        t.textContent=text;
+        this.markerLayer.append(t);
+      });
+
+      const end=state.sortedEnd;
+      if(end>=0){
+        this.sortedLine.setAttribute("opacity","1");
+        this.sortedLabel.setAttribute("opacity","1");
+        this.sortedLine.setAttribute("x2",String(this.slotX(end)+48));
+      }else{
+        this.sortedLine.setAttribute("opacity","0");
+        this.sortedLabel.setAttribute("opacity","0");
+        this.sortedLine.setAttribute("x2","32");
+      }
+    }
+
+    applyState(state, immediate=false){
+      const map=this.stateIndexMap(state);
+      this.setClassState(state);
+      map.forEach((i,id)=>{
+        const g=this.groups.get(id);
+        const y=state.key===id ? -12 : 0;
+        if(immediate){
+          g.setAttribute("transform",`translate(${this.slotX(i)} ${y})`);
+        }
+      });
+      this.status.textContent=state.label;
+    }
+
+    animateGroup(g,x0,y0,x1,y1,duration,arc=0){
+      return new Promise(resolve=>{
+        if(duration<=1){
+          g.setAttribute("transform",`translate(${x1} ${y1})`);
+          resolve();
+          return;
+        }
+        const start=performance.now();
+        const ease=t=>1-Math.pow(1-t,3.15);
+        const tick=now=>{
+          const p=Math.min(1,(now-start)/duration);
+          const q=ease(p);
+          const x=x0+(x1-x0)*q;
+          const y=y0+(y1-y0)*q + Math.sin(Math.PI*p)*arc;
+          g.setAttribute("transform",`translate(${x.toFixed(2)} ${y.toFixed(2)})`);
+          if(p<1) requestAnimationFrame(tick);
+          else resolve();
+        };
+        requestAnimationFrame(tick);
+      });
+    }
+
+    async goTo(targetIndex){
+      if(this.animating) return;
+      targetIndex=Math.max(0,Math.min(this.steps.length-1,targetIndex));
+      if(targetIndex===this.index) return;
+
+      this.animating=true;
+      const from=this.steps[this.index];
+      const to=this.steps[targetIndex];
+      const fromMap=this.stateIndexMap(from);
+      const toMap=this.stateIndexMap(to);
+      const duration=this.duration();
+      const direction=targetIndex>this.index ? 1 : -1;
+
+      this.index=targetIndex;
+      this.setClassState(to);
+      this.status.textContent=to.label;
+      this.updateUI();
+
+      const moved=[];
+      toMap.forEach((toI,id)=>{
+        const fromI=fromMap.get(id);
+        const g=this.groups.get(id);
+        const x0=this.slotX(fromI);
+        const x1=this.slotX(toI);
+        const y0=from.key===id ? -12 : 0;
+        const y1=to.key===id ? -12 : 0;
+        let arc=0;
+
+        if(fromI!==toI){
+          const isSwap=to.kind==="swap" || from.kind==="swap";
+          const isShift=to.kind==="shift" || from.kind==="shift";
+          if(isSwap){
+            arc=(toI>fromI ? -24 : 24)*direction;
+          }else if(isShift){
+            arc=(to.key===id || from.key===id) ? -20 : 10;
+          }else{
+            arc=(to.key===id || from.key===id) ? -16 : 0;
+          }
+        }
+        moved.push(this.animateGroup(g,x0,y0,x1,y1,duration,arc));
+      });
+
+      await Promise.all(moved);
+      this.lastState=to;
+      this.animating=false;
+      this.updateUI();
+    }
+
+    async step(delta){
+      this.pause();
+      await this.goTo(this.index+delta);
+    }
+
+    async togglePlay(){
+      if(this.playing){
+        this.pause();
+        return;
+      }
+      if(this.index>=this.steps.length-1){
+        this.index=0;
+        this.applyState(this.steps[0],true);
+        this.lastState=this.steps[0];
+        this.updateUI();
+      }
+
+      this.playing=true;
+      const token=++this.playToken;
+      this.updateUI();
+
+      while(this.playing && token===this.playToken && this.index<this.steps.length-1){
+        await this.goTo(this.index+1);
+        if(!this.playing || token!==this.playToken) break;
+        await new Promise(r=>setTimeout(r,Math.max(70,this.duration()*.16)));
+      }
+
+      if(token===this.playToken){
+        this.playing=false;
+        this.updateUI();
+      }
+    }
+
+    pause(){
+      if(this.playing){
+        this.playing=false;
+        this.playToken++;
+        this.updateUI();
+      }
+    }
+
+    reset(){
+      this.pause();
+      this.index=0;
+      this.lastState=this.steps[0];
+      this.applyState(this.steps[0],true);
+      this.updateUI();
+    }
+
+    updateUI(){
+      const max=this.steps.length-1;
+      this.count.textContent=`${this.index} / ${max}`;
+      this.progress.style.width=`${max ? (this.index/max)*100 : 0}%`;
+      this.prevBtn.disabled=this.index<=0 || this.animating;
+      this.nextBtn.disabled=this.index>=max || this.animating;
+      this.resetBtn.disabled=this.index===0 && !this.playing;
+
+      const glyph=this.playBtn.querySelector(".glyph");
+      const label=this.playBtn.querySelector(".label");
+      if(this.playing){
+        glyph.textContent="Ⅱ";
+        label.textContent="暂停";
+        this.playBtn.setAttribute("aria-label","暂停");
+      }else if(this.index>=max){
+        glyph.textContent="↺";
+        label.textContent="重播";
+        this.playBtn.setAttribute("aria-label","重新播放");
+      }else{
+        glyph.textContent="▶";
+        label.textContent="播放";
+        this.playBtn.setAttribute("aria-label","播放");
+      }
+    }
+  }
+
+  document.querySelectorAll(".sort-card").forEach(card=>{
+    new Visualizer(card,card.dataset.kind,initial);
+  });
+})();
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>

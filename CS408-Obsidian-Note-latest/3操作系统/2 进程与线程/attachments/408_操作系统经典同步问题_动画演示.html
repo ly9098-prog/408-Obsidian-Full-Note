@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>考研 408｜经典同步问题动画演示</title>
+<style>
+:root{
+  --bg:#090b10;
+  --panel:#11141b;
+  --panel-2:#161a23;
+  --glass:rgba(28,31,40,.60);
+  --line:rgba(255,255,255,.095);
+  --line-2:rgba(255,255,255,.16);
+  --text:#f5f7fb;
+  --muted:#9aa3b5;
+  --muted-2:#697386;
+  --accent:#78a7ff;
+  --accent-soft:rgba(120,167,255,.15);
+  --good:#67d49b;
+  --good-soft:rgba(103,212,155,.14);
+  --warn:#ffbe6d;
+  --warn-soft:rgba(255,190,109,.14);
+  --bad:#ff7c8d;
+  --bad-soft:rgba(255,124,141,.14);
+  --purple:#a990ff;
+  --purple-soft:rgba(169,144,255,.14);
+  --cyan:#69d3e8;
+  --cyan-soft:rgba(105,211,232,.13);
+  --radius-xl:28px;
+  --radius-lg:20px;
+  --radius-md:14px;
+  --pill:999px;
+  --ease:cubic-bezier(.22,.8,.22,1);
+  --shadow:0 28px 80px rgba(0,0,0,.34);
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{
+  margin:0;
+  min-height:100vh;
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  background:
+    radial-gradient(52rem 28rem at 8% -8%,rgba(89,115,255,.15),transparent 64%),
+    radial-gradient(42rem 24rem at 94% 0%,rgba(92,211,183,.085),transparent 66%),
+    linear-gradient(180deg,#0b0d13,#090b10 72%);
+  letter-spacing:-.012em;
+}
+button,input{font:inherit}
+button{color:inherit}
+.app{
+  width:min(1220px,calc(100% - 32px));
+  margin:0 auto;
+  padding:28px 0 38px;
+}
+.topbar{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:18px;
+  margin-bottom:18px;
+  animation:enter .7s var(--ease) both;
+}
+.brand h1{
+  margin:0;
+  font-size:clamp(26px,3vw,38px);
+  font-weight:740;
+  letter-spacing:-.045em;
+  line-height:1.03;
+}
+.brand p{
+  margin:7px 0 0;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:520;
+}
+.selectors{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.segmented{
+  display:flex;
+  gap:4px;
+  padding:4px;
+  border:1px solid var(--line);
+  border-radius:var(--pill);
+  background:var(--glass);
+  -webkit-backdrop-filter:blur(24px) saturate(150%);
+  backdrop-filter:blur(24px) saturate(150%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+}
+.segmented button{
+  min-height:38px;
+  border:0;
+  border-radius:var(--pill);
+  padding:0 14px;
+  background:transparent;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:680;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:background .2s var(--ease),color .2s var(--ease),transform .15s ease;
+}
+.segmented button[aria-selected="true"]{
+  color:var(--text);
+  background:rgba(255,255,255,.105);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 5px 14px rgba(0,0,0,.14);
+}
+.segmented.mode button[data-mode="correct"][aria-selected="true"]{color:#c9f5df;background:var(--good-soft)}
+.segmented.mode button[data-mode="error"][aria-selected="true"]{color:#ffd0d6;background:var(--bad-soft)}
+.segmented button:active{transform:scale(.97)}
+button:focus-visible,input:focus-visible{
+  outline:2px solid rgba(126,173,255,.82);
+  outline-offset:2px;
+}
+
+.workspace{
+  position:relative;
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:var(--radius-xl);
+  background:
+    radial-gradient(46rem 22rem at 50% -18%,rgba(105,130,255,.10),transparent 67%),
+    linear-gradient(180deg,rgba(20,23,31,.97),rgba(13,16,23,.99));
+  box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.04);
+  animation:enter .76s .06s var(--ease) both;
+}
+.workspace::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(115deg,transparent 25%,rgba(255,255,255,.022) 47%,transparent 68%);
+  transform:translateX(-48%);
+  animation:sheen 1.05s .25s var(--ease) both;
+}
+.main-grid{
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:minmax(0,1.35fr) minmax(320px,.65fr);
+  min-height:610px;
+}
+.visual-panel{
+  min-width:0;
+  border-right:1px solid var(--line);
+  display:flex;
+  flex-direction:column;
+}
+.scene-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  padding:18px 20px 6px;
+}
+.scene-title{
+  min-width:0;
+}
+.scene-title .eyebrow{
+  color:var(--muted-2);
+  font-size:10px;
+  font-weight:760;
+  letter-spacing:.085em;
+  text-transform:uppercase;
+}
+.scene-title h2{
+  margin:4px 0 0;
+  font-size:18px;
+  font-weight:700;
+  letter-spacing:-.025em;
+}
+.status-pill{
+  flex:0 0 auto;
+  min-height:30px;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:0 10px;
+  border:1px solid var(--line);
+  border-radius:var(--pill);
+  color:var(--muted);
+  background:rgba(255,255,255,.035);
+  font-size:11px;
+  font-weight:680;
+}
+.status-pill::before{
+  content:"";
+  width:7px;height:7px;border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 0 4px rgba(120,167,255,.09);
+}
+.status-pill.good::before{background:var(--good);box-shadow:0 0 0 4px rgba(103,212,155,.09)}
+.status-pill.bad::before{background:var(--bad);box-shadow:0 0 0 4px rgba(255,124,141,.10)}
+
+.scene-wrap{
+  position:relative;
+  flex:1;
+  min-height:390px;
+  overflow:hidden;
+}
+.scene{
+  width:100%;
+  height:100%;
+  min-height:390px;
+  display:block;
+}
+.scene .soft-line{stroke:rgba(255,255,255,.065);stroke-width:1}
+.scene .resource{
+  fill:rgba(255,255,255,.035);
+  stroke:rgba(255,255,255,.10);
+  stroke-width:1.2;
+}
+.scene .resource.good{fill:var(--good-soft);stroke:rgba(103,212,155,.38)}
+.scene .resource.warn{fill:var(--warn-soft);stroke:rgba(255,190,109,.42)}
+.scene .resource.bad{fill:var(--bad-soft);stroke:rgba(255,124,141,.46)}
+.scene .agent-shell{
+  fill:rgba(255,255,255,.045);
+  stroke:rgba(255,255,255,.105);
+  stroke-width:1;
+}
+.scene .agent-shell.active{fill:var(--accent-soft);stroke:rgba(120,167,255,.45)}
+.scene .agent-shell.wait{fill:var(--warn-soft);stroke:rgba(255,190,109,.42)}
+.scene .agent-shell.bad{fill:var(--bad-soft);stroke:rgba(255,124,141,.5)}
+.scene .agent-shell.good{fill:var(--good-soft);stroke:rgba(103,212,155,.44)}
+.scene .label{
+  fill:#e9edf5;
+  font-size:13px;
+  font-weight:700;
+  text-anchor:middle;
+}
+.scene .sub{
+  fill:#7f899a;
+  font-size:10px;
+  font-weight:620;
+  text-anchor:middle;
+}
+.scene .tiny{
+  fill:#697386;
+  font-size:9px;
+  font-weight:650;
+  text-anchor:middle;
+}
+.scene .counter{
+  fill:#f5f7fb;
+  font-size:22px;
+  font-weight:760;
+  text-anchor:middle;
+  font-variant-numeric:tabular-nums;
+}
+.scene .token{
+  fill:#7fa8ff;
+  stroke:rgba(255,255,255,.14);
+  stroke-width:1;
+}
+.scene .token.good{fill:#68cb98}
+.scene .token.warn{fill:#ffb866}
+.scene .token.bad{fill:#ff7e8e}
+.scene .token.purple{fill:#9f8af2}
+.scene .fork{
+  stroke:#778299;
+  stroke-width:6;
+  stroke-linecap:round;
+  transition:stroke .25s ease,filter .25s ease;
+}
+.scene .fork.held{stroke:#d7e4ff;filter:drop-shadow(0 0 7px rgba(120,167,255,.18))}
+.scene .fork.blocked{stroke:#ff8d9c;filter:drop-shadow(0 0 7px rgba(255,124,141,.18))}
+.scene .arrow{
+  stroke:rgba(120,167,255,.62);
+  stroke-width:2;
+  fill:none;
+  stroke-linecap:round;
+  stroke-dasharray:5 6;
+}
+.scene .warning-ring{
+  fill:none;
+  stroke:rgba(255,124,141,.72);
+  stroke-width:2;
+  stroke-dasharray:6 6;
+}
+.scene .ok-ring{
+  fill:none;
+  stroke:rgba(103,212,155,.58);
+  stroke-width:2;
+  stroke-dasharray:6 6;
+}
+.scene .moving{
+  transform-box:fill-box;
+  transform-origin:center;
+  transition:transform .52s var(--ease),opacity .25s ease;
+}
+.scene .pulse{animation:pulse 1.1s ease-in-out infinite}
+
+.step-readout{
+  min-height:90px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:18px;
+  padding:6px 20px 14px;
+}
+.step-copy{min-width:0}
+.step-copy .eyebrow{
+  color:var(--muted-2);
+  font-size:10px;
+  font-weight:760;
+  letter-spacing:.08em;
+}
+.step-copy h3{
+  margin:4px 0 0;
+  font-size:17px;
+  font-weight:700;
+  letter-spacing:-.022em;
+}
+.step-copy p{
+  margin:5px 0 0;
+  max-width:690px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.55;
+}
+.state-badges{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.state-badge{
+  min-height:30px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:0 9px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:rgba(255,255,255,.035);
+  color:var(--muted);
+  font-size:10px;
+  font-weight:650;
+  font-variant-numeric:tabular-nums;
+}
+.state-badge strong{color:#e8edf6;font-size:11px}
+
+.code-panel{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  background:rgba(8,10,15,.28);
+}
+.code-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:18px 18px 11px;
+  border-bottom:1px solid var(--line);
+}
+.code-head h2{
+  margin:0;
+  font-size:13px;
+  font-weight:720;
+  letter-spacing:-.01em;
+}
+.code-head span{
+  color:var(--muted-2);
+  font-size:10px;
+}
+.code-scroll{
+  flex:1;
+  min-height:0;
+  padding:12px 10px 14px;
+  overflow:auto;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(255,255,255,.14) transparent;
+}
+.code-block{
+  margin:0;
+  padding:0;
+  font:12.5px/1.72 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+  letter-spacing:0;
+  counter-reset:code-line;
+}
+.code-line{
+  position:relative;
+  display:grid;
+  grid-template-columns:30px minmax(0,1fr);
+  gap:10px;
+  min-height:25px;
+  padding:2px 10px 2px 3px;
+  border-radius:8px;
+  color:#939daf;
+  white-space:pre-wrap;
+  transition:color .18s ease,background .18s ease,opacity .18s ease;
+}
+.code-line .no{
+  color:#4f5869;
+  text-align:right;
+  user-select:none;
+  font-variant-numeric:tabular-nums;
+}
+.code-line .txt{min-width:0}
+.code-line.section{
+  margin-top:8px;
+  color:#c0cad9;
+  font-weight:720;
+}
+.code-line.section .no{color:transparent}
+.code-line.comment{color:#657083}
+.code-line.active{
+  color:#f4f7fc;
+  background:rgba(120,167,255,.105);
+  box-shadow:inset 2px 0 0 var(--accent);
+}
+.code-line.active .no{color:#9bc0ff}
+.code-line.near{color:#b2bccb}
+.code-line.danger.active{
+  background:rgba(255,124,141,.105);
+  box-shadow:inset 2px 0 0 var(--bad);
+}
+.code-line.danger.active .no{color:#ffa4b0}
+.code-note{
+  padding:11px 14px;
+  border-top:1px solid var(--line);
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.5;
+}
+.code-note strong{color:#e7ecf5;font-weight:700}
+
+.progress{
+  position:relative;
+  z-index:2;
+  height:2px;
+  margin:0 20px;
+  overflow:hidden;
+  border-radius:999px;
+  background:rgba(255,255,255,.055);
+}
+.progress>div{
+  height:100%;
+  width:0;
+  border-radius:inherit;
+  background:linear-gradient(90deg,#78a7ff,#9d8eff);
+  transition:width .34s var(--ease);
+}
+.control-wrap{position:relative;z-index:3;padding:12px 14px 14px}
+.control-bar{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  gap:12px;
+  min-height:70px;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:22px;
+  background:var(--glass);
+  -webkit-backdrop-filter:blur(28px) saturate(155%);
+  backdrop-filter:blur(28px) saturate(155%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 14px 34px rgba(0,0,0,.18);
+}
+.control-left,.control-center,.control-right{display:flex;align-items:center;gap:8px}
+.control-center{justify-content:center}
+.control-right{justify-content:flex-end}
+.icon-btn,.play-btn{
+  display:grid;
+  place-items:center;
+  border:1px solid var(--line);
+  cursor:pointer;
+  transition:transform .17s ease,background .17s ease,border-color .17s ease,opacity .17s ease;
+}
+.icon-btn{
+  width:44px;height:44px;padding:0;border-radius:50%;
+  background:rgba(255,255,255,.055);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+}
+.icon-btn:hover{background:rgba(255,255,255,.085);border-color:var(--line-2)}
+.icon-btn:active,.play-btn:active{transform:scale(.95)}
+.play-btn{
+  width:50px;height:50px;padding:0;border-radius:50%;
+  color:#07101d;background:#edf3ff;border-color:rgba(255,255,255,.22);
+  box-shadow:0 7px 18px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.7);
+}
+.icon-btn svg,.play-btn svg{width:18px;height:18px;display:block}
+button:disabled{opacity:.32;cursor:default;transform:none!important}
+.step-count{
+  min-width:70px;
+  color:var(--muted);
+  font-size:11px;
+  font-variant-numeric:tabular-nums;
+}
+.speed{
+  display:flex;align-items:center;gap:8px;
+  color:var(--muted);font-size:11px;
+}
+.speed input{width:90px;accent-color:#dce8ff}
+.shortcuts{display:flex;gap:4px}
+kbd{
+  min-width:24px;height:24px;padding:0 7px;
+  display:inline-flex;align-items:center;justify-content:center;
+  border:1px solid rgba(255,255,255,.105);
+  border-radius:8px;
+  color:#aeb7c7;background:rgba(255,255,255,.055);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+  font:650 10px/1 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
+}
+@keyframes enter{
+  from{opacity:0;transform:translateY(12px) scale(.995)}
+  to{opacity:1;transform:none}
+}
+@keyframes sheen{
+  from{opacity:0;transform:translateX(-48%)}
+  40%{opacity:1}
+  to{opacity:0;transform:translateX(48%)}
+}
+@keyframes pulse{
+  0%,100%{opacity:.65}
+  50%{opacity:1}
+}
+@media(max-width:920px){
+  .topbar{align-items:flex-start;flex-direction:column}
+  .selectors{width:100%;justify-content:flex-start}
+  .main-grid{grid-template-columns:1fr}
+  .visual-panel{border-right:0;border-bottom:1px solid var(--line)}
+  .code-panel{min-height:360px}
+  .code-scroll{max-height:390px}
+}
+@media(max-width:620px){
+  .app{width:min(100% - 18px,1220px);padding-top:16px}
+  .brand p{display:none}
+  .selectors{gap:6px}
+  .segmented{width:100%}
+  .segmented button{flex:1;padding:0 8px}
+  .scene-head{padding:14px 14px 4px}
+  .scene-wrap{min-height:350px}
+  .scene{min-height:350px}
+  .step-readout{align-items:flex-start;flex-direction:column;padding:6px 14px 12px}
+  .state-badges{justify-content:flex-start}
+  .control-wrap{padding:10px 8px 8px}
+  .control-bar{padding:8px;gap:6px;border-radius:18px}
+  .control-left .shortcuts{display:none}
+  .control-right .speed span{display:none}
+  .control-right .speed input{width:66px}
+  .step-count{min-width:54px;font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.001ms!important;
+    scroll-behavior:auto!important;
+  }
+}
+</style>
+</head>
+<body>
+<main class="app" id="app">
+  <header class="topbar">
+    <div class="brand">
+      <h1>经典同步问题</h1>
+      <p>正确同步 · 错误同步 · 伪代码逐行联动</p>
+    </div>
+
+    <div class="selectors">
+      <div class="segmented" role="tablist" aria-label="选择同步问题">
+        <button type="button" role="tab" data-problem="rw" aria-selected="true">读者写者</button>
+        <button type="button" role="tab" data-problem="pc" aria-selected="false">生产者消费者</button>
+        <button type="button" role="tab" data-problem="dp" aria-selected="false">哲学家</button>
+      </div>
+      <div class="segmented mode" role="tablist" aria-label="选择正确或错误演示">
+        <button type="button" role="tab" data-mode="correct" aria-selected="true">正确</button>
+        <button type="button" role="tab" data-mode="error" aria-selected="false">错误</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="workspace">
+    <div class="main-grid">
+      <section class="visual-panel">
+        <div class="scene-head">
+          <div class="scene-title">
+            <div class="eyebrow" id="sceneEyebrow">READERS · WRITERS</div>
+            <h2 id="sceneTitle">读者优先同步</h2>
+          </div>
+          <div class="status-pill good" id="statusPill">安全</div>
+        </div>
+
+        <div class="scene-wrap">
+          <svg id="scene" class="scene" viewBox="0 0 760 410" role="img" aria-label="操作系统同步问题动画">
+            <defs>
+              <marker id="arrowHead" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L7,3 z" fill="rgba(120,167,255,.72)"></path>
+              </marker>
+            </defs>
+            <g id="sceneLayer"></g>
+          </svg>
+        </div>
+
+        <div class="step-readout">
+          <div class="step-copy">
+            <div class="eyebrow" id="stepEyebrow">STEP 1</div>
+            <h3 id="stepTitle">准备</h3>
+            <p id="stepMessage" aria-live="polite"></p>
+          </div>
+          <div class="state-badges" id="stateBadges"></div>
+        </div>
+      </section>
+
+      <aside class="code-panel" aria-label="同步伪代码">
+        <div class="code-head">
+          <h2>伪代码</h2>
+          <span id="codeHint">当前执行行高亮</span>
+        </div>
+        <div class="code-scroll" id="codeScroll">
+          <pre class="code-block" id="codeBlock"></pre>
+        </div>
+        <div class="code-note" id="codeNote"></div>
+      </aside>
+    </div>
+
+    <div class="progress" aria-hidden="true"><div id="progressBar"></div></div>
+
+    <div class="control-wrap">
+      <div class="control-bar">
+        <div class="control-left">
+          <button type="button" class="icon-btn" id="resetBtn" aria-label="重置" aria-keyshortcuts="R" title="重置（R）">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M4.8 8.1A8 8 0 1 1 4 14m.8-5.9V4.4m0 3.7h3.7"/></svg>
+          </button>
+          <div class="shortcuts" aria-label="键盘快捷键">
+            <kbd>←</kbd><kbd>→</kbd><kbd>Space</kbd>
+          </div>
+        </div>
+
+        <div class="control-center">
+          <button type="button" class="icon-btn" id="prevBtn" aria-label="上一步" aria-keyshortcuts="ArrowLeft" title="上一步（←）">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M14.8 6.5 9.3 12l5.5 5.5"/></svg>
+          </button>
+          <button type="button" class="play-btn" id="playBtn" aria-label="播放" aria-keyshortcuts="Space" title="播放 / 暂停（Space）">
+            <svg id="playIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.4 6.7c0-1 1.1-1.6 1.9-1l7.9 5.1c.8.5.8 1.7 0 2.2l-7.9 5.2c-.8.5-1.9-.1-1.9-1V6.7Z" fill="currentColor"/></svg>
+          </button>
+          <button type="button" class="icon-btn" id="nextBtn" aria-label="下一步" aria-keyshortcuts="ArrowRight" title="下一步（→）">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="m9.2 6.5 5.5 5.5-5.5 5.5"/></svg>
+          </button>
+        </div>
+
+        <div class="control-right">
+          <span class="step-count" id="stepCount">1 / 1</span>
+          <label class="speed">
+            <span>速度</span>
+            <input id="speedRange" type="range" min="1" max="5" value="3" step="1" aria-label="播放速度">
+          </label>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  "use strict";
+  const $ = id => document.getElementById(id);
+  const NS = "http://www.w3.org/2000/svg";
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const speedMs = {1:1500,2:1120,3:820,4:540,5:340};
+
+  const els = {
+    scene:$("scene"), layer:$("sceneLayer"),
+    sceneEyebrow:$("sceneEyebrow"), sceneTitle:$("sceneTitle"), status:$("statusPill"),
+    stepEyebrow:$("stepEyebrow"), stepTitle:$("stepTitle"), stepMessage:$("stepMessage"),
+    badges:$("stateBadges"), code:$("codeBlock"), codeScroll:$("codeScroll"),
+    codeNote:$("codeNote"), codeHint:$("codeHint"),
+    progress:$("progressBar"), prev:$("prevBtn"), next:$("nextBtn"), reset:$("resetBtn"),
+    play:$("playBtn"), playIcon:$("playIcon"), speed:$("speedRange"), count:$("stepCount")
+  };
+
+  let problem="rw";
+  let mode="correct";
+  let current=0;
+  let playing=false;
+  let timer=null;
+
+  const pseudocode = {
+    rw:{
+      correct:{
+        note:"首个读者锁住 rw，最后一个读者释放 rw；写者独占 rw。",
+        lines:[
+          {t:"// Reader",k:"section"},
+          {t:"wait(mutex)"},
+          {t:"read_count++"},
+          {t:"if read_count == 1: wait(rw)"},
+          {t:"signal(mutex)"},
+          {t:"READ"},
+          {t:"wait(mutex)"},
+          {t:"read_count--"},
+          {t:"if read_count == 0: signal(rw)"},
+          {t:"signal(mutex)"},
+          {t:""},
+          {t:"// Writer",k:"section"},
+          {t:"wait(rw)"},
+          {t:"WRITE"},
+          {t:"signal(rw)"}
+        ]
+      },
+      error:{
+        note:"错误点：读者只维护 read_count，却没有让首个读者 wait(rw)，因此写者仍可进入临界区。",
+        lines:[
+          {t:"// Reader  ❌",k:"section"},
+          {t:"wait(mutex)"},
+          {t:"read_count++"},
+          {t:"// missing: if first reader wait(rw)",k:"comment",bad:true},
+          {t:"signal(mutex)"},
+          {t:"READ",bad:true},
+          {t:""},
+          {t:"// Writer",k:"section"},
+          {t:"wait(rw)"},
+          {t:"WRITE",bad:true},
+          {t:"signal(rw)"}
+        ]
+      }
+    },
+    pc:{
+      correct:{
+        note:"固定顺序：先等待资源计数信号量，再进入 mutex 保护的缓冲区临界区。",
+        lines:[
+          {t:"// Producer",k:"section"},
+          {t:"wait(empty)"},
+          {t:"wait(mutex)"},
+          {t:"put(item)"},
+          {t:"signal(mutex)"},
+          {t:"signal(full)"},
+          {t:""},
+          {t:"// Consumer",k:"section"},
+          {t:"wait(full)"},
+          {t:"wait(mutex)"},
+          {t:"item = get()"},
+          {t:"signal(mutex)"},
+          {t:"signal(empty)"}
+        ]
+      },
+      error:{
+        note:"错误点：先拿 mutex 再等待 empty。缓冲区满时，生产者会持有 mutex 阻塞，消费者也无法进入，形成死锁。",
+        lines:[
+          {t:"// Producer  ❌",k:"section"},
+          {t:"wait(mutex)",bad:true},
+          {t:"wait(empty)",bad:true},
+          {t:"put(item)"},
+          {t:"signal(mutex)"},
+          {t:"signal(full)"},
+          {t:""},
+          {t:"// Consumer",k:"section"},
+          {t:"wait(full)"},
+          {t:"wait(mutex)",bad:true},
+          {t:"item = get()"},
+          {t:"signal(mutex)"},
+          {t:"signal(empty)"}
+        ]
+      }
+    },
+    dp:{
+      correct:{
+        note:"加入 room = 4：最多允许 4 位哲学家同时竞争叉子，破坏“循环等待”条件。",
+        lines:[
+          {t:"// Philosopher i",k:"section"},
+          {t:"wait(room)"},
+          {t:"wait(left_fork[i])"},
+          {t:"wait(right_fork[i])"},
+          {t:"EAT"},
+          {t:"signal(right_fork[i])"},
+          {t:"signal(left_fork[i])"},
+          {t:"signal(room)"}
+        ]
+      },
+      error:{
+        note:"错误点：所有哲学家都先拿左叉再等右叉，可同时形成环形等待，导致死锁。",
+        lines:[
+          {t:"// Philosopher i  ❌",k:"section"},
+          {t:"wait(left_fork[i])",bad:true},
+          {t:"wait(right_fork[i])",bad:true},
+          {t:"EAT"},
+          {t:"signal(right_fork[i])"},
+          {t:"signal(left_fork[i])"}
+        ]
+      }
+    }
+  };
+
+  const steps = {
+    rw:{
+      correct:[
+        {line:1,title:"R1 进入",msg:"R1 获取 mutex，准备更新读者计数。",s:{rc:0,rw:null,mutex:"R1",r1:"active",r2:"idle",w:"idle"}},
+        {line:2,title:"读者计数 +1",msg:"read_count 由 0 变为 1。",s:{rc:1,rw:null,mutex:"R1",r1:"active",r2:"idle",w:"idle"}},
+        {line:3,title:"首个读者锁住 rw",msg:"R1 是首个读者，因此获取 rw，阻止写者进入。",s:{rc:1,rw:"readers",mutex:"R1",r1:"active",r2:"idle",w:"idle"}},
+        {line:4,title:"释放 mutex",msg:"R1 释放 mutex，其他读者可以继续登记。",s:{rc:1,rw:"readers",mutex:null,r1:"active",r2:"idle",w:"idle"}},
+        {line:5,title:"R1 正在读",msg:"R1 访问共享数据。",s:{rc:1,rw:"readers",mutex:null,r1:"reading",r2:"idle",w:"idle"}},
+        {line:2,title:"R2 加入",msg:"R2 登记后 read_count = 2；rw 已由读者集合持有。",s:{rc:2,rw:"readers",mutex:null,r1:"reading",r2:"reading",w:"idle"}},
+        {line:12,title:"写者到达",msg:"W 执行 wait(rw)，但 rw 被读者持有，因此阻塞。",s:{rc:2,rw:"readers",mutex:null,r1:"reading",r2:"reading",w:"wait"}},
+        {line:7,title:"R1 离开",msg:"R1 完成读取，read_count 减为 1。",s:{rc:1,rw:"readers",mutex:"R1",r1:"done",r2:"reading",w:"wait"}},
+        {line:8,title:"最后一个读者释放 rw",msg:"R2 离开后 read_count = 0，释放 rw。",s:{rc:0,rw:null,mutex:null,r1:"done",r2:"done",w:"wait"}},
+        {line:12,title:"写者获得 rw",msg:"W 解除阻塞并独占共享数据。",s:{rc:0,rw:"writer",mutex:null,r1:"done",r2:"done",w:"active"}},
+        {line:13,title:"安全写入",msg:"此时没有读者访问共享数据，W 可以写入。",s:{rc:0,rw:"writer",mutex:null,r1:"done",r2:"done",w:"writing"}},
+        {line:14,title:"写者离开",msg:"W 释放 rw，本轮同步完成。",s:{rc:0,rw:null,mutex:null,r1:"done",r2:"done",w:"done"}}
+      ],
+      error:[
+        {line:1,title:"R1 进入",msg:"R1 仍然用 mutex 保护 read_count。",s:{rc:0,rw:null,mutex:"R1",r1:"active",r2:"idle",w:"idle"}},
+        {line:2,title:"读者计数 +1",msg:"read_count = 1。",s:{rc:1,rw:null,mutex:"R1",r1:"active",r2:"idle",w:"idle"}},
+        {line:3,title:"关键同步缺失",msg:"错误代码没有让首个读者 wait(rw)。",s:{rc:1,rw:null,mutex:"R1",r1:"active",r2:"idle",w:"idle",bad:true}},
+        {line:5,title:"R1 正在读",msg:"R1 已开始访问共享数据，但 rw 仍是空闲状态。",s:{rc:1,rw:null,mutex:null,r1:"reading",r2:"idle",w:"idle",bad:true}},
+        {line:8,title:"写者获得 rw",msg:"W 看到 rw 空闲，因此成功进入。",s:{rc:1,rw:"writer",mutex:null,r1:"reading",r2:"idle",w:"active",bad:true}},
+        {line:9,title:"发生读写冲突",msg:"R1 正在读，同时 W 正在写：共享数据被并发读写。",s:{rc:1,rw:"writer",mutex:null,r1:"reading",r2:"idle",w:"writing",bad:true,violation:true}}
+      ]
+    },
+
+    pc:{
+      correct:[
+        {line:1,title:"等待空槽",msg:"Producer 执行 wait(empty)，empty 从 3 变为 2。",s:{buffer:[],empty:2,full:0,mutex:null,p:"active",c:"idle",item:"A"}},
+        {line:2,title:"进入临界区",msg:"Producer 获取 mutex，独占缓冲区。",s:{buffer:[],empty:2,full:0,mutex:"P",p:"active",c:"idle",item:"A"}},
+        {line:3,title:"放入 A",msg:"A 被放入第一个缓冲槽。",s:{buffer:["A"],empty:2,full:0,mutex:"P",p:"put",c:"idle",item:null}},
+        {line:4,title:"释放 mutex",msg:"缓冲区临界区结束。",s:{buffer:["A"],empty:2,full:0,mutex:null,p:"active",c:"idle"}},
+        {line:5,title:"full +1",msg:"Producer signal(full)，full = 1。",s:{buffer:["A"],empty:2,full:1,mutex:null,p:"done",c:"idle"}},
+        {line:8,title:"消费者等待产品",msg:"Consumer wait(full)，full 从 1 变为 0。",s:{buffer:["A"],empty:2,full:0,mutex:null,p:"done",c:"active"}},
+        {line:9,title:"消费者进入临界区",msg:"Consumer 获取 mutex。",s:{buffer:["A"],empty:2,full:0,mutex:"C",p:"done",c:"active"}},
+        {line:10,title:"取出 A",msg:"Consumer 从缓冲区取出 A。",s:{buffer:[],empty:2,full:0,mutex:"C",p:"done",c:"get",item:"A"}},
+        {line:11,title:"释放 mutex",msg:"Consumer 离开缓冲区临界区。",s:{buffer:[],empty:2,full:0,mutex:null,p:"done",c:"active",item:"A"}},
+        {line:12,title:"empty +1",msg:"Consumer signal(empty)，empty 恢复为 3。",s:{buffer:[],empty:3,full:0,mutex:null,p:"done",c:"done",item:"A"}}
+      ],
+      error:[
+        {line:0,title:"缓冲区已满",msg:"初始状态：3 个缓冲槽均有数据，empty = 0，full = 3。",s:{buffer:["A","B","C"],empty:0,full:3,mutex:null,p:"idle",c:"idle"}},
+        {line:1,title:"生产者先拿 mutex",msg:"错误顺序使 Producer 先进入缓冲区临界区。",s:{buffer:["A","B","C"],empty:0,full:3,mutex:"P",p:"active",c:"idle",bad:true}},
+        {line:2,title:"Producer 阻塞",msg:"empty = 0，Producer 在 wait(empty) 阻塞，但仍持有 mutex。",s:{buffer:["A","B","C"],empty:0,full:3,mutex:"P",p:"wait",c:"idle",bad:true}},
+        {line:8,title:"Consumer 可消费",msg:"full > 0，因此 Consumer 通过 wait(full)。",s:{buffer:["A","B","C"],empty:0,full:2,mutex:"P",p:"wait",c:"active",bad:true}},
+        {line:9,title:"Consumer 也被阻塞",msg:"Consumer 执行 wait(mutex)，但 mutex 被阻塞中的 Producer 持有。",s:{buffer:["A","B","C"],empty:0,full:2,mutex:"P",p:"wait",c:"wait",bad:true}},
+        {line:9,title:"死锁",msg:"Producer 等 empty；Consumer 能释放 empty，却在等 mutex。双方无法继续。",s:{buffer:["A","B","C"],empty:0,full:2,mutex:"P",p:"wait",c:"wait",bad:true,violation:true}}
+      ]
+    },
+
+    dp:{
+      correct:[
+        {line:0,title:"五位哲学家就座",msg:"room 初值为 4。",s:{room:4,p:["think","think","think","think","think"],forks:[null,null,null,null,null]}},
+        {line:1,title:"P0 进入 room",msg:"P0 通过 wait(room)，room = 3。",s:{room:3,p:["hungry","think","think","think","think"],forks:[null,null,null,null,null]}},
+        {line:1,title:"P1、P2、P3 进入",msg:"最多 4 位哲学家进入竞争区，room = 0；P4 被挡在外面。",s:{room:0,p:["hungry","hungry","hungry","hungry","wait"],forks:[null,null,null,null,null]}},
+        {line:2,title:"四人先拿左叉",msg:"P0～P3 分别拿到 F0～F3，F4 仍空闲。",s:{room:0,p:["hungry","hungry","hungry","hungry","wait"],forks:[0,1,2,3,null]}},
+        {line:3,title:"P3 拿到右叉",msg:"P3 的右叉 F4 空闲，因此能继续。",s:{room:0,p:["hungry","hungry","hungry","active","wait"],forks:[0,1,2,3,3]}},
+        {line:4,title:"P3 进餐",msg:"至少有一位哲学家可以完成进餐，不会形成环形等待。",s:{room:0,p:["hungry","hungry","hungry","eat","wait"],forks:[0,1,2,3,3]}},
+        {line:5,title:"P3 放下右叉",msg:"释放 F4。",s:{room:0,p:["hungry","hungry","hungry","done","wait"],forks:[0,1,2,3,null]}},
+        {line:6,title:"P3 放下左叉",msg:"释放 F3，其他哲学家获得继续推进的机会。",s:{room:0,p:["hungry","hungry","active","done","wait"],forks:[0,1,2,null,null]}},
+        {line:7,title:"P3 离开 room",msg:"signal(room)，room = 1；P4 随后可以进入。",s:{room:1,p:["hungry","hungry","active","done","hungry"],forks:[0,1,2,null,null]}}
+      ],
+      error:[
+        {line:0,title:"朴素方案",msg:"所有哲学家都执行“先左叉，再右叉”。",s:{p:["hungry","hungry","hungry","hungry","hungry"],forks:[null,null,null,null,null]}},
+        {line:1,title:"P0 拿左叉",msg:"P0 获取 F0。",s:{p:["hungry","hungry","hungry","hungry","hungry"],forks:[0,null,null,null,null],bad:true}},
+        {line:1,title:"所有人都拿到左叉",msg:"P0～P4 分别持有 F0～F4。",s:{p:["hungry","hungry","hungry","hungry","hungry"],forks:[0,1,2,3,4],bad:true}},
+        {line:2,title:"所有人等待右叉",msg:"每个人的右叉都被相邻哲学家持有。",s:{p:["wait","wait","wait","wait","wait"],forks:[0,1,2,3,4],bad:true}},
+        {line:2,title:"环形等待形成",msg:"P0→P1→P2→P3→P4→P0，循环等待成立。",s:{p:["wait","wait","wait","wait","wait"],forks:[0,1,2,3,4],bad:true,violation:true}}
+      ]
+    }
+  };
+
+  const meta={
+    rw:{eyebrow:"READERS · WRITERS",correct:"读者优先同步",error:"缺失 rw 保护"},
+    pc:{eyebrow:"PRODUCER · CONSUMER",correct:"有界缓冲区同步",error:"错误的 wait 顺序"},
+    dp:{eyebrow:"DINING PHILOSOPHERS",correct:"room = N − 1",error:"循环等待死锁"}
+  };
+
+  function svg(name,attrs={}){
+    const n=document.createElementNS(NS,name);
+    Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,String(v)));
+    return n;
+  }
+  function text(x,y,content,cls="label"){
+    const t=svg("text",{x,y,class:cls});
+    t.textContent=content;
+    return t;
+  }
+  function group(transform=""){
+    return svg("g",transform?{transform}:{});
+  }
+  function setTransform(node,transform){
+    if(reducedMotion){
+      node.style.transition="none";
+    }
+    node.style.transform=transform;
+  }
+  function addAgent(parent,x,y,name,status,label2=""){
+    const g=group(`translate(${x} ${y})`);
+    g.classList.add("moving");
+    let cls="agent-shell";
+    if(status==="reading"||status==="writing"||status==="eat"||status==="put"||status==="get"||status==="active") cls+=" active";
+    if(status==="wait") cls+=" wait";
+    if(status==="bad") cls+=" bad";
+    if(status==="done") cls+=" good";
+    g.appendChild(svg("rect",{x:-44,y:-30,width:88,height:60,rx:18,class:cls}));
+    g.appendChild(text(0,-2,name,"label"));
+    g.appendChild(text(0,15,label2 || statusLabel(status),"sub"));
+    parent.appendChild(g);
+    return g;
+  }
+  function statusLabel(s){
+    return ({
+      idle:"空闲",active:"执行",reading:"读取",writing:"写入",wait:"阻塞",
+      done:"完成",put:"写缓冲区",get:"读缓冲区",think:"思考",hungry:"等待资源",eat:"进餐"
+    })[s]||s||"";
+  }
+
+  function renderRW(st){
+    const g=els.layer;
+    g.innerHTML="";
+
+    g.appendChild(svg("line",{x1:380,y1:70,x2:380,y2:342,class:"soft-line"}));
+
+    const dataBox=svg("rect",{x:285,y:138,width:190,height:120,rx:26,class:`resource ${st.violation?"bad":st.rw?"warn":""}`});
+    g.appendChild(dataBox);
+    g.appendChild(text(380,174,"共享数据","label"));
+    g.appendChild(text(380,198,st.rw==="writer"?"writer 独占":st.rw==="readers"?"readers 持有 rw":"rw 空闲","sub"));
+
+    const rcG=group("translate(380 230)");
+    rcG.appendChild(text(0,-4,String(st.rc??0),"counter"));
+    rcG.appendChild(text(0,17,"read_count","tiny"));
+    g.appendChild(rcG);
+
+    const mutex=svg("rect",{x:324,y:282,width:112,height:42,rx:13,class:`resource ${st.mutex?"warn":""}`});
+    g.appendChild(mutex);
+    g.appendChild(text(380,301,"mutex","label"));
+    g.appendChild(text(380,317,st.mutex?`held by ${st.mutex}`:"free","tiny"));
+
+    const r1=addAgent(g,116,122,"R1",st.r1);
+    const r2=addAgent(g,116,270,"R2",st.r2);
+    const w=addAgent(g,644,196,"W",st.w);
+
+    if(st.r1==="reading") setTransform(r1,"translate(95px,38px)");
+    if(st.r2==="reading") setTransform(r2,"translate(95px,-36px)");
+    if(st.w==="writing"||st.w==="active") setTransform(w,"translate(-103px,0)");
+
+    if(st.w==="wait"){
+      g.appendChild(svg("path",{d:"M585 196 C540 196 520 196 492 196",class:"arrow","marker-end":"url(#arrowHead)"}));
+    }
+    if(st.violation){
+      g.appendChild(svg("circle",{cx:380,cy:198,r:88,class:"warning-ring pulse"}));
+      g.appendChild(text(380,90,"READ / WRITE CONFLICT","sub"));
+    }
+  }
+
+  function renderPC(st){
+    const g=els.layer;
+    g.innerHTML="";
+
+    const prod=addAgent(g,110,200,"Producer",st.p);
+    const cons=addAgent(g,650,200,"Consumer",st.c);
+
+    if(st.p==="put"||st.p==="active") setTransform(prod,"translate(60px,0)");
+    if(st.c==="get"||st.c==="active") setTransform(cons,"translate(-60px,0)");
+
+    const startX=278;
+    for(let i=0;i<3;i++){
+      const x=startX+i*92;
+      const filled=st.buffer?.[i];
+      const r=svg("rect",{x,y:150,width:72,height:100,rx:18,class:`resource ${filled?"good":""}`});
+      g.appendChild(r);
+      g.appendChild(text(x+36,274,`slot ${i}`,"tiny"));
+      if(filled){
+        const item=svg("circle",{cx:x+36,cy:200,r:20,class:"token good moving"});
+        g.appendChild(item);
+        g.appendChild(text(x+36,204,filled,"label"));
+      }
+    }
+
+    if(st.item){
+      const fromProducer=st.p==="active";
+      const cx=fromProducer?185:575;
+      const item=svg("circle",{cx,cy:200,r:20,class:"token warn moving"});
+      g.appendChild(item);
+      g.appendChild(text(cx,204,st.item,"label"));
+    }
+
+    const counters=[
+      {x:315,k:"empty",v:st.empty},
+      {x:380,k:"full",v:st.full},
+      {x:445,k:"mutex",v:st.mutex||"free"}
+    ];
+    counters.forEach(c=>{
+      g.appendChild(svg("rect",{x:c.x-28,y:92,width:56,height:38,rx:12,class:`resource ${c.k==="mutex"&&st.mutex?"warn":""}`}));
+      g.appendChild(text(c.x,108,String(c.v),"label"));
+      g.appendChild(text(c.x,122,c.k,"tiny"));
+    });
+
+    if(st.p==="wait"){
+      g.appendChild(svg("path",{d:"M175 170 C210 125 235 112 280 108",class:"arrow","marker-end":"url(#arrowHead)"}));
+    }
+    if(st.c==="wait"){
+      g.appendChild(svg("path",{d:"M585 170 C555 120 520 110 476 110",class:"arrow","marker-end":"url(#arrowHead)"}));
+    }
+    if(st.violation){
+      g.appendChild(svg("rect",{x:258,y:74,width:244,height:224,rx:34,class:"warning-ring pulse"}));
+      g.appendChild(text(380,58,"DEADLOCK","sub"));
+    }
+  }
+
+  function renderDP(st){
+    const g=els.layer;
+    g.innerHTML="";
+    const cx=380,cy=208,R=132,tableR=88;
+
+    g.appendChild(svg("circle",{cx,cy,r:tableR,class:"resource"}));
+    g.appendChild(text(cx,cy-4,"TABLE","label"));
+    if(st.room!=null) g.appendChild(text(cx,cy+17,`room = ${st.room}`,"sub"));
+
+    const positions=[];
+    for(let i=0;i<5;i++){
+      const a=(-90+i*72)*Math.PI/180;
+      positions.push({x:cx+Math.cos(a)*R,y:cy+Math.sin(a)*R,a});
+    }
+
+    // forks lie between philosophers
+    for(let i=0;i<5;i++){
+      const a=(-54+i*72)*Math.PI/180;
+      const x1=cx+Math.cos(a)*72,y1=cy+Math.sin(a)*72;
+      const x2=cx+Math.cos(a)*102,y2=cy+Math.sin(a)*102;
+      const owner=st.forks?.[i];
+      let cls="fork";
+      if(owner!=null) cls+=" held";
+      if(st.violation) cls+=" blocked";
+      g.appendChild(svg("line",{x1,y1,x2,y2,class:cls}));
+      g.appendChild(text(cx+Math.cos(a)*114,cy+Math.sin(a)*114,`F${i}`,"tiny"));
+    }
+
+    positions.forEach((p,i)=>{
+      let status=st.p?.[i]||"think";
+      let cls="agent-shell";
+      if(status==="eat"||status==="active") cls+=" active";
+      if(status==="wait") cls+=" wait";
+      if(status==="done") cls+=" good";
+      const grp=group(`translate(${p.x} ${p.y})`);
+      grp.classList.add("moving");
+      grp.appendChild(svg("circle",{cx:0,cy:0,r:34,class:cls}));
+      grp.appendChild(text(0,-3,`P${i}`,"label"));
+      grp.appendChild(text(0,13,statusLabel(status),"tiny"));
+      if(status==="eat") setTransform(grp,`translate(${(cx-p.x)*.09}px,${(cy-p.y)*.09}px) scale(1.04)`);
+      g.appendChild(grp);
+    });
+
+    if(st.violation){
+      g.appendChild(svg("circle",{cx,cy,r:158,class:"warning-ring pulse"}));
+      const path=svg("path",{d:"M380 43 A165 165 0 1 1 379.9 43",class:"arrow","marker-end":"url(#arrowHead)"});
+      g.appendChild(path);
+      g.appendChild(text(cx,cy+5,"CIRCULAR WAIT","sub"));
+    }else if(st.room!=null){
+      g.appendChild(svg("circle",{cx,cy,r:158,class:"ok-ring"}));
+    }
+  }
+
+  function currentSteps(){return steps[problem][mode]}
+  function currentStep(){return currentSteps()[current]}
+
+  function renderCode(){
+    const spec=pseudocode[problem][mode];
+    els.code.innerHTML="";
+    spec.lines.forEach((line,i)=>{
+      const div=document.createElement("span");
+      div.className="code-line";
+      if(line.k) div.classList.add(line.k);
+      if(line.bad) div.classList.add("danger");
+      if(i===currentStep().line) div.classList.add("active");
+      else if(Math.abs(i-currentStep().line)<=1) div.classList.add("near");
+
+      const no=document.createElement("span");
+      no.className="no";
+      no.textContent=line.k==="section"?"":String(i+1).padStart(2,"0");
+      const tx=document.createElement("span");
+      tx.className="txt";
+      tx.textContent=line.t || " ";
+      div.append(no,tx);
+      els.code.appendChild(div);
+    });
+    els.codeNote.innerHTML=`<strong>${mode==="correct"?"正确要点":"错误原因"}：</strong>${spec.note}`;
+
+    requestAnimationFrame(()=>{
+      const active=els.code.querySelector(".active");
+      if(active) active.scrollIntoView({block:"nearest",behavior:reducedMotion?"auto":"smooth"});
+    });
+  }
+
+  function renderBadges(st){
+    els.badges.innerHTML="";
+    let data=[];
+    if(problem==="rw"){
+      data=[
+        ["read_count",st.rc??0],
+        ["rw",st.rw||"free"],
+        ["mutex",st.mutex||"free"]
+      ];
+    }else if(problem==="pc"){
+      data=[
+        ["empty",st.empty],
+        ["full",st.full],
+        ["mutex",st.mutex||"free"]
+      ];
+    }else{
+      data=[
+        ["room",st.room==null?"—":st.room],
+        ["held forks",(st.forks||[]).filter(v=>v!=null).length]
+      ];
+    }
+    data.forEach(([k,v])=>{
+      const d=document.createElement("span");
+      d.className="state-badge";
+      d.innerHTML=`${k} <strong>${v}</strong>`;
+      els.badges.appendChild(d);
+    });
+  }
+
+  function render(){
+    const step=currentStep();
+    const st=step.s;
+
+    els.sceneEyebrow.textContent=meta[problem].eyebrow;
+    els.sceneTitle.textContent=meta[problem][mode];
+    els.stepEyebrow.textContent=`STEP ${current+1}`;
+    els.stepTitle.textContent=step.title;
+    els.stepMessage.textContent=step.msg;
+    els.count.textContent=`${current+1} / ${currentSteps().length}`;
+    els.progress.style.width=`${((current+1)/currentSteps().length)*100}%`;
+
+    const isBad=!!st.violation;
+    els.status.className=`status-pill ${isBad?"bad":mode==="correct"?"good":""}`;
+    els.status.textContent=isBad ? (problem==="rw"?"冲突":problem==="pc"?"死锁":"死锁") : (mode==="correct"?"安全":"错误路径");
+
+    if(problem==="rw") renderRW(st);
+    else if(problem==="pc") renderPC(st);
+    else renderDP(st);
+
+    renderBadges(st);
+    renderCode();
+    updateControls();
+  }
+
+  function updateControls(){
+    els.prev.disabled=current===0;
+    els.reset.disabled=current===0 && !playing;
+    els.next.disabled=current===currentSteps().length-1;
+    els.play.setAttribute("aria-label",playing?"暂停":"播放");
+    els.play.title=playing?"暂停（Space）":"播放（Space）";
+    els.playIcon.innerHTML=playing
+      ? '<path d="M7.7 6.5h3v11h-3zm5.6 0h3v11h-3z" fill="currentColor"/>'
+      : '<path d="M8.4 6.7c0-1 1.1-1.6 1.9-1l7.9 5.1c.8.5.8 1.7 0 2.2l-7.9 5.2c-.8.5-1.9-.1-1.9-1V6.7Z" fill="currentColor"/>';
+  }
+
+  function pause(){
+    playing=false;
+    clearTimeout(timer);
+    timer=null;
+    updateControls();
+  }
+
+  function schedule(){
+    clearTimeout(timer);
+    if(!playing) return;
+    timer=setTimeout(()=>{
+      if(current>=currentSteps().length-1){
+        pause();
+        return;
+      }
+      current++;
+      render();
+      schedule();
+    },speedMs[els.speed.value]);
+  }
+
+  function togglePlay(){
+    if(playing){pause();return}
+    if(current>=currentSteps().length-1) current=0;
+    playing=true;
+    render();
+    schedule();
+  }
+
+  function go(delta){
+    pause();
+    current=Math.max(0,Math.min(currentSteps().length-1,current+delta));
+    render();
+  }
+
+  function reset(){
+    pause();
+    current=0;
+    render();
+  }
+
+  function setProblem(next){
+    if(next===problem) return;
+    pause();
+    problem=next;
+    current=0;
+    document.querySelectorAll("[data-problem]").forEach(btn=>{
+      btn.setAttribute("aria-selected",String(btn.dataset.problem===problem));
+    });
+    render();
+  }
+
+  function setMode(next){
+    if(next===mode) return;
+    pause();
+    mode=next;
+    current=0;
+    document.querySelectorAll("[data-mode]").forEach(btn=>{
+      btn.setAttribute("aria-selected",String(btn.dataset.mode===mode));
+    });
+    render();
+  }
+
+  document.querySelectorAll("[data-problem]").forEach(btn=>{
+    btn.addEventListener("click",()=>setProblem(btn.dataset.problem));
+  });
+  document.querySelectorAll("[data-mode]").forEach(btn=>{
+    btn.addEventListener("click",()=>setMode(btn.dataset.mode));
+  });
+
+  els.prev.addEventListener("click",()=>go(-1));
+  els.next.addEventListener("click",()=>go(1));
+  els.reset.addEventListener("click",reset);
+  els.play.addEventListener("click",togglePlay);
+  els.speed.addEventListener("input",()=>{if(playing)schedule()});
+
+  document.addEventListener("keydown",e=>{
+    if(e.defaultPrevented||e.metaKey||e.ctrlKey||e.altKey) return;
+    const tag=e.target?.tagName?.toLowerCase();
+    if(tag==="input"||tag==="textarea"||tag==="select"||e.target?.isContentEditable) return;
+    if(e.code==="Space"){e.preventDefault();togglePlay()}
+    else if(e.code==="ArrowLeft"){e.preventDefault();go(-1)}
+    else if(e.code==="ArrowRight"){e.preventDefault();go(1)}
+    else if(e.code==="KeyR"){e.preventDefault();reset()}
+  });
+
+  render();
+})();
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>

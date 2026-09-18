@@ -1,558 +1,194 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>考研408｜普通 KMP 与优化 KMP 对比动画</title>
-  <style>
-    :root{
-      --bg:#f4f7fb; --panel:#fff; --text:#162033; --muted:#667085;
-      --line:#d9e0ea; --blue:#3158d4; --blue-soft:#e8edff;
-      --green:#138a5b; --green-soft:#def7ea; --red:#d92d20;
-      --red-soft:#fee4e2; --amber:#b54708; --amber-soft:#fff0d5;
-      --purple:#7a4fd0; --purple-soft:#f0eaff; --shadow:0 12px 34px rgba(24,39,75,.08);
-      --cell:38px; --gap:5px;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0; min-height:100vh; color:var(--text);
-      font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",system-ui,sans-serif;
-      background:
-        radial-gradient(circle at 5% 0%,#e7edff 0,transparent 28%),
-        radial-gradient(circle at 96% 4%,#e3fbf1 0,transparent 25%),var(--bg);
-    }
-    .page{max-width:1440px;margin:0 auto;padding:26px 18px 48px}
-    .hero{
-      border-radius:22px;padding:26px 30px;color:#fff;
-      background:linear-gradient(130deg,#233b97,#3158d4 53%,#178660);
-      box-shadow:var(--shadow);position:relative;overflow:hidden;
-    }
-    .hero:after{content:"";position:absolute;width:300px;height:300px;border-radius:50%;
-      right:-100px;top:-140px;background:rgba(255,255,255,.12)}
-    .tag{display:inline-block;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.16);
-      font-size:12px;margin-bottom:10px}
-    h1{margin:0 0 7px;font-size:clamp(25px,4vw,38px)}
-    .hero p{margin:0;opacity:.9;line-height:1.7}
-    .panel{
-      background:var(--panel);border:1px solid rgba(217,224,234,.9);border-radius:18px;
-      padding:18px;box-shadow:var(--shadow);margin-top:18px;
-    }
-    .title{display:flex;align-items:center;gap:9px;margin:0 0 14px;font-size:18px}
-    .dot{width:10px;height:10px;border-radius:50%;background:var(--blue)}
-    .config{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end}
-    label{display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px}
-    input[type=text]{
-      width:100%;height:42px;border:1px solid var(--line);border-radius:10px;
-      padding:0 12px;font-size:16px;outline:none;color:var(--text);background:#fff
-    }
-    input[type=text]:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft)}
-    button{
-      border:0;border-radius:10px;height:42px;padding:0 15px;font-family:inherit;
-      font-weight:800;font-size:14px;cursor:pointer;transition:.16s transform,.16s opacity;
-    }
-    button:hover{transform:translateY(-1px)}
-    button:disabled{opacity:.42;cursor:not-allowed;transform:none}
-    .primary{background:var(--blue);color:#fff}
-    .secondary{background:#edf1f6;color:var(--text)}
-    .error{color:var(--red);min-height:20px;margin-top:7px;font-size:13px}
-    .tip{
-      margin-top:11px;padding:11px 13px;border-radius:12px;background:#f8faff;
-      border:1px solid #e2e8f8;color:#475467;font-size:13px;line-height:1.7
-    }
-    .compare-head{
-      display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;margin-bottom:12px
-    }
-    .algo-name{
-      text-align:center;padding:11px;border-radius:12px;font-weight:900;font-size:17px;
-    }
-    .normal-name{background:var(--blue-soft);color:#2144a8}
-    .opt-name{background:var(--green-soft);color:#087047}
-    .versus{font-size:13px;font-weight:900;color:#98a2b3}
-    .columns{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-    .algo-panel{border:1px solid var(--line);border-radius:16px;padding:14px;min-width:0;background:#fcfdff}
-    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:11px}
-    .stat{border:1px solid var(--line);border-radius:11px;padding:9px;background:#fff}
-    .stat .k{font-size:11px;color:var(--muted)}
-    .stat .v{font-size:17px;font-weight:900;margin-top:2px;min-height:23px}
-    .visual-scroll{overflow-x:auto;border:1px dashed #cbd5e1;border-radius:13px;background:#fff}
-    .visual{min-width:max-content;padding:10px}
-    .row{display:flex;align-items:center;margin:5px 0}
-    .row-label{width:62px;flex:0 0 62px;font-size:12px;font-weight:800;color:var(--muted)}
-    .grid{display:grid;gap:var(--gap);grid-auto-rows:var(--cell);align-items:center}
-    .cell{
-      width:var(--cell);height:var(--cell);border:1px solid var(--line);border-radius:8px;
-      display:flex;align-items:center;justify-content:center;background:#fff;font-size:17px;
-      font-weight:900;transition:.2s all
-    }
-    .idx{width:var(--cell);height:21px;display:flex;align-items:center;justify-content:center;
-      color:#98a2b3;font-size:10px}
-    .cell.matched{background:var(--green-soft);border-color:#70c99e;color:#087047}
-    .cell.current{background:var(--blue-soft);border-color:var(--blue);outline:3px solid rgba(49,88,212,.18)}
-    .cell.bad{background:var(--red-soft);border-color:var(--red);outline:3px solid rgba(217,45,32,.14);color:#a51c14}
-    .cell.done{background:#c8f0da;border-color:var(--green);color:#07663f}
-    .pointer{
-      width:var(--cell);height:23px;display:flex;align-items:center;justify-content:center;
-      font-size:11px;font-weight:900;color:var(--blue);white-space:nowrap
-    }
-    .msg{
-      margin-top:10px;min-height:92px;border-radius:12px;padding:12px 13px;line-height:1.65;
-      background:var(--blue-soft);border-left:5px solid var(--blue);font-size:13px
-    }
-    .msg strong{display:block;font-size:14px;margin-bottom:2px}
-    .msg.warn{background:var(--amber-soft);border-left-color:var(--amber)}
-    .msg.bad{background:var(--red-soft);border-left-color:var(--red)}
-    .msg.good{background:var(--green-soft);border-left-color:var(--green)}
-    .msg.skip{background:var(--purple-soft);border-left-color:var(--purple)}
-    .arrays{margin-top:10px;overflow-x:auto}
-    table{border-collapse:separate;border-spacing:4px}
-    th,td{min-width:34px;height:31px;text-align:center;border:1px solid var(--line);
-      border-radius:7px;padding:0 7px;background:#fff;font-size:12px}
-    th{background:#f0f3f8;color:var(--muted)}
-    td.active{background:var(--blue-soft);border-color:var(--blue);font-weight:900}
-    tr.opt-row td{background:#f4fff9}
-    .controls{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-top:14px;
-      padding-top:14px;border-top:1px solid var(--line)}
-    .spacer{flex:1}
-    .speed{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
-    input[type=range]{accent-color:var(--blue);width:145px}
-    .progress{height:8px;border-radius:999px;background:#edf1f5;overflow:hidden;margin-top:12px}
-    .progress div{height:100%;background:linear-gradient(90deg,var(--blue),var(--green));
-      transition:.18s width}
-    .result{
-      display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px
-    }
-    .result-card{border:1px solid var(--line);border-radius:13px;padding:12px;background:#fff;text-align:center}
-    .result-card .k{font-size:12px;color:var(--muted)}
-    .result-card .v{font-size:22px;font-weight:900;margin-top:4px}
-    .saved{color:var(--green)}
-    .explain{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .ex-card{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fbfcfe}
-    .ex-card h3{margin:0 0 7px;font-size:15px}
-    .ex-card p{margin:0;color:#475467;line-height:1.75;font-size:13px}
-    code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#eef1f6;
-      border-radius:5px;padding:1px 5px}
-    kbd{background:#fff;border:1px solid #d0d5dd;border-bottom-width:2px;border-radius:5px;
-      padding:1px 5px;font-size:11px}
-    footer{text-align:center;color:#98a2b3;font-size:12px;margin-top:20px}
-    @media(max-width:980px){
-      .columns{grid-template-columns:1fr}
-      .compare-head{grid-template-columns:1fr}
-      .versus{display:none}
-      .config{grid-template-columns:1fr}
-    }
-    @media(max-width:620px){
-      .stats,.result,.explain{grid-template-columns:1fr 1fr}
-      :root{--cell:35px;--gap:4px}
-      .hero{padding:22px 19px}
-      .page{padding-left:10px;padding-right:10px}
-    }
-  </style>
-</head>
-<body>
-<main class="page">
-  <section class="hero">
-    <span class="tag">考研 408 · 王道数据结构 · 串</span>
-    <h1>普通 KMP 与优化 KMP 对比动画</h1>
-    <p>两种算法并排同步运行，直观看清 <b>next</b> 与 <b>nextval</b> 的跳转区别，以及优化算法如何跳过必然失配的重复比较。</p>
-  </section>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="color-scheme" content="dark">
+<title>考研408｜普通 KMP 与优化 KMP 对比动画</title>
+<style>
+:root{
+  --bg:#090b10;--panel:#11141b;--glass:rgba(28,31,40,.60);
+  --line:rgba(255,255,255,.095);--line2:rgba(255,255,255,.16);
+  --text:#f5f7fb;--muted:#98a2b4;--muted2:#687286;
+  --accent:#78a7ff;--accentSoft:rgba(120,167,255,.15);
+  --good:#67d49b;--goodSoft:rgba(103,212,155,.14);
+  --warn:#ffbd6b;--warnSoft:rgba(255,189,107,.14);
+  --bad:#ff7c8d;--badSoft:rgba(255,124,141,.14);
+  --purple:#a990ff;--purpleSoft:rgba(169,144,255,.14);
+  --cyan:#69d3e8;--cyanSoft:rgba(105,211,232,.13);
+  --ease:cubic-bezier(.22,.8,.22,1);--shadow:0 28px 80px rgba(0,0,0,.34);
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;min-height:100vh;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","PingFang SC","Microsoft YaHei",system-ui,sans-serif;background:radial-gradient(50rem 28rem at 8% -8%,rgba(89,115,255,.15),transparent 64%),radial-gradient(42rem 24rem at 94% 0%,rgba(92,211,183,.08),transparent 66%),linear-gradient(180deg,#0b0d13,#090b10 72%);letter-spacing:-.012em}
+button,input{font:inherit}button{color:inherit}
+.app{width:min(1260px,calc(100% - 32px));margin:0 auto;padding:28px 0 38px}
+.topbar{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:18px;animation:enter .7s var(--ease) both}
+.brand h1{margin:0;font-size:clamp(27px,3vw,39px);line-height:1.02;font-weight:740;letter-spacing:-.048em}
+.brand p{margin:7px 0 0;color:var(--muted);font-size:13px;font-weight:520}
+.segmented{display:flex;gap:4px;padding:4px;border:1px solid var(--line);border-radius:999px;background:var(--glass);-webkit-backdrop-filter:blur(24px) saturate(150%);backdrop-filter:blur(24px) saturate(150%);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.segmented button{min-height:38px;padding:0 16px;border:0;border-radius:999px;background:transparent;color:var(--muted);font-size:12px;font-weight:680;cursor:pointer;transition:background .2s var(--ease),color .2s var(--ease),transform .15s ease}
+.segmented button[aria-selected=true]{color:var(--text);background:rgba(255,255,255,.105);box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 5px 14px rgba(0,0,0,.14)}
+.segmented button:active{transform:scale(.97)}
+button:focus-visible,input:focus-visible{outline:2px solid rgba(126,173,255,.82);outline-offset:2px}
+.workspace{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:28px;background:radial-gradient(46rem 22rem at 50% -18%,rgba(105,130,255,.10),transparent 67%),linear-gradient(180deg,rgba(20,23,31,.97),rgba(13,16,23,.99));box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.04);animation:enter .76s .06s var(--ease) both}
+.workspace:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 25%,rgba(255,255,255,.022) 47%,transparent 68%);transform:translateX(-48%);animation:sheen 1.05s .25s var(--ease) both}
+.config{position:relative;z-index:4;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.65fr) auto;gap:9px;align-items:center;padding:13px 14px 8px}
+.field{min-width:0;height:44px;display:flex;align-items:center;gap:8px;padding:0 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.035);transition:border-color .18s ease,background .18s ease}
+.field:focus-within{border-color:rgba(120,167,255,.34);background:rgba(120,167,255,.045)}
+.field .cap{flex:0 0 auto;color:var(--muted2);font-size:10px;font-weight:760;letter-spacing:.065em;text-transform:uppercase}
+.field input{min-width:0;width:100%;height:34px;padding:0;border:0;outline:0;color:var(--text);background:transparent;font-size:13px;font-variant-numeric:tabular-nums}
+.field input::placeholder{color:#60697a}
+.config-actions{display:flex;gap:7px}
+.action-btn,.icon-btn{border:1px solid var(--line);background:rgba(255,255,255,.055);box-shadow:inset 0 1px 0 rgba(255,255,255,.05);cursor:pointer;transition:transform .17s ease,background .17s ease,border-color .17s ease,opacity .17s ease}
+.action-btn{height:44px;padding:0 14px;border-radius:13px;font-size:12px;font-weight:680;white-space:nowrap}
+.action-btn.primary{color:#07101d;border-color:transparent;background:#dce8ff}
+.action-btn.primary:hover{background:#edf3ff}.action-btn:hover,.icon-btn:hover{background:rgba(255,255,255,.085);border-color:var(--line2)}
+.action-btn:active,.icon-btn:active{transform:scale(.96)}
+.error{position:relative;z-index:3;min-height:21px;margin:0 17px;color:#ff9aa6;font-size:11px;line-height:1.5}
+.main-grid{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.4fr) minmax(330px,.6fr);min-height:610px}
+.visual-panel{min-width:0;display:flex;flex-direction:column;border-right:1px solid var(--line)}
+.scene-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 20px 3px}
+.scene-title .eyebrow,.step-copy .eyebrow{color:var(--muted2);font-size:10px;font-weight:760;letter-spacing:.085em;text-transform:uppercase}
+.scene-title h2{margin:4px 0 0;font-size:18px;font-weight:700;letter-spacing:-.025em}
+.status-pill{flex:0 0 auto;min-height:30px;display:inline-flex;align-items:center;gap:7px;padding:0 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);background:rgba(255,255,255,.035);font-size:11px;font-weight:680}
+.status-pill:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(120,167,255,.09)}
+.status-pill.good:before{background:var(--good);box-shadow:0 0 0 4px rgba(103,212,155,.09)}
+.status-pill.warn:before{background:var(--warn);box-shadow:0 0 0 4px rgba(255,189,107,.09)}
+.stage-wrap{position:relative;flex:1;min-width:0;min-height:395px;overflow:hidden}
+.stage{display:block;width:100%;height:100%;min-height:395px}
+.cell{fill:rgba(255,255,255,.035);stroke:rgba(255,255,255,.09);stroke-width:1}
+.cell.hot{fill:var(--accentSoft);stroke:rgba(120,167,255,.46)}
+.cell.good{fill:var(--goodSoft);stroke:rgba(103,212,155,.44)}
+.cell.bad{fill:var(--badSoft);stroke:rgba(255,124,141,.46)}
+.cell.warn{fill:var(--warnSoft);stroke:rgba(255,189,107,.46)}
+.ch{fill:#eef3fb;font-size:15px;font-weight:730;text-anchor:middle;dominant-baseline:middle}
+.idx{fill:#586276;font-size:9px;font-weight:650;text-anchor:middle}
+.ptr{fill:#9abfff;font-size:10px;font-weight:760;text-anchor:middle}
+.row-label{fill:#707a8c;font-size:10px;font-weight:750;text-anchor:end}
+.soft-line{stroke:rgba(255,255,255,.07);stroke-width:1}
+.shift-line{stroke:rgba(120,167,255,.34);stroke-width:2;stroke-dasharray:5 6}
+.token{fill:var(--warn);stroke:rgba(255,231,195,.35);stroke-width:1}
+.token-text{fill:#11151d;font-size:11px;font-weight:800;text-anchor:middle;dominant-baseline:middle}
+.table-value{fill:#e8edf7;font-size:11px;font-weight:720;text-anchor:middle;dominant-baseline:middle}
+.table-value.hot{fill:#9fc3ff}
+.table-value.good{fill:#95e8bc}
+.step-readout{min-height:91px;display:flex;align-items:flex-end;justify-content:space-between;gap:18px;padding:6px 20px 14px}
+.step-copy{min-width:0}.step-copy h3{margin:4px 0 0;font-size:17px;font-weight:700;letter-spacing:-.022em}
+.step-copy p{margin:5px 0 0;max-width:720px;color:var(--muted);font-size:12px;line-height:1.55}
+.badges{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.badge{min-height:30px;display:inline-flex;align-items:center;gap:6px;padding:0 9px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.035);color:var(--muted);font-size:10px;font-weight:650;font-variant-numeric:tabular-nums}.badge strong{color:#e8edf6;font-size:11px}
+.code-panel{min-width:0;display:flex;flex-direction:column;background:rgba(8,10,15,.28)}
+.code-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 18px 11px;border-bottom:1px solid var(--line)}
+.code-head h2{margin:0;font-size:13px;font-weight:720}.code-head span{color:var(--muted2);font-size:10px}
+.code-scroll{flex:1;min-height:0;padding:12px 10px 14px;overflow:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.14) transparent}
+.code-block{margin:0;padding:0;font:12.4px/1.72 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;letter-spacing:0}
+.code-line{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;min-height:25px;padding:2px 10px 2px 3px;border-radius:8px;color:#8f99ab;white-space:pre-wrap;transition:color .18s ease,background .18s ease}
+.code-line .no{color:#4e5869;text-align:right;user-select:none;font-variant-numeric:tabular-nums}.code-line.section{margin-top:8px;color:#c1cad9;font-weight:720}.code-line.section .no{color:transparent}.code-line.comment{color:#657083}.code-line.near{color:#b2bccb}
+.code-line.active{color:#f5f7fc;background:rgba(120,167,255,.105);box-shadow:inset 2px 0 0 var(--accent)}.code-line.active .no{color:#9bc0ff}
+.code-line.active.goodline{background:rgba(103,212,155,.09);box-shadow:inset 2px 0 0 var(--good)}
+.code-note{padding:11px 14px;border-top:1px solid var(--line);color:var(--muted);font-size:11px;line-height:1.55}.code-note strong{color:#e7ecf5;font-weight:700}
+.progress{position:relative;z-index:2;height:2px;margin:0 20px;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.055)}.progress>div{width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,#78a7ff,#9d8eff);transition:width .34s var(--ease)}
+.control-wrap{position:relative;z-index:3;padding:12px 14px 14px}
+.control-bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;min-height:70px;padding:10px 12px;border:1px solid var(--line);border-radius:22px;background:var(--glass);-webkit-backdrop-filter:blur(28px) saturate(155%);backdrop-filter:blur(28px) saturate(155%);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 14px 34px rgba(0,0,0,.18)}
+.control-left,.control-center,.control-right{display:flex;align-items:center;gap:8px}.control-center{justify-content:center}.control-right{justify-content:flex-end}
+.icon-btn{width:44px;height:44px;padding:0;display:grid;place-items:center;border-radius:50%}.play-btn{width:50px;height:50px;padding:0;display:grid;place-items:center;border:1px solid rgba(255,255,255,.22);border-radius:50%;color:#07101d;background:#edf3ff;cursor:pointer;box-shadow:0 7px 18px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.7);transition:transform .17s ease,background .17s ease}.play-btn:hover{background:#fff}.play-btn:active{transform:scale(.95)}.icon-btn svg,.play-btn svg{width:18px;height:18px;display:block}
+button:disabled{opacity:.32;cursor:default;transform:none!important}.step-count{min-width:70px;color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums}.speed{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:11px}.speed input{width:90px;accent-color:#dce8ff}.shortcuts{display:flex;gap:4px}
+kbd{min-width:24px;height:24px;padding:0 7px;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.105);border-radius:8px;color:#aeb7c7;background:rgba(255,255,255,.055);box-shadow:inset 0 1px 0 rgba(255,255,255,.06);font:650 10px/1 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif}
+@keyframes enter{from{opacity:0;transform:translateY(12px) scale(.995)}to{opacity:1;transform:none}}@keyframes sheen{from{opacity:0;transform:translateX(-48%)}40%{opacity:1}to{opacity:0;transform:translateX(48%)}}
+@media(max-width:960px){.topbar{align-items:flex-start;flex-direction:column}.main-grid{grid-template-columns:1fr}.visual-panel{border-right:0;border-bottom:1px solid var(--line)}.code-panel{min-height:360px}.code-scroll{max-height:400px}}
+@media(max-width:680px){.app{width:min(100% - 18px,1260px);padding-top:16px}.brand p{display:none}.segmented{width:100%}.segmented button{flex:1;padding:0 8px}.config{grid-template-columns:1fr}.config-actions .action-btn{flex:1}.scene-head{padding:10px 14px 3px}.step-readout{align-items:flex-start;flex-direction:column;padding:6px 14px 12px}.badges{justify-content:flex-start}.control-wrap{padding:10px 8px 8px}.control-bar{padding:8px;gap:6px;border-radius:18px}.control-left .shortcuts{display:none}.control-right .speed span{display:none}.control-right .speed input{width:65px}.step-count{min-width:54px;font-size:10px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
 
-  <section class="panel">
-    <h2 class="title"><span class="dot"></span>设置对比案例</h2>
-    <div class="config">
-      <div>
-        <label for="textInput">主串 T</label>
-        <input id="textInput" type="text" value="aaacaaaab" maxlength="36" />
+.compare-stage{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 16px 6px}
+.lane{min-width:0;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.022);overflow:hidden}
+.lane-head{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;border-bottom:1px solid var(--line)}
+.lane-head strong{font-size:12px}.lane-head span{font-size:10px;color:var(--muted2)}
+.lane svg{display:block;width:100%;height:238px}
+.lane.optimized{background:rgba(103,212,155,.018)}
+.lane.optimized .lane-head strong{color:#bdebd4}
+.legend-mini{display:flex;gap:10px;padding:0 20px 5px;color:var(--muted2);font-size:10px}
+.legend-mini i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px}
+.dual-code{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);height:100%}
+.dual-code>div{background:rgba(8,10,15,.95);min-width:0}
+.dual-code .code-head{padding:13px 13px 9px}.dual-code .code-scroll{padding:9px 7px 12px}
+.dual-code .code-line{grid-template-columns:24px minmax(0,1fr);gap:7px;padding-right:5px;font-size:11.4px}
+@media(max-width:760px){.compare-stage{grid-template-columns:1fr}.lane svg{height:205px}.dual-code{grid-template-columns:1fr}}
+</style></head>
+<body><main class="app" id="app">
+<header class="topbar"><div class="brand"><h1>KMP 对比</h1><p>普通 next · 优化 nextval · 同步步进对照</p></div>
+<div class="segmented" aria-label="对比视图"><button type="button" aria-selected="true">普通 KMP vs 优化 KMP</button></div></header>
+<section class="workspace">
+  <div class="config">
+    <label class="field"><span class="cap">Main</span><input id="textInput" value="aaabaaaabaaaab" maxlength="24" aria-label="主串"></label>
+    <label class="field"><span class="cap">Pattern</span><input id="patternInput" value="aaaab" maxlength="12" aria-label="模式串"></label>
+    <div class="config-actions"><button type="button" class="action-btn" id="exampleBtn">换例子</button><button type="button" class="action-btn primary" id="applyBtn">生成</button></div>
+  </div>
+  <div class="error" id="error" aria-live="polite"></div>
+  <div class="main-grid">
+    <section class="visual-panel">
+      <div class="scene-head"><div class="scene-title"><div class="eyebrow">ONE TIMELINE · TWO TABLES</div><h2>同一步观察两种失配跳转</h2></div><div class="status-pill" id="statusPill">匹配中</div></div>
+      <div class="compare-stage">
+        <div class="lane"><div class="lane-head"><strong>普通 KMP</strong><span id="nextSummary">next</span></div><svg id="normalSvg" viewBox="0 0 560 238"></svg></div>
+        <div class="lane optimized"><div class="lane-head"><strong>优化 KMP</strong><span id="nextvalSummary">nextval</span></div><svg id="optSvg" viewBox="0 0 560 238"></svg></div>
       </div>
-      <div>
-        <label for="patternInput">模式串 P</label>
-        <input id="patternInput" type="text" value="aaaab" maxlength="16" />
+      <div class="legend-mini"><span><i style="background:var(--accent)"></i>比较位置</span><span><i style="background:var(--warn)"></i>失配跳转</span><span><i style="background:var(--good)"></i>匹配完成</span></div>
+      <div class="step-readout"><div class="step-copy"><div class="eyebrow" id="stepEyebrow">STEP 1</div><h3 id="stepTitle">准备</h3><p id="stepMessage"></p></div><div class="badges" id="badges"></div></div>
+    </section>
+    <aside class="code-panel">
+      <div class="dual-code">
+        <div><div class="code-head"><h2>普通 KMP</h2><span>next</span></div><div class="code-scroll"><pre class="code-block" id="normalCode"></pre></div></div>
+        <div><div class="code-head"><h2>优化 KMP</h2><span>nextval</span></div><div class="code-scroll"><pre class="code-block" id="optCode"></pre></div></div>
       </div>
-      <button id="applyBtn" class="primary">应用并生成</button>
-    </div>
-    <div id="error" class="error"></div>
-    <div class="tip">
-      默认案例会在连续字符 <code>a</code> 中发生失配：普通 KMP 会让同一个主串字符重复与多个 <code>a</code> 比较；优化 KMP 通过 <code>nextval</code> 直接跳过这些必然失配。
-    </div>
-  </section>
-
-  <section class="panel">
-    <div class="compare-head">
-      <div class="algo-name normal-name">普通 KMP：j = next[j]</div>
-      <div class="versus">同步对比</div>
-      <div class="algo-name opt-name">优化 KMP：j = nextval[j]</div>
-    </div>
-
-    <div class="columns">
-      <article class="algo-panel">
-        <div class="stats">
-          <div class="stat"><div class="k">步骤</div><div class="v" id="nStep">—</div></div>
-          <div class="stat"><div class="k">主串指针 i</div><div class="v" id="nI">—</div></div>
-          <div class="stat"><div class="k">模式串指针 j</div><div class="v" id="nJ">—</div></div>
-          <div class="stat"><div class="k">字符比较</div><div class="v" id="nCount">0</div></div>
-        </div>
-        <div class="visual-scroll"><div id="normalVisual" class="visual"></div></div>
-        <div id="normalMsg" class="msg"></div>
-        <div id="normalArray" class="arrays"></div>
-      </article>
-
-      <article class="algo-panel">
-        <div class="stats">
-          <div class="stat"><div class="k">步骤</div><div class="v" id="oStep">—</div></div>
-          <div class="stat"><div class="k">主串指针 i</div><div class="v" id="oI">—</div></div>
-          <div class="stat"><div class="k">模式串指针 j</div><div class="v" id="oJ">—</div></div>
-          <div class="stat"><div class="k">字符比较</div><div class="v" id="oCount">0</div></div>
-        </div>
-        <div class="visual-scroll"><div id="optVisual" class="visual"></div></div>
-        <div id="optMsg" class="msg"></div>
-        <div id="optArray" class="arrays"></div>
-      </article>
-    </div>
-
-    <div class="progress"><div id="progressBar" style="width:0"></div></div>
-    <div class="controls">
-      <button id="restartBtn" class="secondary">↺ 重新开始</button>
-      <button id="prevBtn" class="secondary">← 上一轮</button>
-      <button id="playBtn" class="primary">▶ 自动播放</button>
-      <button id="nextBtn" class="secondary">下一轮 →</button>
-      <div class="spacer"></div>
-      <div class="speed">
-        <span>速度</span>
-        <input id="speedRange" type="range" min="1" max="5" value="3" />
-        <strong id="speedText">1.0×</strong>
+      <div class="code-note" id="codeNote"></div>
+    </aside>
+  </div>
+  
+    <div class="progress" aria-hidden="true"><div id="progressBar"></div></div>
+    <div class="control-wrap"><div class="control-bar">
+      <div class="control-left">
+        <button type="button" class="icon-btn" id="resetBtn" aria-label="重置" aria-keyshortcuts="R" title="重置（R）"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M4.8 8.1A8 8 0 1 1 4 14m.8-5.9V4.4m0 3.7h3.7"/></svg></button>
+        <div class="shortcuts"><kbd>←</kbd><kbd>→</kbd><kbd>Space</kbd></div>
       </div>
-    </div>
-
-    <div class="result">
-      <div class="result-card"><div class="k">普通 KMP 总比较</div><div class="v" id="normalTotal">—</div></div>
-      <div class="result-card"><div class="k">优化 KMP 总比较</div><div class="v" id="optTotal">—</div></div>
-      <div class="result-card"><div class="k">减少比较次数</div><div class="v saved" id="savedTotal">—</div></div>
-      <div class="result-card"><div class="k">首次匹配位置</div><div class="v" id="matchPos">—</div></div>
-    </div>
-    <div style="margin-top:10px;color:#98a2b3;font-size:12px">
-      快捷键：<kbd>Space</kbd> 播放/暂停，<kbd>←</kbd> 上一轮，<kbd>→</kbd> 下一轮。
-    </div>
-  </section>
-
-  <section class="panel">
-    <h2 class="title"><span class="dot"></span>区别总结</h2>
-    <div class="explain">
-      <div class="ex-card">
-        <h3>普通 KMP</h3>
-        <p>失配时执行 <code>j = next[j]</code>。虽然主串指针 <code>i</code> 不回退，但若 <code>P[j] = P[next[j]]</code>，同一个主串字符会再次与相同字符比较，结果必然仍然失配。</p>
+      <div class="control-center">
+        <button type="button" class="icon-btn" id="prevBtn" aria-label="上一步" aria-keyshortcuts="ArrowLeft" title="上一步（←）"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M14.8 6.5 9.3 12l5.5 5.5"/></svg></button>
+        <button type="button" class="play-btn" id="playBtn" aria-label="播放" aria-keyshortcuts="Space" title="播放 / 暂停（Space）"><svg id="playIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.4 6.7c0-1 1.1-1.6 1.9-1l7.9 5.1c.8.5.8 1.7 0 2.2l-7.9 5.2c-.8.5-1.9-.1-1.9-1V6.7Z" fill="currentColor"/></svg></button>
+        <button type="button" class="icon-btn" id="nextBtn" aria-label="下一步" aria-keyshortcuts="ArrowRight" title="下一步（→）"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="m9.2 6.5 5.5 5.5-5.5 5.5"/></svg></button>
       </div>
-      <div class="ex-card">
-        <h3>优化 KMP</h3>
-        <p>失配时执行 <code>j = nextval[j]</code>。当回退位置字符与当前失配字符相同时，继续沿跳转链前移，直接跳过必然失败的比较。两者最坏复杂度均为 <code>O(n+m)</code>。</p>
+      <div class="control-right">
+        <span class="step-count" id="stepCount">1 / 1</span>
+        <label class="speed"><span>速度</span><input id="speedRange" type="range" min="1" max="5" value="3" step="1" aria-label="播放速度"></label>
       </div>
-    </div>
-  </section>
-  <footer>王道 1-based 数组展示 · 动画内部采用等价的 0-based 实现 · 单文件离线运行</footer>
-</main>
-
+    </div></div>
+</section></main>
 <script>
 (() => {
-  const $ = id => document.getElementById(id);
-  const speedMs = {1:1500,2:1100,3:780,4:480,5:260};
-  const speedLabel = {1:"0.5×",2:"0.75×",3:"1.0×",4:"1.5×",5:"2.0×"};
-
-  let T = [], P = [], normalSteps = [], optSteps = [];
-  let round = 0, maxRounds = 1, timer = null;
-  let normalMeta = {}, optMeta = {};
-
-  function buildNext(p){
-    const next = Array(p.length).fill(0);
-    if(!p.length) return next;
-    next[0] = -1;
-    let i = 0, j = -1;
-    while(i < p.length - 1){
-      if(j === -1 || p[i] === p[j]){
-        i++; j++; next[i] = j;
-      }else{
-        j = next[j];
-      }
-    }
-    return next;
-  }
-
-  function buildNextVal(p,next=buildNext(p)){
-    const nv = Array(p.length).fill(0);
-    if(!p.length) return nv;
-    nv[0] = -1;
-    for(let i=1;i<p.length;i++){
-      const j = next[i];
-      nv[i] = (j >= 0 && p[i] === p[j]) ? nv[j] : j;
-    }
-    return nv;
-  }
-
-  function state(data){
-    return Object.assign({
-      i:0,j:0,align:0,matched:0,compare:false,kind:"normal",
-      title:"",message:"",comparisons:0,activeIndex:null,done:false,found:false
-    },data);
-  }
-
-  function generate(pText,pPattern,optimized){
-    const next = buildNext(pPattern);
-    const nextval = buildNextVal(pPattern,next);
-    const jump = optimized ? nextval : next;
-    const arrayName = optimized ? "nextval" : "next";
-    const steps = [];
-    let i=0,j=0,count=0,foundAt=-1;
-
-    steps.push(state({
-      i:0,j:0,align:0,title:"初始化",
-      message:optimized
-        ? `计算 next 与 nextval，令 i = 0，j = 0。`
-        : `计算 next，令 i = 0，j = 0。`,
-      activeIndex:0
-    }));
-
-    while(i < pText.length && j < pPattern.length){
-      count++;
-      const equal = pText[i] === pPattern[j];
-      steps.push(state({
-        i,j,align:i-j,matched:equal?j+1:j,compare:true,
-        kind:equal?"match":"mismatch",
-        title:equal?"字符匹配":"发生失配",
-        message:equal
-          ? `第 ${count} 次比较：T[${i}] = “${pText[i]}”，P[${j}] = “${pPattern[j]}”，相等，i 与 j 同时后移。`
-          : `第 ${count} 次比较：T[${i}] = “${pText[i]}”，P[${j}] = “${pPattern[j]}”，不等，查询 ${arrayName}[${j}]。`,
-        comparisons:count,activeIndex:j
-      }));
-
-      if(equal){
-        i++; j++;
-        if(j === pPattern.length){
-          foundAt = i-j;
-          steps.push(state({
-            i:i-1,j:j-1,align:foundAt,matched:j,kind:"found",found:true,done:true,
-            title:"匹配成功",
-            message:`首次匹配位置为 ${foundAt}，共进行了 ${count} 次字符比较。`,
-            comparisons:count,activeIndex:j-1
-          }));
-          break;
-        }
-        continue;
-      }
-
-      const oldJ = j;
-      const newJ = jump[j];
-
-      if(newJ === -1){
-        i++; j=0;
-        const isSkip = optimized && oldJ > 0 && next[oldJ] !== -1;
-        steps.push(state({
-          i:i<pText.length?i:null,j:i<pText.length?0:null,align:i,
-          kind:isSkip?"skip":"jump",
-          title:isSkip?"nextval 跳过重复失配":"经过哨兵位置",
-          message:isSkip
-            ? `next[${oldJ}] = ${next[oldJ]}，但 P[${oldJ}] 与回退位置字符相同；nextval[${oldJ}] = -1，直接跳过整条必然失配链，使 i 前进到 ${i}。`
-            : `${arrayName}[${oldJ}] = -1，按哨兵规则使 i 前进到 ${i}，j 回到 0。`,
-          comparisons:count,activeIndex:oldJ
-        }));
-      }else{
-        j = newJ;
-        steps.push(state({
-          i,j,align:i-j,matched:j,kind:optimized?"skip":"jump",
-          title:optimized?"使用 nextval 回退":"使用 next 回退",
-          message:`i 保持 ${i} 不变，j 从 ${oldJ} 跳到 ${arrayName}[${oldJ}] = ${j}；本次跳转不进行字符比较。`,
-          comparisons:count,activeIndex:oldJ
-        }));
-      }
-    }
-
-    if(foundAt < 0){
-      steps.push(state({
-        i:null,j:null,align:Math.max(0,i-j),kind:"fail",done:true,
-        title:"匹配失败",message:`主串扫描结束，共进行了 ${count} 次字符比较。`,
-        comparisons:count
-      }));
-    }
-    return {steps,next,nextval,total:count,foundAt};
-  }
-
-  function validate(){
-    const t = Array.from($("textInput").value.trim());
-    const p = Array.from($("patternInput").value.trim());
-    if(!t.length || !p.length){
-      $("error").textContent="主串和模式串均不能为空。"; return null;
-    }
-    if(t.length>36 || p.length>16){
-      $("error").textContent="为保证动画清晰，主串最多 36 个字符，模式串最多 16 个字符。"; return null;
-    }
-    $("error").textContent="";
-    return {t,p};
-  }
-
-  function setup(){
-    stop();
-    const v=validate(); if(!v) return;
-    T=v.t; P=v.p;
-    normalMeta=generate(T,P,false);
-    optMeta=generate(T,P,true);
-    normalSteps=normalMeta.steps;
-    optSteps=optMeta.steps;
-    maxRounds=Math.max(normalSteps.length,optSteps.length);
-    round=0;
-    $("normalTotal").textContent=normalMeta.total;
-    $("optTotal").textContent=optMeta.total;
-    $("savedTotal").textContent=Math.max(0,normalMeta.total-optMeta.total);
-    $("matchPos").textContent=normalMeta.foundAt>=0?normalMeta.foundAt:"未找到";
-    render();
-  }
-
-  function currentStep(steps){
-    return steps[Math.min(round,steps.length-1)];
-  }
-
-  function renderVisual(targetId,st){
-    const target=$(targetId);
-    const total=Math.max(T.length,st.align+P.length,1);
-    target.innerHTML="";
-
-    const grid=()=>{const g=document.createElement("div");g.className="grid";
-      g.style.gridTemplateColumns=`repeat(${total},var(--cell))`;return g};
-    const row=(label,g)=>{const r=document.createElement("div");r.className="row";
-      const l=document.createElement("div");l.className="row-label";l.textContent=label;
-      r.append(l,g);target.appendChild(r)};
-
-    const ig=grid();
-    for(let k=0;k<total;k++){
-      const c=document.createElement("div");c.className="idx";c.textContent=k<T.length?k:"";ig.appendChild(c);
-    }
-    row("下标",ig);
-
-    const tg=grid();
-    for(let k=0;k<total;k++){
-      const c=document.createElement("div");
-      if(k<T.length){
-        c.className="cell";c.textContent=T[k];
-        if(k>=st.align && k<st.align+st.matched)c.classList.add(st.found?"done":"matched");
-        if(st.compare && k===st.i)c.classList.add(st.kind==="mismatch"?"bad":"current");
-      }else c.className="idx";
-      tg.appendChild(c);
-    }
-    row("主串 T",tg);
-
-    const pg=grid();
-    for(let k=0;k<P.length;k++){
-      const c=document.createElement("div");c.className="cell";c.textContent=P[k];
-      c.style.gridColumn=String(st.align+k+1);
-      if(k<st.matched)c.classList.add(st.found?"done":"matched");
-      if(st.compare && k===st.j)c.classList.add(st.kind==="mismatch"?"bad":"current");
-      pg.appendChild(c);
-    }
-    row("模式 P",pg);
-
-    const ptr=grid();
-    const same=st.i!==null&&st.j!==null&&st.i===st.align+st.j;
-    if(same){
-      const x=document.createElement("div");x.className="pointer";
-      x.style.gridColumn=String(st.i+1);x.textContent="↑ i,j";ptr.appendChild(x);
-    }else{
-      if(st.i!==null&&st.i>=0&&st.i<total){
-        const x=document.createElement("div");x.className="pointer";
-        x.style.gridColumn=String(st.i+1);x.textContent="↑ i";ptr.appendChild(x);
-      }
-      const jp=st.j===null?null:st.align+st.j;
-      if(jp!==null&&jp>=0&&jp<total){
-        const x=document.createElement("div");x.className="pointer";
-        x.style.gridColumn=String(jp+1);x.textContent="↑ j";ptr.appendChild(x);
-      }
-    }
-    row("指针",ptr);
-  }
-
-  function renderMessage(id,st){
-    const el=$(id);
-    el.className="msg";
-    if(st.kind==="mismatch"||st.kind==="fail")el.classList.add("bad");
-    if(st.kind==="jump")el.classList.add("warn");
-    if(st.kind==="found")el.classList.add("good");
-    if(st.kind==="skip")el.classList.add("skip");
-    el.innerHTML="";
-    const b=document.createElement("strong");b.textContent=st.title;
-    const s=document.createElement("span");s.textContent=st.message;
-    el.append(b,s);
-  }
-
-  function renderArray(id,meta,st,optimized){
-    const box=$(id);box.innerHTML="";
-    const table=document.createElement("table");
-    const rows=[
-      ["位置（王道）",...P.map((_,i)=>i+1)],
-      ["P",...P],
-      ["next",...meta.next.map(v=>v+1)]
-    ];
-    if(optimized)rows.push(["nextval",...meta.nextval.map(v=>v+1)]);
-    rows.forEach((r,ri)=>{
-      const tr=document.createElement("tr");
-      if(ri===3)tr.className="opt-row";
-      r.forEach((v,ci)=>{
-        const el=document.createElement(ri===0||ci===0?"th":"td");
-        el.textContent=v;
-        if(ci>0&&ci-1===st.activeIndex)el.classList.add("active");
-        tr.appendChild(el);
-      });
-      table.appendChild(tr);
-    });
-    box.appendChild(table);
-  }
-
-  function renderSide(prefix,steps,meta,visualId,msgId,arrayId,optimized){
-    const idx=Math.min(round,steps.length-1),st=steps[idx];
-    $(prefix+"Step").textContent=`${idx+1} / ${steps.length}`;
-    $(prefix+"I").textContent=st.i===null?"—":st.i;
-    $(prefix+"J").textContent=st.j===null?"—":st.j;
-    $(prefix+"Count").textContent=st.comparisons;
-    renderVisual(visualId,st);
-    renderMessage(msgId,st);
-    renderArray(arrayId,meta,st,optimized);
-  }
-
-  function render(){
-    renderSide("n",normalSteps,normalMeta,"normalVisual","normalMsg","normalArray",false);
-    renderSide("o",optSteps,optMeta,"optVisual","optMsg","optArray",true);
-    $("progressBar").style.width=`${((round+1)/maxRounds)*100}%`;
-    $("prevBtn").disabled=round===0;
-    $("restartBtn").disabled=round===0;
-    $("nextBtn").disabled=round>=maxRounds-1;
-    $("speedText").textContent=speedLabel[$("speedRange").value];
-  }
-
-  function next(){
-    if(round<maxRounds-1){round++;render()}else stop();
-  }
-  function prev(){stop();if(round>0){round--;render()}}
-  function restart(){stop();round=0;render()}
-  function play(){
-    if(timer){stop();return}
-    if(round>=maxRounds-1)round=0;
-    $("playBtn").textContent="⏸ 暂停";
-    timer=setInterval(()=>{if(round>=maxRounds-1){stop();return}next()},speedMs[$("speedRange").value]);
-  }
-  function stop(){
-    if(timer)clearInterval(timer);
-    timer=null;$("playBtn").textContent="▶ 自动播放";
-  }
-
-  $("applyBtn").addEventListener("click",setup);
-  $("restartBtn").addEventListener("click",restart);
-  $("prevBtn").addEventListener("click",prev);
-  $("nextBtn").addEventListener("click",()=>{stop();next()});
-  $("playBtn").addEventListener("click",play);
-  $("speedRange").addEventListener("input",()=>{render();if(timer){stop();play()}});
-  ["textInput","patternInput"].forEach(id=>$(id).addEventListener("keydown",e=>{if(e.key==="Enter")setup()}));
-  document.addEventListener("keydown",e=>{
-    if(e.target.tagName==="INPUT")return;
-    if(e.code==="Space"){e.preventDefault();play()}
-    if(e.key==="ArrowLeft"){e.preventDefault();prev()}
-    if(e.key==="ArrowRight"){e.preventDefault();stop();next()}
-  });
-  setup();
+"use strict";
+const $=id=>document.getElementById(id),NS="http://www.w3.org/2000/svg";
+const speedMs={1:1500,2:1120,3:820,4:540,5:340},reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const E={text:$("textInput"),pat:$("patternInput"),example:$("exampleBtn"),apply:$("applyBtn"),error:$("error"),normal:$("normalSvg"),opt:$("optSvg"),nextSum:$("nextSummary"),nextvalSum:$("nextvalSummary"),title:$("stepTitle"),msg:$("stepMessage"),eye:$("stepEyebrow"),badges:$("badges"),status:$("statusPill"),normalCode:$("normalCode"),optCode:$("optCode"),note:$("codeNote"),progress:$("progressBar"),prev:$("prevBtn"),next:$("nextBtn"),reset:$("resetBtn"),play:$("playBtn"),playIcon:$("playIcon"),speed:$("speedRange"),count:$("stepCount")};
+const codeLines=[
+ {t:"KMP(S, P, table)",k:"section"},{t:"i = 1; j = 1"},{t:"while i <= |S| and j <= |P|:"},{t:"    if j == 0 or S[i] == P[j]:"},{t:"        i++; j++"},{t:"    else:"},{t:"        j = table[j]"},{t:"return i - |P| if j > |P| else NOT_FOUND"}
+];
+let frames=[],current=0,playing=false,timer=null,exampleIndex=0;
+const examples=[["aaabaaaabaaaab","aaaab"],["ababababca","ababca"],["aaaaabaaaaab","aaaab"],["ababcabcacbab","abcac"]];
+function nextTable(p){const m=p.length,a=Array(m+1).fill(0);if(!m)return a;a[1]=0;let i=1,j=0;while(i<m){if(j===0||p[i-1]===p[j-1]){i++;j++;a[i]=j}else j=a[j]}return a}
+function nextvalTable(p,next){const m=p.length,a=Array(m+1).fill(0);if(!m)return a;a[1]=0;let i=1,j=0;while(i<m){if(j===0||p[i-1]===p[j-1]){i++;j++;if(p[i-1]!==p[j-1])a[i]=j;else a[i]=a[j]}else j=a[j]}return a}
+function trace(s,p,table){let i=1,j=1,cmp=0;const out=[{i,j,cmp,kind:"start",line:1,title:"从首字符开始",msg:"i = 1，j = 1。"}];let guard=0;while(i<=s.length&&j<=p.length&&guard++<500){if(j===0){out.push({i,j,cmp,kind:"jump0",line:3,title:"j = 0",msg:"模式串已回退到表首：主串前进一位，模式串从第 1 位重新比较。"});i++;j++;out.push({i,j,cmp,kind:"move",line:4,title:"继续比较",msg:`i → ${i}，j → ${j}。`});continue}cmp++;const eq=s[i-1]===p[j-1];out.push({i,j,cmp,kind:eq?"match":"mismatch",line:3,title:eq?"字符匹配":"发生失配",msg:`S[${i}] = ${s[i-1]}，P[${j}] = ${p[j-1]}：${eq?"相等":"不相等"}。`});if(eq){i++;j++;out.push({i,j,cmp,kind:"move",line:4,title:"双指针前进",msg:`i → ${i}，j → ${j}。`})}else{const old=j;j=table[j];out.push({i,j,cmp,kind:"fallback",line:6,title:"模式串回退",msg:`主串 i 不回退；j: ${old} → table[${old}] = ${j}。`,from:old,to:j})}}
+const found=j>p.length;out.push({i,j,cmp,kind:found?"done":"fail",line:7,title:found?"匹配成功":"匹配失败",msg:found?`起始位置 = ${i-p.length}（1-based）。`:"主串扫描结束，未找到模式串。"});return out}
+function build(){pause();const s=E.text.value.trim(),p=E.pat.value.trim();if(!s||!p){E.error.textContent="主串和模式串均不能为空。";return}if([...s].length>24||[...p].length>12){E.error.textContent="为保证动画清晰，主串最多 24 个字符，模式串最多 12 个字符。";return}if(p.length>s.length){E.error.textContent="模式串长度不能超过主串。";return}E.error.textContent="";const nt=nextTable(p),nv=nextvalTable(p,nt),a=trace(s,p,nt),b=trace(s,p,nv),len=Math.max(a.length,b.length);frames=Array.from({length:len},(_,k)=>({a:a[Math.min(k,a.length-1)],b:b[Math.min(k,b.length-1)],s,p,nt,nv}));current=0;render()}
+function svg(name,attrs={}){const n=document.createElementNS(NS,name);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,String(v)));return n}
+function tx(x,y,t,cls){const n=svg("text",{x,y,class:cls});n.textContent=t;return n}
+function draw(target,state,s,p,table,label){target.innerHTML="";const W=560,cw=Math.min(34,470/Math.max(1,s.length)),x0=58,yS=70,yP=138,align=Math.max(0,state.i-state.j);const start=x0+align*cw;
+for(let k=0;k<s.length;k++){const x=x0+k*cw;let cls="cell";if(k===state.i-1&&state.j>0)cls+=" hot";target.appendChild(svg("rect",{x,y:yS,width:cw-2,height:34,rx:8,class:cls}));target.appendChild(tx(x+(cw-2)/2,yS+17,s[k],"ch"));target.appendChild(tx(x+(cw-2)/2,yS-8,k+1,"idx"))}
+for(let k=0;k<p.length;k++){const x=start+k*cw;let cls="cell";if(k===state.j-1&&state.j>0)cls+=state.kind==="mismatch"?" bad":" hot";target.appendChild(svg("rect",{x,y:yP,width:cw-2,height:34,rx:8,class:cls}));target.appendChild(tx(x+(cw-2)/2,yP+17,p[k],"ch"));target.appendChild(tx(x+(cw-2)/2,yP+48,table[k+1],"table-value"+(k+1===state.j?" hot":"")))}
+target.appendChild(tx(48,yS+18,"S","row-label"));target.appendChild(tx(48,yP+18,"P","row-label"));target.appendChild(tx(48,yP+48,label,"row-label"));
+if(state.i<=s.length)target.appendChild(tx(x0+(state.i-1)*cw+(cw-2)/2,yS+48,"i","ptr"));if(state.j>0&&state.j<=p.length)target.appendChild(tx(start+(state.j-1)*cw+(cw-2)/2,yP-10,"j","ptr"));
+if(state.kind==="fallback"){const y=208;target.appendChild(svg("line",{x1:start+(state.from-1)*cw+(cw-2)/2,y1:y,x2:start+Math.max(0,state.to-1)*cw+(cw-2)/2,y2:y,class:"shift-line"}));}
+if(state.kind==="done"){target.appendChild(svg("rect",{x:start-3,y:yP-3,width:p.length*cw+4,height:40,rx:10,fill:"none",stroke:"rgba(103,212,155,.65)","stroke-width":"2"}))}
+}
+function renderCode(box,line){box.innerHTML="";codeLines.forEach((it,i)=>{const r=document.createElement("span");r.className="code-line"+(it.k?" "+it.k:"")+(i===line?" active":"")+(Math.abs(i-line)===1?" near":"");const no=document.createElement("span");no.className="no";no.textContent=it.k?"":String(i+1).padStart(2,"0");const t=document.createElement("span");t.textContent=it.t;r.append(no,t);box.appendChild(r)})}
+function render(){if(!frames.length)return;const f=frames[current];draw(E.normal,f.a,f.s,f.p,f.nt,"next");draw(E.opt,f.b,f.s,f.p,f.nv,"nextval");renderCode(E.normalCode,f.a.line);renderCode(E.optCode,f.b.line);E.nextSum.textContent="next = "+f.nt.slice(1).join(" · ");E.nextvalSum.textContent="nextval = "+f.nv.slice(1).join(" · ");E.eye.textContent=`STEP ${current+1}`;E.title.textContent=f.a.title===f.b.title?f.a.title:"对照执行";E.msg.textContent=`普通：${f.a.msg}　优化：${f.b.msg}`;E.badges.innerHTML=`<span class="badge">普通比较 <strong>${f.a.cmp}</strong></span><span class="badge">优化比较 <strong>${f.b.cmp}</strong></span><span class="badge">节省 <strong>${Math.max(0,f.a.cmp-f.b.cmp)}</strong></span>`;const done=f.a.kind==="done"&&f.b.kind==="done";E.status.className="status-pill"+(done?" good":"");E.status.textContent=done?"对比完成":"匹配中";E.note.innerHTML="<strong>观察重点：</strong>nextval 只改变失配后的 j 跳转位置；主串 i 仍不回退。模式串存在连续重复字符时，nextval 可避免明显无效比较。";E.count.textContent=`${current+1} / ${frames.length}`;E.progress.style.width=`${(current+1)/frames.length*100}%`;update()}
+function update(){E.prev.disabled=current===0;E.next.disabled=current===frames.length-1;E.reset.disabled=current===0&&!playing;E.play.setAttribute("aria-label",playing?"暂停":"播放");E.playIcon.innerHTML=playing?'<path d="M7.7 6.5h3v11h-3zm5.6 0h3v11h-3z" fill="currentColor"/>':'<path d="M8.4 6.7c0-1 1.1-1.6 1.9-1l7.9 5.1c.8.5.8 1.7 0 2.2l-7.9 5.2c-.8.5-1.9-.1-1.9-1V6.7Z" fill="currentColor"/>'}
+function pause(){playing=false;clearTimeout(timer);timer=null;update()}function schedule(){clearTimeout(timer);if(!playing)return;timer=setTimeout(()=>{if(current>=frames.length-1){pause();return}current++;render();schedule()},speedMs[E.speed.value])}function play(){if(playing){pause();return}if(current>=frames.length-1)current=0;playing=true;render();schedule()}function go(d){pause();current=Math.max(0,Math.min(frames.length-1,current+d));render()}function reset(){pause();current=0;render()}
+E.example.addEventListener("click",()=>{exampleIndex=(exampleIndex+1)%examples.length;[E.text.value,E.pat.value]=examples[exampleIndex];build()});E.apply.addEventListener("click",build);E.prev.addEventListener("click",()=>go(-1));E.next.addEventListener("click",()=>go(1));E.reset.addEventListener("click",reset);E.play.addEventListener("click",play);E.speed.addEventListener("input",()=>{if(playing)schedule()});[E.text,E.pat].forEach(x=>x.addEventListener("keydown",e=>{if(e.key==="Enter")build()}));document.addEventListener("keydown",e=>{if(e.defaultPrevented||e.metaKey||e.ctrlKey||e.altKey)return;const tag=e.target?.tagName?.toLowerCase();if(tag==="input"||tag==="button"||e.target?.isContentEditable)return;if(e.code==="Space"){e.preventDefault();play()}else if(e.code==="ArrowLeft"){e.preventDefault();go(-1)}else if(e.code==="ArrowRight"){e.preventDefault();go(1)}else if(e.code==="KeyR"){e.preventDefault();reset()}});
+build();
 })();
-</script>
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e"}' crossorigin="anonymous"></script>
-</body>
-</html>
+</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e","spa":2}' crossorigin="anonymous"></script>
+</body></html>

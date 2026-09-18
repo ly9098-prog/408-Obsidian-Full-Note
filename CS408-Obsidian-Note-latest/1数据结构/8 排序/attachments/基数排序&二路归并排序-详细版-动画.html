@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>排序 · 2D 动画</title>
+<style>
+  :root{
+    color-scheme:dark;
+    --bg:#07090d;
+    --bg2:#0b0e14;
+    --glass:rgba(18,21,28,.62);
+    --glass-strong:rgba(24,28,36,.78);
+    --stroke:rgba(255,255,255,.09);
+    --stroke-strong:rgba(255,255,255,.15);
+    --text:#f5f7fb;
+    --muted:#9299a8;
+    --muted2:#676e7c;
+    --accent:#78b8ff;
+    --accent2:#9bd0ff;
+    --good:#79d7b0;
+    --warn:#ffd37a;
+    --danger:#ff8e9b;
+    --shadow:0 24px 80px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.05);
+    --radius:28px;
+    --ease:cubic-bezier(.2,.78,.2,1);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    min-height:100%;
+    background:
+      radial-gradient(900px 520px at 18% -8%, rgba(64,116,188,.16), transparent 62%),
+      radial-gradient(720px 480px at 88% 4%, rgba(115,82,168,.10), transparent 60%),
+      linear-gradient(180deg,var(--bg),#05070a 72%);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",sans-serif;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:"";
+    position:fixed; inset:0; pointer-events:none; opacity:.16;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
+    mix-blend-mode:soft-light;
+  }
+  .app{width:min(1220px,calc(100% - 32px)); margin:0 auto; padding:28px 0 36px; position:relative;}
+  .topbar{display:flex; align-items:center; justify-content:space-between; gap:18px; margin-bottom:16px;}
+  .brand{display:flex; align-items:center; gap:12px; min-width:0;}
+  .mark{
+    width:34px;height:34px;border-radius:11px;
+    display:grid;place-items:center;
+    background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.045));
+    border:1px solid var(--stroke);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 10px 24px rgba(0,0,0,.22);
+  }
+  .mark svg{width:18px;height:18px;opacity:.9}
+  h1{font-size:18px; line-height:1; margin:0; letter-spacing:-.02em; font-weight:650;}
+  .segmented{
+    display:inline-flex; padding:4px; gap:2px; border-radius:14px;
+    background:rgba(255,255,255,.045); border:1px solid var(--stroke);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+  }
+  .segmented button{
+    position:relative; isolation:isolate;
+    border:0; color:var(--muted); background:transparent; cursor:pointer;
+    padding:9px 14px; border-radius:10px; font:inherit; font-size:13px; font-weight:600;
+    transition:color .24s var(--ease), transform .18s var(--ease);
+  }
+  .segmented button::before{
+    content:""; position:absolute; inset:0; z-index:-1; border-radius:10px;
+    background:rgba(255,255,255,.085); border:1px solid rgba(255,255,255,.07);
+    opacity:0; transform:scale(.96); transition:.24s var(--ease);
+  }
+  .segmented button.active{color:var(--text)}
+  .segmented button.active::before{opacity:1; transform:scale(1)}
+  .segmented button:active{transform:scale(.97)}
+
+  .stage-shell{
+    position:relative; overflow:hidden; border-radius:var(--radius);
+    background:linear-gradient(180deg,rgba(24,28,36,.70),rgba(12,15,21,.56));
+    border:1px solid var(--stroke);
+    box-shadow:var(--shadow);
+    backdrop-filter:blur(28px) saturate(135%);
+    -webkit-backdrop-filter:blur(28px) saturate(135%);
+  }
+  .stage-shell::before{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background:linear-gradient(135deg,rgba(255,255,255,.05),transparent 24%,transparent 75%,rgba(255,255,255,.018));
+  }
+  #viz{display:block; width:100%; height:auto; aspect-ratio:16/8.7; min-height:540px;}
+
+  .controlbar{
+    display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:12px;
+    margin-top:14px; padding:12px;
+    border-radius:20px;
+    background:rgba(15,18,24,.58); border:1px solid var(--stroke);
+    backdrop-filter:blur(22px) saturate(130%); -webkit-backdrop-filter:blur(22px) saturate(130%);
+    box-shadow:0 18px 50px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.035);
+  }
+  .progress-wrap{display:flex; align-items:center; gap:12px; min-width:0;}
+  .step-count{font-variant-numeric:tabular-nums; font-size:12px; color:var(--muted); white-space:nowrap; min-width:64px;}
+  .progress{height:5px; background:rgba(255,255,255,.065); border-radius:999px; overflow:hidden; flex:1; min-width:80px;}
+  .progress > i{display:block; width:0; height:100%; border-radius:inherit; background:linear-gradient(90deg,var(--accent),var(--accent2)); transition:width .32s var(--ease); box-shadow:0 0 16px rgba(120,184,255,.28);}
+  .buttons{display:flex; align-items:center; justify-content:center; gap:8px;}
+  .btn{
+    border:1px solid var(--stroke); background:rgba(255,255,255,.055); color:var(--text);
+    height:38px; padding:0 13px; border-radius:12px; font:inherit; font-size:13px; font-weight:620;
+    display:inline-flex; align-items:center; justify-content:center; gap:8px; cursor:pointer;
+    transition:transform .16s var(--ease), background .2s var(--ease), border-color .2s var(--ease), opacity .2s;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.035);
+  }
+  .btn.icon{width:40px; padding:0;}
+  .btn.primary{background:rgba(120,184,255,.16); border-color:rgba(120,184,255,.28); color:#eaf5ff;}
+  .btn:hover:not(:disabled){background:rgba(255,255,255,.09); border-color:var(--stroke-strong)}
+  .btn.primary:hover:not(:disabled){background:rgba(120,184,255,.22)}
+  .btn:active:not(:disabled){transform:scale(.96)}
+  .btn:disabled{opacity:.32; cursor:not-allowed}
+  .btn svg{width:15px;height:15px;display:block}
+  .right-controls{display:flex; justify-content:flex-end; align-items:center; gap:8px;}
+  .speed{
+    height:38px; border:1px solid var(--stroke); background:rgba(255,255,255,.045); color:var(--muted);
+    border-radius:12px; padding:0 10px; font:inherit; font-size:12px; font-weight:600; outline:none; cursor:pointer;
+  }
+  .kbdhint{font-size:11px; color:var(--muted2); margin-top:10px; text-align:center; letter-spacing:.01em;}
+  kbd{font:inherit; color:#aeb5c1; border:1px solid rgba(255,255,255,.08); border-bottom-color:rgba(255,255,255,.13); padding:1px 5px; border-radius:5px; background:rgba(255,255,255,.035);}
+  button:focus-visible,select:focus-visible{outline:2px solid rgba(120,184,255,.65); outline-offset:2px}
+
+  /* SVG */
+  #viz .eyebrow{fill:#7d8595;font-size:12px;font-weight:650;letter-spacing:.08em;text-transform:uppercase}
+  #viz .title{fill:#f5f7fb;font-size:23px;font-weight:680;letter-spacing:-.025em}
+  #viz .sub{fill:#9aa2b1;font-size:13px;font-weight:520}
+  #viz .small{fill:#7d8595;font-size:11px;font-weight:560}
+  #viz .slot{fill:rgba(255,255,255,.022);stroke:rgba(255,255,255,.075);stroke-width:1}
+  #viz .slot.active{stroke:rgba(120,184,255,.36);fill:rgba(120,184,255,.055)}
+  #viz .token{transform-box:fill-box;transform-origin:center}
+  #viz .token rect{fill:rgba(255,255,255,.075);stroke:rgba(255,255,255,.13);stroke-width:1;filter:url(#tokenShadow)}
+  #viz .token text{fill:#f6f8fb;font-size:15px;font-weight:690;text-anchor:middle;dominant-baseline:middle;font-variant-numeric:tabular-nums}
+  #viz .token.active rect{fill:rgba(120,184,255,.18);stroke:rgba(120,184,255,.54)}
+  #viz .token.compare rect{fill:rgba(255,211,122,.13);stroke:rgba(255,211,122,.50)}
+  #viz .token.done rect{fill:rgba(121,215,176,.12);stroke:rgba(121,215,176,.34)}
+  #viz .connector{stroke:rgba(255,255,255,.08);stroke-width:1.2;fill:none}
+  #viz .connector.active{stroke:rgba(120,184,255,.35);stroke-width:1.5}
+  #viz .node rect{fill:rgba(255,255,255,.028);stroke:rgba(255,255,255,.08);stroke-width:1}
+  #viz .node text{fill:#a9b0bd;font-size:11px;font-weight:620;text-anchor:middle;dominant-baseline:middle}
+  #viz .node.active rect{fill:rgba(120,184,255,.08);stroke:rgba(120,184,255,.35)}
+  #viz .glassBox{fill:rgba(255,255,255,.025);stroke:rgba(255,255,255,.075);stroke-width:1}
+  #viz .bucketLabel{fill:#727a89;font-size:11px;font-weight:700;text-anchor:middle}
+  #viz .bucket.active .bucketShell{stroke:rgba(120,184,255,.38);fill:rgba(120,184,255,.045)}
+  #viz .resultSlot{fill:rgba(121,215,176,.025);stroke:rgba(121,215,176,.15);stroke-width:1}
+  #viz .divider{stroke:rgba(255,255,255,.055);stroke-width:1}
+  #viz .chip{fill:rgba(120,184,255,.10);stroke:rgba(120,184,255,.20);stroke-width:1}
+  #viz .chipText{fill:#bfe1ff;font-size:11px;font-weight:680;text-anchor:middle;dominant-baseline:middle}
+  #viz .appear{animation:svgAppear .42s var(--ease) both; transform-box:fill-box; transform-origin:center}
+  @keyframes svgAppear{from{opacity:0;transform:translateY(5px) scale(.985)}to{opacity:1;transform:none}}
+
+  @media (max-width:820px){
+    .app{width:min(100% - 18px,1220px);padding-top:14px}
+    .topbar{align-items:flex-start;flex-direction:column}
+    .segmented{width:100%}.segmented button{flex:1}
+    #viz{min-height:600px;aspect-ratio:1/1.05}
+    .controlbar{grid-template-columns:1fr;gap:10px}
+    .progress-wrap{order:2}.buttons{order:1}.right-controls{order:3;justify-content:center}
+    .kbdhint{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;transition-duration:.001ms!important}
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="mark" aria-hidden="true">
+        <svg viewBox="0 0 20 20" fill="none">
+          <rect x="2.5" y="3" width="5" height="14" rx="2" fill="rgba(255,255,255,.72)"/>
+          <rect x="8.5" y="6" width="4" height="11" rx="2" fill="rgba(255,255,255,.46)"/>
+          <rect x="13.5" y="9" width="4" height="8" rx="2" fill="rgba(120,184,255,.88)"/>
+        </svg>
+      </div>
+      <h1>排序 · 2D 动画</h1>
+    </div>
+    <nav class="segmented" aria-label="选择排序算法">
+      <button class="active" data-algo="radix">基数排序</button>
+      <button data-algo="merge">二路归并</button>
+    </nav>
+  </header>
+
+  <section class="stage-shell" aria-label="排序动画区域">
+    <svg id="viz" viewBox="0 0 1200 650" role="img" aria-labelledby="svgTitle svgDesc" preserveAspectRatio="xMidYMid meet">
+      <title id="svgTitle">排序算法二维动画</title>
+      <desc id="svgDesc">逐步展示基数排序与二路归并排序的每个拆分、比较和移动动作。</desc>
+      <defs>
+        <filter id="tokenShadow" x="-50%" y="-50%" width="200%" height="200%">
+          <feDropShadow dx="0" dy="7" stdDeviation="8" flood-color="#000" flood-opacity=".22"/>
+        </filter>
+      </defs>
+      <g id="scene"></g>
+    </svg>
+  </section>
+
+  <section class="controlbar" aria-label="动画控制">
+    <div class="progress-wrap">
+      <span class="step-count" id="stepCount">01 / 01</span>
+      <div class="progress" aria-hidden="true"><i id="progressBar"></i></div>
+    </div>
+    <div class="buttons">
+      <button class="btn icon" id="resetBtn" aria-label="重置" title="重置 (R)">
+        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 7.2A6.2 6.2 0 1 1 4 13" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M4.4 3.8v3.8h3.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="btn" id="prevBtn" aria-label="上一步"><span aria-hidden="true">←</span> 上一步</button>
+      <button class="btn primary icon" id="playBtn" aria-label="播放" title="播放 / 暂停 (Space)">
+        <svg id="playIcon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7 5.2v9.6L15 10 7 5.2Z" fill="currentColor"/></svg>
+      </button>
+      <button class="btn" id="nextBtn" aria-label="下一步">下一步 <span aria-hidden="true">→</span></button>
+    </div>
+    <div class="right-controls">
+      <select class="speed" id="speedSelect" aria-label="播放速度">
+        <option value="1.25">0.75×</option>
+        <option value="0.9" selected>1×</option>
+        <option value="0.62">1.5×</option>
+        <option value="0.42">2×</option>
+      </select>
+    </div>
+  </section>
+  <div class="kbdhint"><kbd>←</kbd> <kbd>→</kbd> 步进 · <kbd>Space</kbd> 播放 · <kbd>R</kbd> 重置 · <kbd>1</kbd>/<kbd>2</kbd> 切换</div>
+</main>
+
+<script>
+(() => {
+  'use strict';
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const values = [170,45,75,90,802,24,2,66];
+  const baseItems = values.map((value,id)=>({id,value}));
+  const scene = document.getElementById('scene');
+  const stepCount = document.getElementById('stepCount');
+  const progressBar = document.getElementById('progressBar');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const playBtn = document.getElementById('playBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const speedSelect = document.getElementById('speedSelect');
+  const algoButtons = [...document.querySelectorAll('[data-algo]')];
+
+  const motion = { duration: 520 };
+  let algo = 'radix';
+  let index = 0;
+  let playing = false;
+  let playTimer = null;
+
+  const cloneItems = arr => arr.map(x=>({...x}));
+  const digitName = exp => exp===1?'个位':exp===10?'十位':exp===100?'百位':`${exp} 位`;
+  const esc = s => String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+  function buildRadixSteps(items){
+    const steps=[];
+    let order=cloneItems(items);
+    let positions={};
+    order.forEach((it,i)=>positions[it.id]={zone:'array',index:i});
+    const snapshot=(meta)=>steps.push({
+      type:'radix', order:cloneItems(order),
+      positions:JSON.parse(JSON.stringify(positions)), ...meta
+    });
+    snapshot({phase:'ready',exp:1,label:'初始序列',detail:'从最低位开始，按位稳定排序'});
+    const max=Math.max(...order.map(x=>x.value));
+    for(let exp=1; Math.floor(max/exp)>0; exp*=10){
+      const name=digitName(exp);
+      const buckets=Array.from({length:10},()=>[]);
+      snapshot({phase:'phase',exp,label:`${name} · 分配`,detail:'按当前位数字，逐个放入对应桶'});
+      for(let i=0;i<order.length;i++){
+        const it=order[i];
+        const d=Math.floor(it.value/exp)%10;
+        positions[it.id]={zone:'bucket',bucket:d,index:buckets[d].length};
+        buckets[d].push(it);
+        snapshot({phase:'distribute',exp,activeId:it.id,activeBucket:d,label:`${name} · ${it.value} → 桶 ${d}`,detail:`第 ${i+1} / ${order.length} 个元素入桶`});
+      }
+      const gathered=buckets.flat();
+      positions={};
+      gathered.forEach(it=>positions[it.id]={zone:'bucket',bucket:Math.floor(it.value/exp)%10,index:buckets[Math.floor(it.value/exp)%10].findIndex(x=>x.id===it.id)});
+      snapshot({phase:'collect-start',exp,label:`${name} · 收集`,detail:'从 0 到 9 号桶，保持桶内原顺序依次回写'});
+      for(let i=0;i<gathered.length;i++){
+        const it=gathered[i];
+        positions[it.id]={zone:'array',index:i};
+        snapshot({phase:'collect',exp,activeId:it.id,label:`${name} · ${it.value} → 第 ${i+1} 位`,detail:`第 ${i+1} / ${gathered.length} 个元素回写`});
+      }
+      order=cloneItems(gathered);
+      // Normalize all array positions in the now-current order.
+      order.forEach((it,i)=>positions[it.id]={zone:'array',index:i});
+      snapshot({phase:'pass-done',exp,label:`${name} · 完成`,detail:`当前序列：${order.map(x=>x.value).join('  ')}`});
+    }
+    snapshot({phase:'done',exp:1,label:'排序完成',detail:`${order.map(x=>x.value).join('  ')}`});
+    return steps;
+  }
+
+  function buildMergeSteps(items){
+    const steps=[];
+    const allNodes=new Map();
+    const visible=new Set();
+    let nodeSeq=0;
+    const rootId='n'+(nodeSeq++);
+    allNodes.set(rootId,{id:rootId,start:0,end:items.length-1,depth:0,items:cloneItems(items),parent:null});
+    visible.add(rootId);
+    const snapshot=(meta)=>steps.push({
+      type:'merge',
+      nodes:[...allNodes.values()].map(n=>({...n,items:cloneItems(n.items)})),
+      visible:[...visible],
+      ...meta,
+      left:meta.left?cloneItems(meta.left):[],
+      right:meta.right?cloneItems(meta.right):[],
+      result:meta.result?cloneItems(meta.result):[]
+    });
+    snapshot({phase:'ready',label:'初始序列',detail:'先递归二分，再由小到大两两归并',activeNode:rootId});
+
+    function split(nodeId){
+      const node=allNodes.get(nodeId);
+      if(node.start===node.end) return;
+      const mid=Math.floor((node.start+node.end)/2);
+      const leftItems=node.items.slice(0,mid-node.start+1);
+      const rightItems=node.items.slice(mid-node.start+1);
+      const l='n'+(nodeSeq++), r='n'+(nodeSeq++);
+      const ln={id:l,start:node.start,end:mid,depth:node.depth+1,items:cloneItems(leftItems),parent:nodeId};
+      const rn={id:r,start:mid+1,end:node.end,depth:node.depth+1,items:cloneItems(rightItems),parent:nodeId};
+      allNodes.set(l,ln); allNodes.set(r,rn); visible.add(l); visible.add(r);
+      node.left=l; node.right=r;
+      snapshot({phase:'split',label:`拆分 · [${node.start+1}–${node.end+1}]`,detail:`[${leftItems.map(x=>x.value).join(', ')}]  |  [${rightItems.map(x=>x.value).join(', ')}]`,activeNode:nodeId,childNodes:[l,r]});
+      split(l); split(r);
+    }
+    split(rootId);
+
+    function mergeNode(nodeId){
+      const node=allNodes.get(nodeId);
+      if(!node.left || !node.right) return cloneItems(node.items);
+      const leftSorted=mergeNode(node.left);
+      const rightSorted=mergeNode(node.right);
+      let i=0,j=0,result=[];
+      snapshot({phase:'merge-start',label:`归并 · [${node.start+1}–${node.end+1}]`,detail:'比较两路首元素，较小者写入结果',activeNode:nodeId,left:leftSorted,right:rightSorted,result});
+      while(i<leftSorted.length && j<rightSorted.length){
+        const a=leftSorted[i], b=rightSorted[j];
+        snapshot({phase:'compare',label:`比较 · ${a.value} 与 ${b.value}`,detail:`结果位置 ${result.length+1}`,activeNode:nodeId,left:leftSorted,right:rightSorted,result,compareIds:[a.id,b.id],leftIndex:i,rightIndex:j});
+        if(a.value<=b.value){
+          result.push(a); i++;
+          snapshot({phase:'write',label:`写入 · ${a.value}`,detail:`${a.value} ≤ ${b.value}，取左路`,activeNode:nodeId,left:leftSorted,right:rightSorted,result,activeId:a.id,leftIndex:i,rightIndex:j});
+        }else{
+          result.push(b); j++;
+          snapshot({phase:'write',label:`写入 · ${b.value}`,detail:`${b.value} < ${a.value}，取右路`,activeNode:nodeId,left:leftSorted,right:rightSorted,result,activeId:b.id,leftIndex:i,rightIndex:j});
+        }
+      }
+      while(i<leftSorted.length){
+        const a=leftSorted[i++]; result.push(a);
+        snapshot({phase:'remainder',label:`写入剩余 · ${a.value}`,detail:'右路已空，左路剩余元素按原顺序写入',activeNode:nodeId,left:leftSorted,right:rightSorted,result,activeId:a.id,leftIndex:i,rightIndex:j});
+      }
+      while(j<rightSorted.length){
+        const b=rightSorted[j++]; result.push(b);
+        snapshot({phase:'remainder',label:`写入剩余 · ${b.value}`,detail:'左路已空，右路剩余元素按原顺序写入',activeNode:nodeId,left:leftSorted,right:rightSorted,result,activeId:b.id,leftIndex:i,rightIndex:j});
+      }
+      node.items=cloneItems(result);
+      snapshot({phase:'merge-done',label:`归并完成 · [${node.start+1}–${node.end+1}]`,detail:`[${result.map(x=>x.value).join(', ')}]`,activeNode:nodeId,left:leftSorted,right:rightSorted,result});
+      return cloneItems(result);
+    }
+    const sorted=mergeNode(rootId);
+    snapshot({phase:'done',label:'排序完成',detail:sorted.map(x=>x.value).join('  '),activeNode:rootId,left:[],right:[],result:sorted});
+    return steps;
+  }
+
+  const stepsByAlgo={radix:buildRadixSteps(baseItems), merge:buildMergeSteps(baseItems)};
+
+  function svgEl(name,attrs={},parent=scene){
+    const el=document.createElementNS(SVG_NS,name);
+    for(const [k,v] of Object.entries(attrs)){
+      if(v===null || v===undefined) continue;
+      if(k==='class') el.setAttribute('class',v); else el.setAttribute(k,String(v));
+    }
+    parent.appendChild(el); return el;
+  }
+  function textEl(x,y,text,cls,parent=scene,anchor=null){
+    const el=svgEl('text',{x,y,class:cls,'text-anchor':anchor},parent); el.textContent=text; return el;
+  }
+  function roundedRect(x,y,w,h,r,cls,parent=scene){return svgEl('rect',{x,y,width:w,height:h,rx:r,class:cls},parent)}
+
+  function token(parent,item,x,y,{active=false,compare=false,done=false,w=64,h=46}={}){
+    const outer=svgEl('g',{class:'token-wrap','data-id':item.id,transform:`translate(${x} ${y})`},parent);
+    const g=svgEl('g',{class:`token${active?' active':''}${compare?' compare':''}${done?' done':''}`},outer);
+    roundedRect(0,0,w,h,13,'',g);
+    textEl(w/2,h/2+1,item.value,'',g,'middle');
+    return outer;
+  }
+
+  function capturePositions(){
+    const map=new Map();
+    scene.querySelectorAll('.token-wrap[data-id]').forEach(el=>{
+      const id=el.getAttribute('data-id');
+      const r=el.getBoundingClientRect();
+      if(!map.has(id)) map.set(id,{x:r.left+r.width/2,y:r.top+r.height/2});
+    });
+    return map;
+  }
+  function animateFlip(before){
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const seen=new Set();
+    scene.querySelectorAll('.token-wrap[data-id]').forEach(el=>{
+      const id=el.getAttribute('data-id');
+      if(seen.has(id)) return; // animate only primary occurrence in complex merge scene
+      seen.add(id);
+      const prev=before.get(id); const inner=el.querySelector('.token') || el;
+      if(!prev){
+        inner.animate([{opacity:0,transform:'translateY(6px) scale(.96)'},{opacity:1,transform:'none'}],{duration:360,easing:'cubic-bezier(.2,.78,.2,1)'}); return;
+      }
+      const r=el.getBoundingClientRect();
+      const now={x:r.left+r.width/2,y:r.top+r.height/2};
+      const dx=prev.x-now.x,dy=prev.y-now.y;
+      if(Math.abs(dx)<1 && Math.abs(dy)<1) return;
+      inner.animate([
+        {transform:`translate(${dx}px,${dy}px) scale(.985)`},
+        {transform:'translate(0,0) scale(1)'}
+      ],{duration:motion.duration,easing:'cubic-bezier(.2,.78,.2,1)'});
+    });
+  }
+
+  function renderRadix(s){
+    textEl(48,49,'RADIX SORT','eyebrow');
+    textEl(48,82,s.label,'title');
+    textEl(48,106,s.detail,'sub');
+    const chip=svgEl('g',{class:'appear'}); roundedRect(1008,46,142,32,16,'chip',chip); textEl(1079,62,`${digitName(s.exp)} · 10 进制`,'chipText',chip,'middle');
+    svgEl('line',{x1:48,y1:132,x2:1152,y2:132,class:'divider'});
+
+    textEl(48,164,'当前序列','small');
+    const startX=302, topY=184, gap=76, w=64,h=46;
+    for(let i=0;i<baseItems.length;i++) roundedRect(startX+i*gap,topY,w,h,13,`slot${s.phase==='collect' && s.positions[s.activeId]?.index===i?' active':''}`);
+
+    const bucketTop=318, bucketW=96, bucketGap=8, bucketStart=76;
+    textEl(48,286,'桶','small');
+    for(let b=0;b<10;b++){
+      const x=bucketStart+b*(bucketW+bucketGap);
+      const g=svgEl('g',{class:`bucket${s.activeBucket===b?' active':''}`});
+      roundedRect(x,bucketTop,bucketW,248,18,'bucketShell',g);
+      textEl(x+bucketW/2,bucketTop+24,String(b),'bucketLabel',g,'middle');
+      svgEl('line',{x1:x+14,y1:bucketTop+38,x2:x+bucketW-14,y2:bucketTop+38,class:'divider'},g);
+    }
+
+    // Bucket occupancy by current positions.
+    const bucketMembers=Array.from({length:10},()=>[]);
+    for(const it of baseItems){
+      const p=s.positions[it.id]; if(p?.zone==='bucket') bucketMembers[p.bucket].push({it,p});
+    }
+    bucketMembers.forEach(arr=>arr.sort((a,b)=>a.p.index-b.p.index));
+
+    // Array tokens
+    for(const it of baseItems){
+      const p=s.positions[it.id]; if(!p) continue;
+      if(p.zone==='array') token(scene,it,startX+p.index*gap,topY,{active:it.id===s.activeId,done:s.phase==='done'});
+      else{
+        const x=bucketStart+p.bucket*(bucketW+bucketGap)+(bucketW-w)/2;
+        const y=bucketTop+55+p.index*52;
+        token(scene,it,x,y,{active:it.id===s.activeId,w,h});
+      }
+    }
+
+    // digit hint line
+    const example=s.activeId!==undefined?baseItems.find(x=>x.id===s.activeId):null;
+    if(example && s.phase==='distribute'){
+      const d=Math.floor(example.value/s.exp)%10;
+      textEl(48,608,`${example.value}  →  当前位 = ${d}`,'sub');
+    } else if(s.phase==='done'){
+      textEl(48,608,'稳定排序完成','sub');
+    } else {
+      textEl(48,608,'每一次移动均保留为独立步骤','sub');
+    }
+  }
+
+  function nodeLayout(node){
+    const unit=128;
+    const start=152 + node.start*unit;
+    const end=152 + node.end*unit;
+    return {x:(start+end)/2,y:170+node.depth*65,w:Math.max(68,(node.end-node.start+1)*unit-20)};
+  }
+
+  function renderMerge(s){
+    textEl(48,49,'TWO-WAY MERGE','eyebrow');
+    textEl(48,82,s.label,'title');
+    textEl(48,106,s.detail,'sub');
+    svgEl('line',{x1:48,y1:132,x2:1152,y2:132,class:'divider'});
+
+    const visible=new Set(s.visible);
+    const byId=new Map(s.nodes.map(n=>[n.id,n]));
+    // connectors first
+    for(const n of s.nodes){
+      if(!visible.has(n.id)||!n.parent||!visible.has(n.parent)) continue;
+      const a=nodeLayout(byId.get(n.parent)), b=nodeLayout(n);
+      svgEl('path',{d:`M ${a.x} ${a.y+18} C ${a.x} ${a.y+38}, ${b.x} ${b.y-30}, ${b.x} ${b.y-18}`,class:`connector${s.activeNode===n.parent?' active':''}`});
+    }
+    // tree nodes
+    for(const n of s.nodes){
+      if(!visible.has(n.id)) continue;
+      const l=nodeLayout(n), active=s.activeNode===n.id;
+      const g=svgEl('g',{class:`node appear${active?' active':''}`});
+      roundedRect(l.x-l.w/2,l.y-18,l.w,36,11,'',g);
+      const val=n.items.map(x=>x.value).join(' · ');
+      textEl(l.x,l.y+1,val,'',g,'middle');
+    }
+
+    const focusY=445;
+    if(['merge-start','compare','write','remainder','merge-done','done'].includes(s.phase)){
+      roundedRect(48,410,1104,190,22,'glassBox');
+      textEl(72,438,s.phase==='done'?'最终结果':'当前归并','small');
+      if(s.phase==='done'){
+        const gap=76, sx=254;
+        s.result.forEach((it,i)=>token(scene,it,sx+i*gap,485,{done:true}));
+      }else{
+        textEl(72,477,'左路','small'); textEl(72,533,'右路','small'); textEl(650,477,'结果','small');
+        const smallW=54, smallH=40, g=58;
+        const li=s.leftIndex ?? 0, ri=s.rightIndex ?? 0;
+        s.left.forEach((it,i)=>{ if(i>=li) token(scene,it,126+i*g,451,{compare:s.compareIds?.includes(it.id),active:s.activeId===it.id,w:smallW,h:smallH}); });
+        s.right.forEach((it,i)=>{ if(i>=ri) token(scene,it,126+i*g,507,{compare:s.compareIds?.includes(it.id),active:s.activeId===it.id,w:smallW,h:smallH}); });
+        for(let i=0;i<Math.max(1,s.left.length+s.right.length);i++) roundedRect(680+i*58,451,54,40,11,'resultSlot');
+        s.result.forEach((it,i)=>token(scene,it,680+i*58,451,{active:s.activeId===it.id,done:s.phase==='merge-done',w:smallW,h:smallH}));
+        if(s.compareIds?.length){
+          textEl(650,548,'逐次比较','small');
+        }else if(s.phase==='remainder'){
+          textEl(650,548,'顺序写入剩余元素','small');
+        }
+      }
+    } else {
+      textEl(48,603,'每一次拆分均保留为独立步骤','sub');
+    }
+  }
+
+  function render({animate=true}={}){
+    const before=animate?capturePositions():new Map();
+    scene.replaceChildren();
+    const step=stepsByAlgo[algo][index];
+    if(algo==='radix') renderRadix(step); else renderMerge(step);
+    requestAnimationFrame(()=>{ if(animate) animateFlip(before); });
+    const total=stepsByAlgo[algo].length;
+    stepCount.textContent=`${String(index+1).padStart(2,'0')} / ${String(total).padStart(2,'0')}`;
+    progressBar.style.width=`${total<=1?100:(index/(total-1))*100}%`;
+    prevBtn.disabled=index===0;
+    nextBtn.disabled=index===total-1;
+    updatePlayIcon();
+  }
+
+  function updatePlayIcon(){
+    playBtn.setAttribute('aria-label',playing?'暂停':'播放');
+    document.getElementById('playIcon').innerHTML=playing
+      ? '<rect x="6" y="5" width="3" height="10" rx="1" fill="currentColor"/><rect x="11" y="5" width="3" height="10" rx="1" fill="currentColor"/>'
+      : '<path d="M7 5.2v9.6L15 10 7 5.2Z" fill="currentColor"/>';
+  }
+  function stop(){playing=false;clearTimeout(playTimer);playTimer=null;updatePlayIcon()}
+  function stepBy(delta){
+    stop();
+    const total=stepsByAlgo[algo].length;
+    const next=Math.max(0,Math.min(total-1,index+delta));
+    if(next===index) return; index=next; render();
+  }
+  function schedulePlay(){
+    if(!playing) return;
+    const total=stepsByAlgo[algo].length;
+    if(index>=total-1){stop();return;}
+    const seconds=parseFloat(speedSelect.value)||.9;
+    playTimer=setTimeout(()=>{
+      if(!playing) return;
+      index++; render(); schedulePlay();
+    },seconds*1000);
+  }
+  function togglePlay(){
+    if(playing){stop();return;}
+    const total=stepsByAlgo[algo].length;
+    if(index>=total-1) index=0;
+    playing=true;updatePlayIcon();render();schedulePlay();
+  }
+  function reset(){stop();index=0;render()}
+  function setAlgo(next){
+    if(next===algo) return;
+    stop(); algo=next; index=0;
+    algoButtons.forEach(b=>b.classList.toggle('active',b.dataset.algo===algo));
+    render({animate:false});
+    scene.animate([{opacity:.3,transform:'translateY(8px)'},{opacity:1,transform:'none'}],{duration:420,easing:'cubic-bezier(.2,.78,.2,1)'});
+  }
+
+  prevBtn.addEventListener('click',()=>stepBy(-1));
+  nextBtn.addEventListener('click',()=>stepBy(1));
+  playBtn.addEventListener('click',togglePlay);
+  resetBtn.addEventListener('click',reset);
+  speedSelect.addEventListener('change',()=>{if(playing){clearTimeout(playTimer);schedulePlay();}});
+  algoButtons.forEach(b=>b.addEventListener('click',()=>setAlgo(b.dataset.algo)));
+
+  window.addEventListener('keydown',e=>{
+    if(['INPUT','SELECT','TEXTAREA'].includes(document.activeElement?.tagName)) return;
+    if(e.key==='ArrowLeft'){e.preventDefault();stepBy(-1)}
+    else if(e.key==='ArrowRight'){e.preventDefault();stepBy(1)}
+    else if(e.code==='Space'){e.preventDefault();togglePlay()}
+    else if(e.key==='r'||e.key==='R'){e.preventDefault();reset()}
+    else if(e.key==='1'){e.preventDefault();setAlgo('radix')}
+    else if(e.key==='2'){e.preventDefault();setAlgo('merge')}
+    else if(e.key==='Home'){e.preventDefault();stop();index=0;render()}
+    else if(e.key==='End'){e.preventDefault();stop();index=stepsByAlgo[algo].length-1;render()}
+  });
+
+  render({animate:false});
+})();
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
