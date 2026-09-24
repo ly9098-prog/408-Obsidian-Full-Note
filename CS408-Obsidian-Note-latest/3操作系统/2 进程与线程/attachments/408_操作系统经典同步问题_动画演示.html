@@ -247,6 +247,12 @@ button:focus-visible,input:focus-visible{
   font-weight:650;
   text-anchor:middle;
 }
+.scene .scene-note{
+  fill:#596477;
+  font-size:9px;
+  font-weight:650;
+  text-anchor:middle;
+}
 .scene .counter{
   fill:#f5f7fb;
   font-size:22px;
@@ -509,6 +515,94 @@ kbd{
   box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
   font:650 10px/1 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
 }
+
+
+.scene-head-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex:0 0 auto;
+}
+.actor-pill{
+  min-height:30px;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:0 10px;
+  border:1px solid rgba(120,167,255,.18);
+  border-radius:var(--pill);
+  color:#c9dbff;
+  background:rgba(120,167,255,.07);
+  font-size:11px;
+  font-weight:700;
+  white-space:nowrap;
+}
+.actor-pill::before{
+  content:"";
+  width:6px;height:6px;border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 0 4px rgba(120,167,255,.08);
+}
+.scene .agent-shell.current{
+  stroke:rgba(142,190,255,.88);
+  stroke-width:2.2;
+  filter:drop-shadow(0 0 9px rgba(120,167,255,.18));
+}
+.scene .fork-owner{
+  fill:#aab7cc;
+  font-size:8px;
+  font-weight:760;
+  text-anchor:middle;
+}
+.execution-rule{
+  color:#788399;
+  font-size:10px;
+  line-height:1.45;
+}
+
+.dp-solutions{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin:0 0 14px;
+  animation:enter .45s var(--ease) both;
+}
+.dp-solutions[hidden]{display:none}
+.solution-card{
+  min-width:0;
+  min-height:66px;
+  padding:11px 13px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  color:var(--muted);
+  background:rgba(255,255,255,.035);
+  text-align:left;
+  cursor:pointer;
+  transition:background .18s var(--ease),border-color .18s ease,transform .16s ease,color .18s ease;
+}
+.solution-card:hover{background:rgba(255,255,255,.06);border-color:var(--line-2)}
+.solution-card:active{transform:scale(.985)}
+.solution-card[aria-selected="true"]{
+  color:var(--text);
+  border-color:rgba(120,167,255,.30);
+  background:rgba(120,167,255,.09);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+}
+.solution-card .n{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:21px;height:21px;
+  margin-right:6px;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:7px;
+  color:#a9c8ff;
+  background:rgba(120,167,255,.08);
+  font-size:10px;font-weight:800;
+}
+.solution-card strong{font-size:12px;font-weight:720}
+.solution-card small{display:block;margin:5px 0 0 28px;color:var(--muted-2);font-size:10px;line-height:1.35;font-weight:560}
+
 @keyframes enter{
   from{opacity:0;transform:translateY(12px) scale(.995)}
   to{opacity:1;transform:none}
@@ -530,6 +624,10 @@ kbd{
   .code-panel{min-height:360px}
   .code-scroll{max-height:390px}
 }
+@media(max-width:700px){
+  .dp-solutions{grid-template-columns:1fr}
+}
+
 @media(max-width:620px){
   .app{width:min(100% - 18px,1220px);padding-top:16px}
   .brand p{display:none}
@@ -563,7 +661,7 @@ kbd{
   <header class="topbar">
     <div class="brand">
       <h1>经典同步问题</h1>
-      <p>正确同步 · 错误同步 · 伪代码逐行联动</p>
+      <p>P / V 标准写法 · 正确 / 错误路径 · 伪代码逐行联动</p>
     </div>
 
     <div class="selectors">
@@ -579,6 +677,21 @@ kbd{
     </div>
   </header>
 
+  <div class="dp-solutions" id="dpSolutions" role="tablist" aria-label="哲学家问题正确解决方案" hidden>
+    <button type="button" class="solution-card" role="tab" data-dp-solution="nminus1" aria-selected="true">
+      <span class="n">①</span><strong>N−1 取筷名额</strong>
+      <small>限制同时进入取筷区的人数，不是限制同时吃饭人数</small>
+    </button>
+    <button type="button" class="solution-card" role="tab" data-dp-solution="atomic" aria-selected="false">
+      <span class="n">②</span><strong>左右筷子一起申请</strong>
+      <small>用 mutex 串行化“取得两根筷子”的过程</small>
+    </button>
+    <button type="button" class="solution-card" role="tab" data-dp-solution="oddEven" aria-selected="false">
+      <span class="n">③</span><strong>奇偶编号非对称取筷</strong>
+      <small>奇数先左、偶数先右，破坏循环等待</small>
+    </button>
+  </div>
+
   <section class="workspace">
     <div class="main-grid">
       <section class="visual-panel">
@@ -587,7 +700,10 @@ kbd{
             <div class="eyebrow" id="sceneEyebrow">READERS · WRITERS</div>
             <h2 id="sceneTitle">读者优先同步</h2>
           </div>
-          <div class="status-pill good" id="statusPill">安全</div>
+          <div class="scene-head-actions">
+            <div class="actor-pill" id="actorPill">当前对象：System</div>
+            <div class="status-pill good" id="statusPill">安全</div>
+          </div>
         </div>
 
         <div class="scene-wrap">
@@ -614,7 +730,7 @@ kbd{
       <aside class="code-panel" aria-label="同步伪代码">
         <div class="code-head">
           <h2>伪代码</h2>
-          <span id="codeHint">当前执行行高亮</span>
+          <span id="codeHint">P / V 操作同步高亮</span>
         </div>
         <div class="code-scroll" id="codeScroll">
           <pre class="code-block" id="codeBlock"></pre>
@@ -670,120 +786,226 @@ kbd{
 
   const els = {
     scene:$("scene"), layer:$("sceneLayer"),
-    sceneEyebrow:$("sceneEyebrow"), sceneTitle:$("sceneTitle"), status:$("statusPill"),
+    sceneEyebrow:$("sceneEyebrow"), sceneTitle:$("sceneTitle"), status:$("statusPill"), actorPill:$("actorPill"),
     stepEyebrow:$("stepEyebrow"), stepTitle:$("stepTitle"), stepMessage:$("stepMessage"),
     badges:$("stateBadges"), code:$("codeBlock"), codeScroll:$("codeScroll"),
-    codeNote:$("codeNote"), codeHint:$("codeHint"),
+    codeNote:$("codeNote"), codeHint:$("codeHint"), dpSolutions:$("dpSolutions"),
     progress:$("progressBar"), prev:$("prevBtn"), next:$("nextBtn"), reset:$("resetBtn"),
     play:$("playBtn"), playIcon:$("playIcon"), speed:$("speedRange"), count:$("stepCount")
   };
 
   let problem="rw";
   let mode="correct";
+  let dpSolution="nminus1";
   let current=0;
   let playing=false;
   let timer=null;
 
+
   const pseudocode = {
     rw:{
       correct:{
-        note:"首个读者锁住 rw，最后一个读者释放 rw；写者独占 rw。",
+        note:"读者优先：mutex 只保护 read_count；第一个读者 P(rw)，最后一个读者 V(rw)；写者独占 rw。",
         lines:[
+          {t:"semaphore mutex = 1, rw = 1;  int read_count = 0;",k:"section"},
           {t:"// Reader",k:"section"},
-          {t:"wait(mutex)"},
-          {t:"read_count++"},
-          {t:"if read_count == 1: wait(rw)"},
-          {t:"signal(mutex)"},
-          {t:"READ"},
-          {t:"wait(mutex)"},
-          {t:"read_count--"},
-          {t:"if read_count == 0: signal(rw)"},
-          {t:"signal(mutex)"},
+          {t:"Reader() {"},
+          {t:"  while (true) {"},
+          {t:"    P(mutex);"},
+          {t:"    read_count++;"},
+          {t:"    if (read_count == 1) P(rw);"},
+          {t:"    V(mutex);"},
+          {t:"    read_data();"},
+          {t:"    P(mutex);"},
+          {t:"    read_count--;"},
+          {t:"    if (read_count == 0) V(rw);"},
+          {t:"    V(mutex);"},
+          {t:"  }"},
+          {t:"}"},
           {t:""},
           {t:"// Writer",k:"section"},
-          {t:"wait(rw)"},
-          {t:"WRITE"},
-          {t:"signal(rw)"}
+          {t:"Writer() {"},
+          {t:"  while (true) {"},
+          {t:"    P(rw);"},
+          {t:"    write_data();"},
+          {t:"    V(rw);"},
+          {t:"  }"},
+          {t:"}"}
         ]
       },
       error:{
-        note:"错误点：读者只维护 read_count，却没有让首个读者 wait(rw)，因此写者仍可进入临界区。",
+        note:"错误示例：首个读者没有 P(rw)。mutex 只能保护 read_count，不能阻止写者与读者同时访问共享数据。",
         lines:[
+          {t:"semaphore mutex = 1, rw = 1;  int read_count = 0;",k:"section"},
           {t:"// Reader  ❌",k:"section"},
-          {t:"wait(mutex)"},
-          {t:"read_count++"},
-          {t:"// missing: if first reader wait(rw)",k:"comment",bad:true},
-          {t:"signal(mutex)"},
-          {t:"READ",bad:true},
+          {t:"Reader() {"},
+          {t:"  while (true) {"},
+          {t:"    P(mutex);"},
+          {t:"    read_count++;"},
+          {t:"    // 缺失：if (read_count == 1) P(rw);",k:"comment",bad:true},
+          {t:"    V(mutex);"},
+          {t:"    read_data();",bad:true},
+          {t:"  }"},
+          {t:"}"},
           {t:""},
           {t:"// Writer",k:"section"},
-          {t:"wait(rw)"},
-          {t:"WRITE",bad:true},
-          {t:"signal(rw)"}
+          {t:"Writer() {"},
+          {t:"  while (true) {"},
+          {t:"    P(rw);"},
+          {t:"    write_data();",bad:true},
+          {t:"    V(rw);"},
+          {t:"  }"},
+          {t:"}"}
         ]
       }
     },
+
     pc:{
       correct:{
-        note:"固定顺序：先等待资源计数信号量，再进入 mutex 保护的缓冲区临界区。",
+        note:"标准有界缓冲区：生产者先 P(empty) 再 P(mutex)；消费者先 P(full) 再 P(mutex)。produce/consume 位于临界区之外。",
         lines:[
+          {t:"semaphore mutex = 1, empty = n, full = 0;",k:"section"},
           {t:"// Producer",k:"section"},
-          {t:"wait(empty)"},
-          {t:"wait(mutex)"},
-          {t:"put(item)"},
-          {t:"signal(mutex)"},
-          {t:"signal(full)"},
+          {t:"Producer() {"},
+          {t:"  while (true) {"},
+          {t:"    produce_item();"},
+          {t:"    P(empty);"},
+          {t:"    P(mutex);"},
+          {t:"    put(item);"},
+          {t:"    V(mutex);"},
+          {t:"    V(full);"},
+          {t:"  }"},
+          {t:"}"},
           {t:""},
           {t:"// Consumer",k:"section"},
-          {t:"wait(full)"},
-          {t:"wait(mutex)"},
-          {t:"item = get()"},
-          {t:"signal(mutex)"},
-          {t:"signal(empty)"}
+          {t:"Consumer() {"},
+          {t:"  while (true) {"},
+          {t:"    P(full);"},
+          {t:"    P(mutex);"},
+          {t:"    item = get();"},
+          {t:"    V(mutex);"},
+          {t:"    V(empty);"},
+          {t:"    consume_item(item);"},
+          {t:"  }"},
+          {t:"}"}
         ]
       },
       error:{
-        note:"错误点：先拿 mutex 再等待 empty。缓冲区满时，生产者会持有 mutex 阻塞，消费者也无法进入，形成死锁。",
+        note:"错误示例：生产者先 P(mutex) 再 P(empty)。缓冲区满时，生产者抱着 mutex 等 empty，消费者又要等 mutex，形成死锁。",
         lines:[
+          {t:"semaphore mutex = 1, empty = n, full = 0;",k:"section"},
           {t:"// Producer  ❌",k:"section"},
-          {t:"wait(mutex)",bad:true},
-          {t:"wait(empty)",bad:true},
-          {t:"put(item)"},
-          {t:"signal(mutex)"},
-          {t:"signal(full)"},
+          {t:"Producer() {"},
+          {t:"  while (true) {"},
+          {t:"    produce_item();"},
+          {t:"    P(mutex);",bad:true},
+          {t:"    P(empty);",bad:true},
+          {t:"    put(item);"},
+          {t:"    V(mutex);"},
+          {t:"    V(full);"},
+          {t:"  }"},
+          {t:"}"},
           {t:""},
           {t:"// Consumer",k:"section"},
-          {t:"wait(full)"},
-          {t:"wait(mutex)",bad:true},
-          {t:"item = get()"},
-          {t:"signal(mutex)"},
-          {t:"signal(empty)"}
+          {t:"Consumer() {"},
+          {t:"  while (true) {"},
+          {t:"    P(full);"},
+          {t:"    P(mutex);",bad:true},
+          {t:"    item = get();"},
+          {t:"    V(mutex);"},
+          {t:"    V(empty);"},
+          {t:"    consume_item(item);"},
+          {t:"  }"},
+          {t:"}"}
         ]
       }
     },
+
     dp:{
       correct:{
-        note:"加入 room = 4：最多允许 4 位哲学家同时竞争叉子，破坏“循环等待”条件。",
-        lines:[
-          {t:"// Philosopher i",k:"section"},
-          {t:"wait(room)"},
-          {t:"wait(left_fork[i])"},
-          {t:"wait(right_fork[i])"},
-          {t:"EAT"},
-          {t:"signal(right_fork[i])"},
-          {t:"signal(left_fork[i])"},
-          {t:"signal(room)"}
-        ]
+        nminus1:{
+          note:"方案①：room = N−1 限制的是“同时进入取筷区的人数”，不是保证 N−1 人同时吃饭。这样至少留下一根筷子，使某位哲学家能够拿齐两根筷子并继续。",
+          lines:[
+            {t:"semaphore chopstick[1..5] = {1,1,1,1,1};",k:"section"},
+            {t:"semaphore room = 4;"},
+            {t:"#define LEFT(i)  i"},
+            {t:"#define RIGHT(i) i % 5 + 1"},
+            {t:"Philosopher(i) {"},
+            {t:"  while (true) {"},
+            {t:"    think();"},
+            {t:"    P(room);"},
+            {t:"    P(chopstick[LEFT(i)]);"},
+            {t:"    P(chopstick[RIGHT(i)]);"},
+            {t:"    eat();"},
+            {t:"    V(chopstick[RIGHT(i)]);"},
+            {t:"    V(chopstick[LEFT(i)]);"},
+            {t:"    V(room);"},
+            {t:"  }"},
+            {t:"}"}
+          ]
+        },
+        atomic:{
+          note:"方案②：用 mutex 让“取得两根筷子的过程”互斥。mutex 在拿齐两根筷子后立即释放，吃饭本身不占有 mutex，因此互不相邻的哲学家仍可并发进餐。",
+          lines:[
+            {t:"semaphore chopstick[1..5] = {1,1,1,1,1};",k:"section"},
+            {t:"semaphore mutex = 1;"},
+            {t:"#define LEFT(i)  i"},
+            {t:"#define RIGHT(i) i % 5 + 1"},
+            {t:"Philosopher(i) {"},
+            {t:"  while (true) {"},
+            {t:"    think();"},
+            {t:"    P(mutex);"},
+            {t:"    P(chopstick[LEFT(i)]);"},
+            {t:"    P(chopstick[RIGHT(i)]);"},
+            {t:"    V(mutex);"},
+            {t:"    eat();"},
+            {t:"    V(chopstick[RIGHT(i)]);"},
+            {t:"    V(chopstick[LEFT(i)]);"},
+            {t:"  }"},
+            {t:"}"}
+          ]
+        },
+        oddEven:{
+          note:"方案③：统一采用 1-based 编号。奇数号先左后右，偶数号先右后左，使相邻哲学家不会全部按同一方向占有并等待，从而破坏循环等待。",
+          lines:[
+            {t:"semaphore chopstick[1..5] = {1,1,1,1,1};",k:"section"},
+            {t:"#define LEFT(i)  i"},
+            {t:"#define RIGHT(i) i % 5 + 1"},
+            {t:"Philosopher(i) {"},
+            {t:"  while (true) {"},
+            {t:"    think();"},
+            {t:"    if (i % 2 == 1) {        // 奇数号"},
+            {t:"      P(chopstick[LEFT(i)]);"},
+            {t:"      P(chopstick[RIGHT(i)]);"},
+            {t:"    } else {                 // 偶数号"},
+            {t:"      P(chopstick[RIGHT(i)]);"},
+            {t:"      P(chopstick[LEFT(i)]);"},
+            {t:"    }"},
+            {t:"    eat();"},
+            {t:"    V(chopstick[RIGHT(i)]);"},
+            {t:"    V(chopstick[LEFT(i)]);"},
+            {t:"  }"},
+            {t:"}"}
+          ]
+        }
       },
+
       error:{
-        note:"错误点：所有哲学家都先拿左叉再等右叉，可同时形成环形等待，导致死锁。",
+        note:"错误示例：所有人都按“先左后右”申请。若 5 人先各占一根左筷，再分别申请右筷，就会构成 P1→P2→P3→P4→P5→P1 的循环等待。",
         lines:[
-          {t:"// Philosopher i  ❌",k:"section"},
-          {t:"wait(left_fork[i])",bad:true},
-          {t:"wait(right_fork[i])",bad:true},
-          {t:"EAT"},
-          {t:"signal(right_fork[i])"},
-          {t:"signal(left_fork[i])"}
+          {t:"semaphore chopstick[1..5] = {1,1,1,1,1};",k:"section"},
+          {t:"#define LEFT(i)  i"},
+          {t:"#define RIGHT(i) i % 5 + 1"},
+          {t:"Philosopher(i) {",bad:true},
+          {t:"  while (true) {",bad:true},
+          {t:"    think();"},
+          {t:"    P(chopstick[LEFT(i)]);",bad:true},
+          {t:"    P(chopstick[RIGHT(i)]);",bad:true},
+          {t:"    eat();"},
+          {t:"    V(chopstick[RIGHT(i)]);"},
+          {t:"    V(chopstick[LEFT(i)]);"},
+          {t:"  }"},
+          {t:"}"}
         ]
       }
     }
@@ -792,78 +1014,168 @@ kbd{
   const steps = {
     rw:{
       correct:[
-        {line:1,title:"R1 进入",msg:"R1 获取 mutex，准备更新读者计数。",s:{rc:0,rw:null,mutex:"R1",r1:"active",r2:"idle",w:"idle"}},
-        {line:2,title:"读者计数 +1",msg:"read_count 由 0 变为 1。",s:{rc:1,rw:null,mutex:"R1",r1:"active",r2:"idle",w:"idle"}},
-        {line:3,title:"首个读者锁住 rw",msg:"R1 是首个读者，因此获取 rw，阻止写者进入。",s:{rc:1,rw:"readers",mutex:"R1",r1:"active",r2:"idle",w:"idle"}},
-        {line:4,title:"释放 mutex",msg:"R1 释放 mutex，其他读者可以继续登记。",s:{rc:1,rw:"readers",mutex:null,r1:"active",r2:"idle",w:"idle"}},
-        {line:5,title:"R1 正在读",msg:"R1 访问共享数据。",s:{rc:1,rw:"readers",mutex:null,r1:"reading",r2:"idle",w:"idle"}},
-        {line:2,title:"R2 加入",msg:"R2 登记后 read_count = 2；rw 已由读者集合持有。",s:{rc:2,rw:"readers",mutex:null,r1:"reading",r2:"reading",w:"idle"}},
-        {line:12,title:"写者到达",msg:"W 执行 wait(rw)，但 rw 被读者持有，因此阻塞。",s:{rc:2,rw:"readers",mutex:null,r1:"reading",r2:"reading",w:"wait"}},
-        {line:7,title:"R1 离开",msg:"R1 完成读取，read_count 减为 1。",s:{rc:1,rw:"readers",mutex:"R1",r1:"done",r2:"reading",w:"wait"}},
-        {line:8,title:"最后一个读者释放 rw",msg:"R2 离开后 read_count = 0，释放 rw。",s:{rc:0,rw:null,mutex:null,r1:"done",r2:"done",w:"wait"}},
-        {line:12,title:"写者获得 rw",msg:"W 解除阻塞并独占共享数据。",s:{rc:0,rw:"writer",mutex:null,r1:"done",r2:"done",w:"active"}},
-        {line:13,title:"安全写入",msg:"此时没有读者访问共享数据，W 可以写入。",s:{rc:0,rw:"writer",mutex:null,r1:"done",r2:"done",w:"writing"}},
-        {line:14,title:"写者离开",msg:"W 释放 rw，本轮同步完成。",s:{rc:0,rw:null,mutex:null,r1:"done",r2:"done",w:"done"}}
+        {actor:"System",line:0,title:"初始化",msg:"mutex = 1，rw = 1，read_count = 0。先让 R1 到达。",s:{rc:0,rw:null,mutex:null,r1:"idle",r2:"idle",w:"idle"}},
+        {actor:"R1",line:4,title:"R1：P(mutex)",msg:"R1 取得 mutex，开始独占修改 read_count。",s:{rc:0,rw:null,mutex:"R1",r1:"active",r2:"idle",w:"idle"}},
+        {actor:"R1",line:5,title:"R1：read_count++",msg:"read_count：0 → 1。",s:{rc:1,rw:null,mutex:"R1",r1:"active",r2:"idle",w:"idle"}},
+        {actor:"R1",line:6,title:"R1：首个读者 P(rw)",msg:"条件 read_count == 1 为真，R1 执行 P(rw)，读者组占有 rw。",s:{rc:1,rw:"readers",mutex:"R1",r1:"active",r2:"idle",w:"idle"}},
+        {actor:"R1",line:7,title:"R1：V(mutex)",msg:"R1 释放 mutex；read_count 的登记临界区结束。",s:{rc:1,rw:"readers",mutex:null,r1:"active",r2:"idle",w:"idle"}},
+        {actor:"R1",line:8,title:"R1：read_data()",msg:"R1 开始读取共享数据。",s:{rc:1,rw:"readers",mutex:null,r1:"reading",r2:"idle",w:"idle"}},
+
+        {actor:"R2",line:4,title:"R2：P(mutex)",msg:"R1 正在读；R2 仍可取得 mutex 来登记自己。",s:{rc:1,rw:"readers",mutex:"R2",r1:"reading",r2:"active",w:"idle"}},
+        {actor:"R2",line:5,title:"R2：read_count++",msg:"read_count：1 → 2。",s:{rc:2,rw:"readers",mutex:"R2",r1:"reading",r2:"active",w:"idle"}},
+        {actor:"R2",line:6,title:"R2：判断 read_count == 1",msg:"条件为假，因此 R2 不再执行 P(rw)；rw 已由读者组持有。",s:{rc:2,rw:"readers",mutex:"R2",r1:"reading",r2:"active",w:"idle"}},
+        {actor:"R2",line:7,title:"R2：V(mutex)",msg:"R2 释放 mutex。",s:{rc:2,rw:"readers",mutex:null,r1:"reading",r2:"active",w:"idle"}},
+        {actor:"R2",line:8,title:"R2：read_data()",msg:"R2 也开始读取；多个读者可以并发读。",s:{rc:2,rw:"readers",mutex:null,r1:"reading",r2:"reading",w:"idle"}},
+
+        {actor:"W",line:19,title:"W：P(rw) 阻塞",msg:"rw 被读者组占有，W 的 P(rw) 不能完成，W 进入等待。",s:{rc:2,rw:"readers",mutex:null,r1:"reading",r2:"reading",w:"wait"}},
+
+        {actor:"R1",line:9,title:"R1：P(mutex)",msg:"R1 读完，重新取得 mutex，准备退出读者组。",s:{rc:2,rw:"readers",mutex:"R1",r1:"active",r2:"reading",w:"wait"}},
+        {actor:"R1",line:10,title:"R1：read_count--",msg:"read_count：2 → 1。",s:{rc:1,rw:"readers",mutex:"R1",r1:"active",r2:"reading",w:"wait"}},
+        {actor:"R1",line:11,title:"R1：判断 read_count == 0",msg:"条件为假，仍有 R2 在读，因此 R1 不执行 V(rw)。",s:{rc:1,rw:"readers",mutex:"R1",r1:"active",r2:"reading",w:"wait"}},
+        {actor:"R1",line:12,title:"R1：V(mutex)",msg:"R1 完成退出。",s:{rc:1,rw:"readers",mutex:null,r1:"done",r2:"reading",w:"wait"}},
+
+        {actor:"R2",line:9,title:"R2：P(mutex)",msg:"R2 读完，取得 mutex。",s:{rc:1,rw:"readers",mutex:"R2",r1:"done",r2:"active",w:"wait"}},
+        {actor:"R2",line:10,title:"R2：read_count--",msg:"read_count：1 → 0。",s:{rc:0,rw:"readers",mutex:"R2",r1:"done",r2:"active",w:"wait"}},
+        {actor:"R2",line:11,title:"R2：最后读者 V(rw)",msg:"条件 read_count == 0 为真，R2 执行 V(rw)，允许等待中的写者继续。",s:{rc:0,rw:null,mutex:"R2",r1:"done",r2:"active",w:"wait"}},
+        {actor:"R2",line:12,title:"R2：V(mutex)",msg:"R2 释放 mutex 并完成退出。",s:{rc:0,rw:null,mutex:null,r1:"done",r2:"done",w:"wait"}},
+
+        {actor:"W",line:19,title:"W：P(rw) 被唤醒并完成",msg:"W 从等待中恢复，取得 rw，开始独占共享数据。",s:{rc:0,rw:"W",mutex:null,r1:"done",r2:"done",w:"active"}},
+        {actor:"W",line:20,title:"W：write_data()",msg:"当前没有任何读者，W 安全写入。",s:{rc:0,rw:"W",mutex:null,r1:"done",r2:"done",w:"writing"}},
+        {actor:"W",line:21,title:"W：V(rw)",msg:"W 释放 rw，本轮演示结束。",s:{rc:0,rw:null,mutex:null,r1:"done",r2:"done",w:"done"}}
       ],
+
       error:[
-        {line:1,title:"R1 进入",msg:"R1 仍然用 mutex 保护 read_count。",s:{rc:0,rw:null,mutex:"R1",r1:"active",r2:"idle",w:"idle"}},
-        {line:2,title:"读者计数 +1",msg:"read_count = 1。",s:{rc:1,rw:null,mutex:"R1",r1:"active",r2:"idle",w:"idle"}},
-        {line:3,title:"关键同步缺失",msg:"错误代码没有让首个读者 wait(rw)。",s:{rc:1,rw:null,mutex:"R1",r1:"active",r2:"idle",w:"idle",bad:true}},
-        {line:5,title:"R1 正在读",msg:"R1 已开始访问共享数据，但 rw 仍是空闲状态。",s:{rc:1,rw:null,mutex:null,r1:"reading",r2:"idle",w:"idle",bad:true}},
-        {line:8,title:"写者获得 rw",msg:"W 看到 rw 空闲，因此成功进入。",s:{rc:1,rw:"writer",mutex:null,r1:"reading",r2:"idle",w:"active",bad:true}},
-        {line:9,title:"发生读写冲突",msg:"R1 正在读，同时 W 正在写：共享数据被并发读写。",s:{rc:1,rw:"writer",mutex:null,r1:"reading",r2:"idle",w:"writing",bad:true,violation:true}}
+        {actor:"System",line:0,title:"初始化错误版本",msg:"mutex = 1，rw = 1。错误代码没有让首个读者申请 rw。",s:{rc:0,rw:null,mutex:null,r1:"idle",r2:"idle",w:"idle"}},
+        {actor:"R1",line:4,title:"R1：P(mutex)",msg:"R1 只锁住 read_count。",s:{rc:0,rw:null,mutex:"R1",r1:"active",r2:"idle",w:"idle"}},
+        {actor:"R1",line:5,title:"R1：read_count++",msg:"read_count：0 → 1。",s:{rc:1,rw:null,mutex:"R1",r1:"active",r2:"idle",w:"idle"}},
+        {actor:"R1",line:6,title:"R1：关键 P(rw) 缺失",msg:"这里本应由首个读者 P(rw)，但错误代码什么也没做。rw 仍为空闲。",s:{rc:1,rw:null,mutex:"R1",r1:"active",r2:"idle",w:"idle",bad:true}},
+        {actor:"R1",line:7,title:"R1：V(mutex)",msg:"R1 释放 mutex。",s:{rc:1,rw:null,mutex:null,r1:"active",r2:"idle",w:"idle",bad:true}},
+        {actor:"R1",line:8,title:"R1：read_data()",msg:"R1 已经在读共享数据，但 rw 仍未被读者组占有。",s:{rc:1,rw:null,mutex:null,r1:"reading",r2:"idle",w:"idle",bad:true}},
+        {actor:"W",line:15,title:"W：P(rw) 成功",msg:"由于 rw 仍空闲，W 成功取得 rw。",s:{rc:1,rw:"W",mutex:null,r1:"reading",r2:"idle",w:"active",bad:true}},
+        {actor:"W",line:16,title:"W：write_data() → 冲突",msg:"R1 正在读而 W 同时写，读写互斥被破坏。",s:{rc:1,rw:"W",mutex:null,r1:"reading",r2:"idle",w:"writing",bad:true,violation:true}}
       ]
     },
 
     pc:{
       correct:[
-        {line:1,title:"等待空槽",msg:"Producer 执行 wait(empty)，empty 从 3 变为 2。",s:{buffer:[],empty:2,full:0,mutex:null,p:"active",c:"idle",item:"A"}},
-        {line:2,title:"进入临界区",msg:"Producer 获取 mutex，独占缓冲区。",s:{buffer:[],empty:2,full:0,mutex:"P",p:"active",c:"idle",item:"A"}},
-        {line:3,title:"放入 A",msg:"A 被放入第一个缓冲槽。",s:{buffer:["A"],empty:2,full:0,mutex:"P",p:"put",c:"idle",item:null}},
-        {line:4,title:"释放 mutex",msg:"缓冲区临界区结束。",s:{buffer:["A"],empty:2,full:0,mutex:null,p:"active",c:"idle"}},
-        {line:5,title:"full +1",msg:"Producer signal(full)，full = 1。",s:{buffer:["A"],empty:2,full:1,mutex:null,p:"done",c:"idle"}},
-        {line:8,title:"消费者等待产品",msg:"Consumer wait(full)，full 从 1 变为 0。",s:{buffer:["A"],empty:2,full:0,mutex:null,p:"done",c:"active"}},
-        {line:9,title:"消费者进入临界区",msg:"Consumer 获取 mutex。",s:{buffer:["A"],empty:2,full:0,mutex:"C",p:"done",c:"active"}},
-        {line:10,title:"取出 A",msg:"Consumer 从缓冲区取出 A。",s:{buffer:[],empty:2,full:0,mutex:"C",p:"done",c:"get",item:"A"}},
-        {line:11,title:"释放 mutex",msg:"Consumer 离开缓冲区临界区。",s:{buffer:[],empty:2,full:0,mutex:null,p:"done",c:"active",item:"A"}},
-        {line:12,title:"empty +1",msg:"Consumer signal(empty)，empty 恢复为 3。",s:{buffer:[],empty:3,full:0,mutex:null,p:"done",c:"done",item:"A"}}
+        {actor:"System",line:0,title:"初始化",msg:"缓冲区容量 n = 3：empty = 3，full = 0，mutex = 1。",s:{buffer:[],empty:3,full:0,mutex:null,p:"idle",c:"idle",item:null}},
+        {actor:"Producer",line:4,title:"Producer：produce_item()",msg:"Producer 在临界区外产生产品 A。",s:{buffer:[],empty:3,full:0,mutex:null,p:"produce",c:"idle",item:"A"}},
+        {actor:"Producer",line:5,title:"Producer：P(empty)",msg:"预定一个空槽：empty 3 → 2。",s:{buffer:[],empty:2,full:0,mutex:null,p:"active",c:"idle",item:"A"}},
+        {actor:"Producer",line:6,title:"Producer：P(mutex)",msg:"Producer 取得缓冲区互斥量。",s:{buffer:[],empty:2,full:0,mutex:"Producer",p:"active",c:"idle",item:"A"}},
+        {actor:"Producer",line:7,title:"Producer：put(A)",msg:"A 放入缓冲区。",s:{buffer:["A"],empty:2,full:0,mutex:"Producer",p:"put",c:"idle",item:null}},
+        {actor:"Producer",line:8,title:"Producer：V(mutex)",msg:"Producer 离开缓冲区临界区。",s:{buffer:["A"],empty:2,full:0,mutex:null,p:"active",c:"idle",item:null}},
+        {actor:"Producer",line:9,title:"Producer：V(full)",msg:"新增一个可消费产品：full 0 → 1。",s:{buffer:["A"],empty:2,full:1,mutex:null,p:"done",c:"idle",item:null}},
+
+        {actor:"Consumer",line:16,title:"Consumer：P(full)",msg:"Consumer 预定一个产品：full 1 → 0。",s:{buffer:["A"],empty:2,full:0,mutex:null,p:"done",c:"active",item:null}},
+        {actor:"Consumer",line:17,title:"Consumer：P(mutex)",msg:"Consumer 取得缓冲区互斥量。",s:{buffer:["A"],empty:2,full:0,mutex:"Consumer",p:"done",c:"active",item:null}},
+        {actor:"Consumer",line:18,title:"Consumer：get()",msg:"Consumer 从缓冲区取出 A。",s:{buffer:[],empty:2,full:0,mutex:"Consumer",p:"done",c:"get",item:"A"}},
+        {actor:"Consumer",line:19,title:"Consumer：V(mutex)",msg:"Consumer 离开临界区。",s:{buffer:[],empty:2,full:0,mutex:null,p:"done",c:"active",item:"A"}},
+        {actor:"Consumer",line:20,title:"Consumer：V(empty)",msg:"释放一个空槽：empty 2 → 3。",s:{buffer:[],empty:3,full:0,mutex:null,p:"done",c:"active",item:"A"}},
+        {actor:"Consumer",line:21,title:"Consumer：consume_item(A)",msg:"Consumer 在临界区外使用产品 A。",s:{buffer:[],empty:3,full:0,mutex:null,p:"done",c:"consume",item:"A"}}
       ],
+
       error:[
-        {line:0,title:"缓冲区已满",msg:"初始状态：3 个缓冲槽均有数据，empty = 0，full = 3。",s:{buffer:["A","B","C"],empty:0,full:3,mutex:null,p:"idle",c:"idle"}},
-        {line:1,title:"生产者先拿 mutex",msg:"错误顺序使 Producer 先进入缓冲区临界区。",s:{buffer:["A","B","C"],empty:0,full:3,mutex:"P",p:"active",c:"idle",bad:true}},
-        {line:2,title:"Producer 阻塞",msg:"empty = 0，Producer 在 wait(empty) 阻塞，但仍持有 mutex。",s:{buffer:["A","B","C"],empty:0,full:3,mutex:"P",p:"wait",c:"idle",bad:true}},
-        {line:8,title:"Consumer 可消费",msg:"full > 0，因此 Consumer 通过 wait(full)。",s:{buffer:["A","B","C"],empty:0,full:2,mutex:"P",p:"wait",c:"active",bad:true}},
-        {line:9,title:"Consumer 也被阻塞",msg:"Consumer 执行 wait(mutex)，但 mutex 被阻塞中的 Producer 持有。",s:{buffer:["A","B","C"],empty:0,full:2,mutex:"P",p:"wait",c:"wait",bad:true}},
-        {line:9,title:"死锁",msg:"Producer 等 empty；Consumer 能释放 empty，却在等 mutex。双方无法继续。",s:{buffer:["A","B","C"],empty:0,full:2,mutex:"P",p:"wait",c:"wait",bad:true,violation:true}}
+        {actor:"System",line:0,title:"构造死锁前提",msg:"缓冲区已满：empty = 0，full = 3，mutex = 1。",s:{buffer:["A","B","C"],empty:0,full:3,mutex:null,p:"idle",c:"idle",item:null}},
+        {actor:"Producer",line:4,title:"Producer：produce_item()",msg:"Producer 在本地先产生产品 D。",s:{buffer:["A","B","C"],empty:0,full:3,mutex:null,p:"produce",c:"idle",item:"D"}},
+        {actor:"Producer",line:5,title:"Producer：P(mutex)",msg:"错误顺序：Producer 先取得 mutex。",s:{buffer:["A","B","C"],empty:0,full:3,mutex:"Producer",p:"active",c:"idle",item:"D",bad:true}},
+        {actor:"Producer",line:6,title:"Producer：P(empty) 阻塞",msg:"empty = 0，Producer 等待空槽；但它仍占有 mutex。",s:{buffer:["A","B","C"],empty:0,full:3,mutex:"Producer",p:"wait",c:"idle",item:"D",bad:true}},
+        {actor:"Consumer",line:16,title:"Consumer：P(full)",msg:"full > 0，Consumer 成功预定一个产品：full 3 → 2。",s:{buffer:["A","B","C"],empty:0,full:2,mutex:"Producer",p:"wait",c:"active",item:"D",bad:true}},
+        {actor:"Consumer",line:17,title:"Consumer：P(mutex) 阻塞",msg:"mutex 被 Producer 占有，Consumer 无法进入缓冲区，也就无法执行 V(empty)。",s:{buffer:["A","B","C"],empty:0,full:2,mutex:"Producer",p:"wait",c:"wait",item:"D",bad:true}},
+        {actor:"System",line:null,title:"形成死锁",msg:"Producer 等 empty；Consumer 能产生 empty，却等 mutex。两者相互等待，系统无法推进。",s:{buffer:["A","B","C"],empty:0,full:2,mutex:"Producer",p:"wait",c:"wait",item:"D",bad:true,violation:true}}
       ]
     },
 
     dp:{
-      correct:[
-        {line:0,title:"五位哲学家就座",msg:"room 初值为 4。",s:{room:4,p:["think","think","think","think","think"],forks:[null,null,null,null,null]}},
-        {line:1,title:"P0 进入 room",msg:"P0 通过 wait(room)，room = 3。",s:{room:3,p:["hungry","think","think","think","think"],forks:[null,null,null,null,null]}},
-        {line:1,title:"P1、P2、P3 进入",msg:"最多 4 位哲学家进入竞争区，room = 0；P4 被挡在外面。",s:{room:0,p:["hungry","hungry","hungry","hungry","wait"],forks:[null,null,null,null,null]}},
-        {line:2,title:"四人先拿左叉",msg:"P0～P3 分别拿到 F0～F3，F4 仍空闲。",s:{room:0,p:["hungry","hungry","hungry","hungry","wait"],forks:[0,1,2,3,null]}},
-        {line:3,title:"P3 拿到右叉",msg:"P3 的右叉 F4 空闲，因此能继续。",s:{room:0,p:["hungry","hungry","hungry","active","wait"],forks:[0,1,2,3,3]}},
-        {line:4,title:"P3 进餐",msg:"至少有一位哲学家可以完成进餐，不会形成环形等待。",s:{room:0,p:["hungry","hungry","hungry","eat","wait"],forks:[0,1,2,3,3]}},
-        {line:5,title:"P3 放下右叉",msg:"释放 F4。",s:{room:0,p:["hungry","hungry","hungry","done","wait"],forks:[0,1,2,3,null]}},
-        {line:6,title:"P3 放下左叉",msg:"释放 F3，其他哲学家获得继续推进的机会。",s:{room:0,p:["hungry","hungry","active","done","wait"],forks:[0,1,2,null,null]}},
-        {line:7,title:"P3 离开 room",msg:"signal(room)，room = 1；P4 随后可以进入。",s:{room:1,p:["hungry","hungry","active","done","hungry"],forks:[0,1,2,null,null]}}
-      ],
+      correct:{
+        nminus1:[
+          {actor:"System",line:0,title:"初始化 N−1 方案",msg:"5 位哲学家，C1～C5 各一根筷子，room = 4。定义：Pi 左筷 = Ci，右筷 = C(i mod 5 + 1)。",s:{room:4,p:["think","think","think","think","think"],forks:[null,null,null,null,null]}},
+          {actor:"P1",line:7,title:"P1：P(room)",msg:"P1 获得取筷名额：room 4 → 3。",s:{room:3,p:["hungry","think","think","think","think"],forks:[null,null,null,null,null]}},
+          {actor:"P2",line:7,title:"P2：P(room)",msg:"P2 获得名额：room 3 → 2。",s:{room:2,p:["hungry","hungry","think","think","think"],forks:[null,null,null,null,null]}},
+          {actor:"P3",line:7,title:"P3：P(room)",msg:"P3 获得名额：room 2 → 1。",s:{room:1,p:["hungry","hungry","hungry","think","think"],forks:[null,null,null,null,null]}},
+          {actor:"P4",line:7,title:"P4：P(room)",msg:"P4 获得名额：room 1 → 0。",s:{room:0,p:["hungry","hungry","hungry","hungry","think"],forks:[null,null,null,null,null]}},
+          {actor:"P5",line:7,title:"P5：P(room) 阻塞",msg:"room = 0，P5 不能进入取筷区，等待 room。",s:{room:0,p:["hungry","hungry","hungry","hungry","wait"],waiting:{"P5":"room"},forks:[null,null,null,null,null]}},
+
+          {actor:"P1",line:8,title:"P1：P(C1)",msg:"P1 取得左筷 C1。",s:{room:0,p:["hungry","hungry","hungry","hungry","wait"],waiting:{"P5":"room"},forks:["P1",null,null,null,null]}},
+          {actor:"P2",line:8,title:"P2：P(C2)",msg:"P2 取得左筷 C2。",s:{room:0,p:["hungry","hungry","hungry","hungry","wait"],waiting:{"P5":"room"},forks:["P1","P2",null,null,null]}},
+          {actor:"P3",line:8,title:"P3：P(C3)",msg:"P3 取得左筷 C3。",s:{room:0,p:["hungry","hungry","hungry","hungry","wait"],waiting:{"P5":"room"},forks:["P1","P2","P3",null,null]}},
+          {actor:"P4",line:8,title:"P4：P(C4)",msg:"P4 取得左筷 C4。",s:{room:0,p:["hungry","hungry","hungry","hungry","wait"],waiting:{"P5":"room"},forks:["P1","P2","P3","P4",null]}},
+
+          {actor:"P1",line:9,title:"P1：P(C2) 阻塞",msg:"P1 的右筷 C2 被 P2 占有，P1 等待。",s:{room:0,p:["wait","hungry","hungry","hungry","wait"],waiting:{"P1":"C2","P5":"room"},forks:["P1","P2","P3","P4",null]}},
+          {actor:"P2",line:9,title:"P2：P(C3) 阻塞",msg:"P2 的右筷 C3 被 P3 占有，P2 等待。",s:{room:0,p:["wait","wait","hungry","hungry","wait"],waiting:{"P1":"C2","P2":"C3","P5":"room"},forks:["P1","P2","P3","P4",null]}},
+          {actor:"P3",line:9,title:"P3：P(C4) 阻塞",msg:"P3 的右筷 C4 被 P4 占有，P3 等待。",s:{room:0,p:["wait","wait","wait","hungry","wait"],waiting:{"P1":"C2","P2":"C3","P3":"C4","P5":"room"},forks:["P1","P2","P3","P4",null]}},
+          {actor:"P4",line:9,title:"P4：P(C5) 成功",msg:"C5 没有被占有，所以 P4 能拿齐 C4、C5；这正是 room=4 留出的“突破口”。",s:{room:0,p:["wait","wait","wait","active","wait"],waiting:{"P1":"C2","P2":"C3","P3":"C4","P5":"room"},forks:["P1","P2","P3","P4","P4"]}},
+          {actor:"P4",line:10,title:"P4：eat()",msg:"P4 开始进餐。系统并未死锁。",s:{room:0,p:["wait","wait","wait","eat","wait"],waiting:{"P1":"C2","P2":"C3","P3":"C4","P5":"room"},forks:["P1","P2","P3","P4","P4"]}},
+          {actor:"P4",line:11,title:"P4：V(C5)",msg:"P4 放下右筷 C5。",s:{room:0,p:["wait","wait","wait","active","wait"],waiting:{"P1":"C2","P2":"C3","P3":"C4","P5":"room"},forks:["P1","P2","P3","P4",null]}},
+          {actor:"P4",line:12,title:"P4：V(C4)",msg:"P4 放下左筷 C4；等待 C4 的 P3 可以被唤醒。",s:{room:0,p:["wait","wait","wait","active","wait"],waiting:{"P1":"C2","P2":"C3","P3":"C4","P5":"room"},forks:["P1","P2","P3",null,null]}},
+          {actor:"P4",line:13,title:"P4：V(room)",msg:"P4 退出取筷区：room 0 → 1；等待 room 的 P5 也有机会继续。",s:{room:1,p:["wait","wait","wait","done","wait"],waiting:{"P1":"C2","P2":"C3","P3":"C4","P5":"room"},forks:["P1","P2","P3",null,null]}},
+          {actor:"P3",line:9,title:"P3：被唤醒，P(C4) 完成",msg:"P3 取得刚释放的 C4，现在持有 C3、C4。",s:{room:1,p:["wait","wait","active","done","wait"],waiting:{"P1":"C2","P2":"C3","P5":"room"},forks:["P1","P2","P3","P3",null]}},
+          {actor:"P3",line:10,title:"P3：eat()",msg:"P3 继续进餐，说明系统可以持续向前推进。",s:{room:1,p:["wait","wait","eat","done","wait"],waiting:{"P1":"C2","P2":"C3","P5":"room"},forks:["P1","P2","P3","P3",null]}}
+        ],
+
+        atomic:[
+          {actor:"System",line:0,title:"初始化同时申请方案",msg:"C1～C5 初值均为 1，mutex = 1。mutex 只保护“取得两根筷子”的阶段。",s:{pickup:1,pickupOwner:null,p:["think","think","think","think","think"],forks:[null,null,null,null,null]}},
+          {actor:"P1",line:7,title:"P1：P(mutex)",msg:"P1 进入取筷阶段：mutex 1 → 0。",s:{pickup:0,pickupOwner:"P1",p:["hungry","think","think","think","think"],forks:[null,null,null,null,null]}},
+          {actor:"P1",line:8,title:"P1：P(C1)",msg:"P1 取得左筷 C1。",s:{pickup:0,pickupOwner:"P1",p:["hungry","think","think","think","think"],forks:["P1",null,null,null,null]}},
+          {actor:"P1",line:9,title:"P1：P(C2)",msg:"P1 取得右筷 C2，已经拿齐两根。",s:{pickup:0,pickupOwner:"P1",p:["active","think","think","think","think"],forks:["P1","P1",null,null,null]}},
+          {actor:"P2",line:7,title:"P2：P(mutex) 阻塞",msg:"P1 还没有 V(mutex)，所以 P2 不能插入到 P1 的两次取筷操作之间。",s:{pickup:0,pickupOwner:"P1",p:["active","wait","think","think","think"],waiting:{"P2":"mutex"},forks:["P1","P1",null,null,null]}},
+          {actor:"P1",line:10,title:"P1：V(mutex)",msg:"P1 已拿齐两根筷子，立即释放 mutex。",s:{pickup:1,pickupOwner:null,p:["active","wait","think","think","think"],waiting:{"P2":"mutex"},forks:["P1","P1",null,null,null]}},
+          {actor:"P1",line:11,title:"P1：eat()",msg:"P1 进餐时不占有 mutex。",s:{pickup:1,pickupOwner:null,p:["eat","wait","think","think","think"],waiting:{"P2":"mutex"},forks:["P1","P1",null,null,null]}},
+          {actor:"P2",line:7,title:"P2：被唤醒，P(mutex) 完成",msg:"P2 获得 mutex，进入自己的取筷阶段。",s:{pickup:0,pickupOwner:"P2",p:["eat","hungry","think","think","think"],forks:["P1","P1",null,null,null]}},
+          {actor:"P2",line:8,title:"P2：P(C2) 阻塞",msg:"C2 仍由正在吃饭的 P1 占有。P2 在这里等待，并暂时保持 mutex。",s:{pickup:0,pickupOwner:"P2",p:["eat","wait","think","think","think"],waiting:{"P2":"C2"},forks:["P1","P1",null,null,null]}},
+          {actor:"P1",line:12,title:"P1：V(C2)",msg:"P1 吃完，先放下右筷 C2；P2 的 P(C2) 可以被唤醒。",s:{pickup:0,pickupOwner:"P2",p:["active","wait","think","think","think"],waiting:{"P2":"C2"},forks:["P1",null,null,null,null]}},
+          {actor:"P1",line:13,title:"P1：V(C1)",msg:"P1 放下左筷 C1，完成本轮。注意：释放筷子不需要 mutex。",s:{pickup:0,pickupOwner:"P2",p:["done","wait","think","think","think"],waiting:{"P2":"C2"},forks:[null,null,null,null,null]}},
+          {actor:"P2",line:8,title:"P2：被唤醒，P(C2) 完成",msg:"P2 取得 C2。",s:{pickup:0,pickupOwner:"P2",p:["done","hungry","think","think","think"],forks:[null,"P2",null,null,null]}},
+          {actor:"P2",line:9,title:"P2：P(C3)",msg:"C3 空闲，P2 拿到第二根筷子。",s:{pickup:0,pickupOwner:"P2",p:["done","active","think","think","think"],forks:[null,"P2","P2",null,null]}},
+          {actor:"P2",line:10,title:"P2：V(mutex)",msg:"P2 拿齐两根后释放 mutex。",s:{pickup:1,pickupOwner:null,p:["done","active","think","think","think"],forks:[null,"P2","P2",null,null]}},
+          {actor:"P2",line:11,title:"P2：eat()",msg:"P2 开始进餐；整个过程不存在循环等待。",s:{pickup:1,pickupOwner:null,p:["done","eat","think","think","think"],forks:[null,"P2","P2",null,null]}}
+        ],
+
+        oddEven:[
+          {actor:"System",line:0,title:"初始化奇偶方案",msg:"统一 1-based 编号：Pi 左筷 = Ci，右筷 = C(i mod 5 + 1)。奇数先左，偶数先右。",s:{strategy:"奇数先左 · 偶数先右",p:["think","think","think","think","think"],forks:[null,null,null,null,null]}},
+          {actor:"P1",line:7,title:"P1（奇数）：P(C1)",msg:"P1 先申请左筷 C1，成功。",s:{strategy:"奇数先左 · 偶数先右",p:["hungry","think","think","think","think"],forks:["P1",null,null,null,null]}},
+          {actor:"P2",line:10,title:"P2（偶数）：P(C3)",msg:"P2 先申请右筷 C3，成功。",s:{strategy:"奇数先左 · 偶数先右",p:["hungry","hungry","think","think","think"],forks:["P1",null,"P2",null,null]}},
+          {actor:"P3",line:7,title:"P3（奇数）：P(C3) 阻塞",msg:"P3 想先拿左筷 C3，但 C3 已被 P2 占有。",s:{strategy:"奇数先左 · 偶数先右",p:["hungry","hungry","wait","think","think"],waiting:{"P3":"C3"},forks:["P1",null,"P2",null,null]}},
+          {actor:"P4",line:10,title:"P4（偶数）：P(C5)",msg:"P4 先申请右筷 C5，成功。",s:{strategy:"奇数先左 · 偶数先右",p:["hungry","hungry","wait","hungry","think"],waiting:{"P3":"C3"},forks:["P1",null,"P2",null,"P4"]}},
+          {actor:"P5",line:7,title:"P5（奇数）：P(C5) 阻塞",msg:"P5 想先拿左筷 C5，但 C5 已被 P4 占有。",s:{strategy:"奇数先左 · 偶数先右",p:["hungry","hungry","wait","hungry","wait"],waiting:{"P3":"C3","P5":"C5"},forks:["P1",null,"P2",null,"P4"]}},
+          {actor:"P1",line:8,title:"P1（奇数）：P(C2)",msg:"P1 再申请右筷 C2，C2 空闲，所以 P1 拿齐两根。",s:{strategy:"奇数先左 · 偶数先右",p:["active","hungry","wait","hungry","wait"],waiting:{"P3":"C3","P5":"C5"},forks:["P1","P1","P2",null,"P4"]}},
+          {actor:"P1",line:13,title:"P1：eat()",msg:"P1 可以进餐，系统已经出现可推进进程。",s:{strategy:"奇数先左 · 偶数先右",p:["eat","hungry","wait","hungry","wait"],waiting:{"P3":"C3","P5":"C5"},forks:["P1","P1","P2",null,"P4"]}},
+          {actor:"P2",line:11,title:"P2（偶数）：P(C2) 阻塞",msg:"P2 的第二根是左筷 C2，此时 C2 被 P1 占有，所以 P2 等待。",s:{strategy:"奇数先左 · 偶数先右",p:["eat","wait","wait","hungry","wait"],waiting:{"P2":"C2","P3":"C3","P5":"C5"},forks:["P1","P1","P2",null,"P4"]}},
+          {actor:"P4",line:11,title:"P4（偶数）：P(C4)",msg:"P4 的第二根是左筷 C4，C4 空闲，因此 P4 也拿齐两根。",s:{strategy:"奇数先左 · 偶数先右",p:["eat","wait","wait","active","wait"],waiting:{"P2":"C2","P3":"C3","P5":"C5"},forks:["P1","P1","P2","P4","P4"]}},
+          {actor:"P4",line:13,title:"P4：eat()",msg:"P1 与 P4 可同时进餐；奇偶顺序打破了全体同向循环等待。",s:{strategy:"奇数先左 · 偶数先右",p:["eat","wait","wait","eat","wait"],waiting:{"P2":"C2","P3":"C3","P5":"C5"},forks:["P1","P1","P2","P4","P4"]}},
+          {actor:"P1",line:14,title:"P1：V(C2)",msg:"P1 放下右筷 C2，等待 C2 的 P2 可以继续。",s:{strategy:"奇数先左 · 偶数先右",p:["active","wait","wait","eat","wait"],waiting:{"P2":"C2","P3":"C3","P5":"C5"},forks:["P1",null,"P2","P4","P4"]}},
+          {actor:"P1",line:15,title:"P1：V(C1)",msg:"P1 放下左筷 C1，完成本轮。",s:{strategy:"奇数先左 · 偶数先右",p:["done","wait","wait","eat","wait"],waiting:{"P2":"C2","P3":"C3","P5":"C5"},forks:[null,null,"P2","P4","P4"]}},
+          {actor:"P2",line:11,title:"P2：被唤醒，P(C2) 完成",msg:"P2 现在同时持有 C3、C2，可以继续。",s:{strategy:"奇数先左 · 偶数先右",p:["done","active","wait","eat","wait"],waiting:{"P3":"C3","P5":"C5"},forks:[null,"P2","P2","P4","P4"]}},
+          {actor:"P2",line:13,title:"P2：eat()",msg:"P2 开始进餐，系统继续推进。",s:{strategy:"奇数先左 · 偶数先右",p:["done","eat","wait","eat","wait"],waiting:{"P3":"C3","P5":"C5"},forks:[null,"P2","P2","P4","P4"]}}
+        ]
+      },
+
       error:[
-        {line:0,title:"朴素方案",msg:"所有哲学家都执行“先左叉，再右叉”。",s:{p:["hungry","hungry","hungry","hungry","hungry"],forks:[null,null,null,null,null]}},
-        {line:1,title:"P0 拿左叉",msg:"P0 获取 F0。",s:{p:["hungry","hungry","hungry","hungry","hungry"],forks:[0,null,null,null,null],bad:true}},
-        {line:1,title:"所有人都拿到左叉",msg:"P0～P4 分别持有 F0～F4。",s:{p:["hungry","hungry","hungry","hungry","hungry"],forks:[0,1,2,3,4],bad:true}},
-        {line:2,title:"所有人等待右叉",msg:"每个人的右叉都被相邻哲学家持有。",s:{p:["wait","wait","wait","wait","wait"],forks:[0,1,2,3,4],bad:true}},
-        {line:2,title:"环形等待形成",msg:"P0→P1→P2→P3→P4→P0，循环等待成立。",s:{p:["wait","wait","wait","wait","wait"],forks:[0,1,2,3,4],bad:true,violation:true}}
+        {actor:"System",line:0,title:"初始化错误同序方案",msg:"所有哲学家都执行“先左后右”。这段代码能保证单根筷子互斥，但不能避免死锁。",s:{p:["think","think","think","think","think"],forks:[null,null,null,null,null]}},
+        {actor:"P1",line:6,title:"P1：P(C1)",msg:"P1 取得左筷 C1。",s:{p:["hungry","think","think","think","think"],forks:["P1",null,null,null,null],bad:true}},
+        {actor:"P2",line:6,title:"P2：P(C2)",msg:"P2 取得左筷 C2。",s:{p:["hungry","hungry","think","think","think"],forks:["P1","P2",null,null,null],bad:true}},
+        {actor:"P3",line:6,title:"P3：P(C3)",msg:"P3 取得左筷 C3。",s:{p:["hungry","hungry","hungry","think","think"],forks:["P1","P2","P3",null,null],bad:true}},
+        {actor:"P4",line:6,title:"P4：P(C4)",msg:"P4 取得左筷 C4。",s:{p:["hungry","hungry","hungry","hungry","think"],forks:["P1","P2","P3","P4",null],bad:true}},
+        {actor:"P5",line:6,title:"P5：P(C5)",msg:"P5 取得左筷 C5。现在 5 根筷子都已被各自左邻占有。",s:{p:["hungry","hungry","hungry","hungry","hungry"],forks:["P1","P2","P3","P4","P5"],bad:true}},
+        {actor:"P1",line:7,title:"P1：P(C2) 阻塞",msg:"C2 被 P2 占有。",s:{p:["wait","hungry","hungry","hungry","hungry"],waiting:{"P1":"C2"},forks:["P1","P2","P3","P4","P5"],bad:true}},
+        {actor:"P2",line:7,title:"P2：P(C3) 阻塞",msg:"C3 被 P3 占有。",s:{p:["wait","wait","hungry","hungry","hungry"],waiting:{"P1":"C2","P2":"C3"},forks:["P1","P2","P3","P4","P5"],bad:true}},
+        {actor:"P3",line:7,title:"P3：P(C4) 阻塞",msg:"C4 被 P4 占有。",s:{p:["wait","wait","wait","hungry","hungry"],waiting:{"P1":"C2","P2":"C3","P3":"C4"},forks:["P1","P2","P3","P4","P5"],bad:true}},
+        {actor:"P4",line:7,title:"P4：P(C5) 阻塞",msg:"C5 被 P5 占有。",s:{p:["wait","wait","wait","wait","hungry"],waiting:{"P1":"C2","P2":"C3","P3":"C4","P4":"C5"},forks:["P1","P2","P3","P4","P5"],bad:true}},
+        {actor:"P5",line:7,title:"P5：P(C1) 阻塞 → 死锁",msg:"C1 被 P1 占有。至此 P1→P2→P3→P4→P5→P1 构成完整循环等待。",s:{p:["wait","wait","wait","wait","wait"],waiting:{"P1":"C2","P2":"C3","P3":"C4","P4":"C5","P5":"C1"},forks:["P1","P2","P3","P4","P5"],bad:true,violation:true}}
       ]
     }
   };
 
+
   const meta={
-    rw:{eyebrow:"READERS · WRITERS",correct:"读者优先同步",error:"缺失 rw 保护"},
-    pc:{eyebrow:"PRODUCER · CONSUMER",correct:"有界缓冲区同步",error:"错误的 wait 顺序"},
-    dp:{eyebrow:"DINING PHILOSOPHERS",correct:"room = N − 1",error:"循环等待死锁"}
+    rw:{eyebrow:"READERS · WRITERS",correct:"读者优先同步",error:"缺失 P(rw) 保护"},
+    pc:{eyebrow:"PRODUCER · CONSUMER",correct:"有界缓冲区同步",error:"错误的 P 操作顺序"},
+    dp:{eyebrow:"DINING PHILOSOPHERS",error:"同序取筷导致循环等待"}
+  };
+
+  const dpTitles={
+    nminus1:"方案① · N−1 取筷名额",
+    atomic:"方案② · 左右筷子一起申请",
+    oddEven:"方案③ · 奇偶编号非对称取筷"
   };
 
   function svg(name,attrs={}){
@@ -885,14 +1197,15 @@ kbd{
     }
     node.style.transform=transform;
   }
-  function addAgent(parent,x,y,name,status,label2=""){
+  function addAgent(parent,x,y,name,status,label2="",isCurrent=false){
     const g=group(`translate(${x} ${y})`);
     g.classList.add("moving");
     let cls="agent-shell";
-    if(status==="reading"||status==="writing"||status==="eat"||status==="put"||status==="get"||status==="active") cls+=" active";
+    if(status==="reading"||status==="writing"||status==="eat"||status==="put"||status==="get"||status==="active"||status==="produce"||status==="consume") cls+=" active";
     if(status==="wait") cls+=" wait";
     if(status==="bad") cls+=" bad";
     if(status==="done") cls+=" good";
+    if(isCurrent) cls+=" current";
     g.appendChild(svg("rect",{x:-44,y:-30,width:88,height:60,rx:18,class:cls}));
     g.appendChild(text(0,-2,name,"label"));
     g.appendChild(text(0,15,label2 || statusLabel(status),"sub"));
@@ -902,12 +1215,14 @@ kbd{
   function statusLabel(s){
     return ({
       idle:"空闲",active:"执行",reading:"读取",writing:"写入",wait:"阻塞",
-      done:"完成",put:"写缓冲区",get:"读缓冲区",think:"思考",hungry:"等待资源",eat:"进餐"
+      done:"完成",put:"写缓冲区",get:"读缓冲区",produce:"生产产品",
+      consume:"使用产品",think:"思考",hungry:"申请资源",eat:"进餐"
     })[s]||s||"";
   }
 
   function renderRW(st){
     const g=els.layer;
+    const actor=currentStep().actor;
     g.innerHTML="";
 
     g.appendChild(svg("line",{x1:380,y1:70,x2:380,y2:342,class:"soft-line"}));
@@ -915,7 +1230,7 @@ kbd{
     const dataBox=svg("rect",{x:285,y:138,width:190,height:120,rx:26,class:`resource ${st.violation?"bad":st.rw?"warn":""}`});
     g.appendChild(dataBox);
     g.appendChild(text(380,174,"共享数据","label"));
-    g.appendChild(text(380,198,st.rw==="writer"?"writer 独占":st.rw==="readers"?"readers 持有 rw":"rw 空闲","sub"));
+    g.appendChild(text(380,198,st.rw==="W"?"W 独占 rw":st.rw==="readers"?"读者组持有 rw":"rw 空闲","sub"));
 
     const rcG=group("translate(380 230)");
     rcG.appendChild(text(0,-4,String(st.rc??0),"counter"));
@@ -927,9 +1242,9 @@ kbd{
     g.appendChild(text(380,301,"mutex","label"));
     g.appendChild(text(380,317,st.mutex?`held by ${st.mutex}`:"free","tiny"));
 
-    const r1=addAgent(g,116,122,"R1",st.r1);
-    const r2=addAgent(g,116,270,"R2",st.r2);
-    const w=addAgent(g,644,196,"W",st.w);
+    const r1=addAgent(g,116,122,"R1",st.r1,"",actor==="R1");
+    const r2=addAgent(g,116,270,"R2",st.r2,"",actor==="R2");
+    const w=addAgent(g,644,196,"W",st.w,"",actor==="W");
 
     if(st.r1==="reading") setTransform(r1,"translate(95px,38px)");
     if(st.r2==="reading") setTransform(r2,"translate(95px,-36px)");
@@ -946,10 +1261,11 @@ kbd{
 
   function renderPC(st){
     const g=els.layer;
+    const actor=currentStep().actor;
     g.innerHTML="";
 
-    const prod=addAgent(g,110,200,"Producer",st.p);
-    const cons=addAgent(g,650,200,"Consumer",st.c);
+    const prod=addAgent(g,110,200,"Producer",st.p,"",actor==="Producer");
+    const cons=addAgent(g,650,200,"Consumer",st.c,"",actor==="Consumer");
 
     if(st.p==="put"||st.p==="active") setTransform(prod,"translate(60px,0)");
     if(st.c==="get"||st.c==="active") setTransform(cons,"translate(-60px,0)");
@@ -969,7 +1285,7 @@ kbd{
     }
 
     if(st.item){
-      const fromProducer=st.p==="active";
+      const fromProducer=st.p!=="done";
       const cx=fromProducer?185:575;
       const item=svg("circle",{cx,cy:200,r:20,class:"token warn moving"});
       g.appendChild(item);
@@ -1001,12 +1317,21 @@ kbd{
 
   function renderDP(st){
     const g=els.layer;
+    const actor=currentStep().actor;
     g.innerHTML="";
     const cx=380,cy=208,R=132,tableR=88;
 
     g.appendChild(svg("circle",{cx,cy,r:tableR,class:"resource"}));
     g.appendChild(text(cx,cy-4,"TABLE","label"));
-    if(st.room!=null) g.appendChild(text(cx,cy+17,`room = ${st.room}`,"sub"));
+
+    if(st.room!=null){
+      g.appendChild(text(cx,cy+17,`room 可用名额 = ${st.room}`,"sub"));
+    }else if(st.pickup!=null){
+      const detail=st.pickupOwner ? ` · ${st.pickupOwner} 持有` : "";
+      g.appendChild(text(cx,cy+17,`mutex = ${st.pickup}${detail}`,"sub"));
+    }else if(st.strategy){
+      g.appendChild(text(cx,cy+17,st.strategy,"sub"));
+    }
 
     const positions=[];
     for(let i=0;i<5;i++){
@@ -1014,7 +1339,7 @@ kbd{
       positions.push({x:cx+Math.cos(a)*R,y:cy+Math.sin(a)*R,a});
     }
 
-    // forks lie between philosophers
+    // C1..C5 位于相邻哲学家之间。定义 Pi 的左筷为 Ci，右筷为 C(i mod 5 + 1)。
     for(let i=0;i<5;i++){
       const a=(-54+i*72)*Math.PI/180;
       const x1=cx+Math.cos(a)*72,y1=cy+Math.sin(a)*72;
@@ -1024,21 +1349,34 @@ kbd{
       if(owner!=null) cls+=" held";
       if(st.violation) cls+=" blocked";
       g.appendChild(svg("line",{x1,y1,x2,y2,class:cls}));
-      g.appendChild(text(cx+Math.cos(a)*114,cy+Math.sin(a)*114,`F${i}`,"tiny"));
+
+      const lx=cx+Math.cos(a)*116,ly=cy+Math.sin(a)*116;
+      g.appendChild(text(lx,ly,`C${i+1}`,"tiny"));
+      if(owner){
+        const ox=cx+Math.cos(a)*132,oy=cy+Math.sin(a)*132;
+        g.appendChild(text(ox,oy,owner,"fork-owner"));
+      }
     }
 
-    positions.forEach((p,i)=>{
-      let status=st.p?.[i]||"think";
+    positions.forEach((pos,i)=>{
+      const name=`P${i+1}`;
+      const status=st.p?.[i]||"think";
+      const waitingFor=st.waiting?.[name];
       let cls="agent-shell";
       if(status==="eat"||status==="active") cls+=" active";
       if(status==="wait") cls+=" wait";
       if(status==="done") cls+=" good";
-      const grp=group(`translate(${p.x} ${p.y})`);
+      if(actor===name) cls+=" current";
+
+      const grp=group(`translate(${pos.x} ${pos.y})`);
       grp.classList.add("moving");
       grp.appendChild(svg("circle",{cx:0,cy:0,r:34,class:cls}));
-      grp.appendChild(text(0,-3,`P${i}`,"label"));
-      grp.appendChild(text(0,13,statusLabel(status),"tiny"));
-      if(status==="eat") setTransform(grp,`translate(${(cx-p.x)*.09}px,${(cy-p.y)*.09}px) scale(1.04)`);
+      grp.appendChild(text(0,-3,name,"label"));
+      grp.appendChild(text(0,13,waitingFor?`等 ${waitingFor}`:statusLabel(status),"tiny"));
+
+      if(status==="eat"){
+        setTransform(grp,`translate(${(cx-pos.x)*.09}px,${(cy-pos.y)*.09}px) scale(1.04)`);
+      }
       g.appendChild(grp);
     });
 
@@ -1047,24 +1385,35 @@ kbd{
       const path=svg("path",{d:"M380 43 A165 165 0 1 1 379.9 43",class:"arrow","marker-end":"url(#arrowHead)"});
       g.appendChild(path);
       g.appendChild(text(cx,cy+5,"CIRCULAR WAIT","sub"));
-    }else if(st.room!=null){
+    }else if(mode==="correct"){
       g.appendChild(svg("circle",{cx,cy,r:158,class:"ok-ring"}));
     }
+
+    // 让初学者始终知道左右筷子的编号规则。
+    g.appendChild(text(cx,388,"Pi：左筷 Ci · 右筷 C(i mod 5 + 1)","scene-note"));
   }
 
-  function currentSteps(){return steps[problem][mode]}
+  function currentSteps(){
+    if(problem==="dp" && mode==="correct") return steps.dp.correct[dpSolution];
+    return steps[problem][mode];
+  }
+  function currentPseudocode(){
+    if(problem==="dp" && mode==="correct") return pseudocode.dp.correct[dpSolution];
+    return pseudocode[problem][mode];
+  }
   function currentStep(){return currentSteps()[current]}
 
   function renderCode(){
-    const spec=pseudocode[problem][mode];
+    const spec=currentPseudocode();
     els.code.innerHTML="";
     spec.lines.forEach((line,i)=>{
       const div=document.createElement("span");
       div.className="code-line";
       if(line.k) div.classList.add(line.k);
       if(line.bad) div.classList.add("danger");
-      if(i===currentStep().line) div.classList.add("active");
-      else if(Math.abs(i-currentStep().line)<=1) div.classList.add("near");
+      const activeLine=currentStep().line;
+      if(Number.isInteger(activeLine) && i===activeLine) div.classList.add("active");
+      else if(Number.isInteger(activeLine) && Math.abs(i-activeLine)<=1) div.classList.add("near");
 
       const no=document.createElement("span");
       no.className="no";
@@ -1075,7 +1424,7 @@ kbd{
       div.append(no,tx);
       els.code.appendChild(div);
     });
-    els.codeNote.innerHTML=`<strong>${mode==="correct"?"正确要点":"错误原因"}：</strong>${spec.note}`;
+    els.codeNote.innerHTML=`<strong>${mode==="correct"?"P / V 要点":"错误原因"}：</strong>${spec.note}<div class="execution-rule">教学规则：每一步只对应一个明确进程的一条伪代码语句；若 P 操作阻塞，动画停留在该 P 行，直到相应 V 操作使它能够继续。状态卡中的 empty / full / room 按“当前可用资源数”展示，等待进程单独标注，不展开信号量内部可能出现的负值表示。</div>`;
 
     requestAnimationFrame(()=>{
       const active=els.code.querySelector(".active");
@@ -1086,24 +1435,52 @@ kbd{
   function renderBadges(st){
     els.badges.innerHTML="";
     let data=[];
+
     if(problem==="rw"){
+      const rwLabel=st.rw==="readers"?"0 · 读者组":st.rw==="W"?"0 · W":"1 · 空闲";
+      const mutexLabel=st.mutex?`0 · ${st.mutex}`:"1 · 空闲";
       data=[
         ["read_count",st.rc??0],
-        ["rw",st.rw||"free"],
-        ["mutex",st.mutex||"free"]
+        ["rw",rwLabel],
+        ["mutex",mutexLabel]
       ];
     }else if(problem==="pc"){
+      const mutexLabel=st.mutex?`0 · ${st.mutex}`:"1 · 空闲";
       data=[
-        ["empty",st.empty],
-        ["full",st.full],
-        ["mutex",st.mutex||"free"]
+        ["empty 可用",st.empty],
+        ["full 可用",st.full],
+        ["mutex",mutexLabel]
       ];
     }else{
-      data=[
-        ["room",st.room==null?"—":st.room],
-        ["held forks",(st.forks||[]).filter(v=>v!=null).length]
-      ];
+      const waitingCount=st.waiting?Object.keys(st.waiting).length:0;
+      if(mode==="correct" && dpSolution==="nminus1"){
+        data=[
+          ["room 可用",st.room==null?"—":st.room],
+          ["已占筷子",(st.forks||[]).filter(Boolean).length],
+          ["阻塞进程",waitingCount]
+        ];
+      }else if(mode==="correct" && dpSolution==="atomic"){
+        const mutexLabel=st.pickupOwner?`0 · ${st.pickupOwner}`:"1 · 空闲";
+        data=[
+          ["mutex",mutexLabel],
+          ["已占筷子",(st.forks||[]).filter(Boolean).length],
+          ["阻塞进程",waitingCount]
+        ];
+      }else if(mode==="correct" && dpSolution==="oddEven"){
+        data=[
+          ["规则","奇左 · 偶右"],
+          ["已占筷子",(st.forks||[]).filter(Boolean).length],
+          ["阻塞进程",waitingCount]
+        ];
+      }else{
+        data=[
+          ["已占筷子",(st.forks||[]).filter(Boolean).length],
+          ["阻塞进程",waitingCount],
+          ["状态",st.violation?"死锁":"竞争中"]
+        ];
+      }
     }
+
     data.forEach(([k,v])=>{
       const d=document.createElement("span");
       d.className="state-badge";
@@ -1117,7 +1494,8 @@ kbd{
     const st=step.s;
 
     els.sceneEyebrow.textContent=meta[problem].eyebrow;
-    els.sceneTitle.textContent=meta[problem][mode];
+    els.sceneTitle.textContent=(problem==="dp" && mode==="correct") ? dpTitles[dpSolution] : meta[problem][mode];
+    els.actorPill.textContent=step.actor==="System" ? "当前对象：系统状态" : `当前进程：${step.actor}`;
     els.stepEyebrow.textContent=`STEP ${current+1}`;
     els.stepTitle.textContent=step.title;
     els.stepMessage.textContent=step.msg;
@@ -1189,6 +1567,22 @@ kbd{
     render();
   }
 
+  function updateDPSolutionBar(){
+    const show=problem==="dp" && mode==="correct";
+    els.dpSolutions.hidden=!show;
+  }
+
+  function setDPSolution(next){
+    if(next===dpSolution) return;
+    pause();
+    dpSolution=next;
+    current=0;
+    document.querySelectorAll("[data-dp-solution]").forEach(btn=>{
+      btn.setAttribute("aria-selected",String(btn.dataset.dpSolution===dpSolution));
+    });
+    render();
+  }
+
   function setProblem(next){
     if(next===problem) return;
     pause();
@@ -1197,6 +1591,7 @@ kbd{
     document.querySelectorAll("[data-problem]").forEach(btn=>{
       btn.setAttribute("aria-selected",String(btn.dataset.problem===problem));
     });
+    updateDPSolutionBar();
     render();
   }
 
@@ -1208,6 +1603,7 @@ kbd{
     document.querySelectorAll("[data-mode]").forEach(btn=>{
       btn.setAttribute("aria-selected",String(btn.dataset.mode===mode));
     });
+    updateDPSolutionBar();
     render();
   }
 
@@ -1216,6 +1612,9 @@ kbd{
   });
   document.querySelectorAll("[data-mode]").forEach(btn=>{
     btn.addEventListener("click",()=>setMode(btn.dataset.mode));
+  });
+  document.querySelectorAll("[data-dp-solution]").forEach(btn=>{
+    btn.addEventListener("click",()=>setDPSolution(btn.dataset.dpSolution));
   });
 
   els.prev.addEventListener("click",()=>go(-1));
@@ -1234,6 +1633,7 @@ kbd{
     else if(e.code==="KeyR"){e.preventDefault();reset()}
   });
 
+  updateDPSolutionBar();
   render();
 })();
 </script>

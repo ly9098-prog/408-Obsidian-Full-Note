@@ -7,7 +7,7 @@
 		{"id":"a5c034af2f5ed308","type":"text","text":"![[4.4.3 CISC和RISC的比较]]","x":-2258,"y":1700,"width":1338,"height":840,"color":"4"},
 		{"id":"40c78f08d2474bec","type":"text","text":"![[4.2.2 常见的数据寻址方式]]","x":-560,"y":-920,"width":1640,"height":3560,"color":"4"},
 		{"id":"9bf800ff2e8816b3","type":"text","text":"![[4.3 程序的机器级代码表示]]","x":1200,"y":-2125,"width":571,"height":145},
-		{"id":"407bdbe054cc0964","type":"text","text":"![[4.1.4 扩展操作码指令格式]]","x":-2258,"y":400,"width":1498,"height":720,"color":"4"}
+		{"id":"407bdbe054cc0964","type":"text","text":"![[4.1.4 扩展操作码指令格式]]","x":-2318,"y":140,"width":1498,"height":720,"color":"4"}
 	],
 	"edges":[
 		{"id":"5ec6bcdaf1a25cdf","fromNode":"050a2f213509629e","fromSide":"bottom","toNode":"68d2eb0b7ef8e217","toSide":"top"},
