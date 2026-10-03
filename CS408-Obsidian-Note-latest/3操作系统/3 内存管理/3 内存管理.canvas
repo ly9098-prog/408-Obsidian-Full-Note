@@ -11,8 +11,8 @@
 		{"id":"deb1dd6434f43467","type":"text","text":"![[3.2.7 内存映射文件]]","x":2200,"y":-270,"width":860,"height":170,"color":"4"},
 		{"id":"356b53a439d89823","type":"text","text":"![[3.2.8 虚拟存储器性能影响因素]]","x":2200,"y":-40,"width":700,"height":340,"color":"4"},
 		{"id":"c5acd02a6dfc1296","type":"text","text":"![[3.3 内存管理常见计算题]]","x":2200,"y":380,"width":1640,"height":640,"color":"4"},
-		{"id":"55a612c2d5739f91","type":"text","text":"![[3.1 内存管理方法]]","x":-660,"y":-1420,"width":1380,"height":5826,"color":"4"},
-		{"id":"00dec5be09285231","type":"file","file":"CS408-Obsidian-Note-latest/3操作系统/3 内存管理/页表概念区分关系图.md","x":-660,"y":-2320,"width":1220,"height":740}
+		{"id":"55a612c2d5739f91","type":"text","text":"![[3.1 内存管理方法]]","x":-960,"y":-1353,"width":1380,"height":5826,"color":"4"},
+		{"id":"00dec5be09285231","type":"file","file":"CS408-Obsidian-Note-latest/3操作系统/3 内存管理/页表概念区分关系图.md","x":-960,"y":-2320,"width":1220,"height":740}
 	],
 	"edges":[
 		{"id":"5eccf91d2f61397a","fromNode":"4617ad705ac14a20","fromSide":"bottom","toNode":"4d4306689d3057bd","toSide":"top"},
