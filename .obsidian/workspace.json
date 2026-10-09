@@ -13,18 +13,36 @@
             "state": {
               "type": "canvas",
               "state": {
-                "file": "CS408-Obsidian-Note-latest/3操作系统/4 文件管理/4 文件管理.canvas",
+                "file": "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4 网络层.canvas",
                 "viewState": {
-                  "x": -100.69977231148862,
-                  "y": 1970.1487992462842,
-                  "zoom": -0.16571704988245972
+                  "x": -1436.5521459759816,
+                  "y": 4668.364794309677,
+                  "zoom": 0.055141554192460585
                 }
               },
               "icon": "lucide-layout-dashboard",
-              "title": "4 文件管理"
+              "title": "4 网络层"
+            }
+          },
+          {
+            "id": "11e32ad64113a48d",
+            "type": "leaf",
+            "state": {
+              "type": "canvas",
+              "state": {
+                "file": "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4 网络层.canvas",
+                "viewState": {
+                  "x": -1122.9894684572391,
+                  "y": 4793.366610618756,
+                  "zoom": -0.27819177914087273
+                }
+              },
+              "icon": "lucide-layout-dashboard",
+              "title": "4 网络层"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -199,11 +217,22 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "81f363bcd8af9c0c",
+  "active": "11e32ad64113a48d",
   "lastOpenFiles": [
+    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/变长子网划分-堵水法.md",
+    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/变长子网划分-堵水法-3.png",
+    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/变长子网划分-堵水法-2.png",
+    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4 网络层.canvas",
+    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/变长子网划分-堵水法.png",
+    "CS408-Obsidian-Note-latest/4计算机网络/1 计算机网络体系结构/1 计算机网络体系结构.canvas",
+    "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/2.4.2 死锁预防.md",
+    "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/2.4.3 死锁避免.md",
+    "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/2 进程与线程.canvas",
+    "CS408-Obsidian-Note-latest/3操作系统/4 文件管理/4 文件管理.canvas",
+    "CS408-Obsidian-Note-latest/3操作系统/背诵知识点.md",
+    "CS408-Obsidian-Note-latest/3操作系统/5 输入输出管理/5 输入输出管理.canvas",
     "CS408-Obsidian-Note-latest/3操作系统/4 文件管理/文件共享方式.md",
     "CS408-Obsidian-Note-latest/3操作系统/4 文件管理/4.2.5 文件共享.md",
-    "CS408-Obsidian-Note-latest/3操作系统/4 文件管理/4 文件管理.canvas",
     "CS408-Obsidian-Note-latest/3操作系统/4 文件管理/attachments/文件共享方式.png",
     "CS408-Obsidian-Note-latest/3操作系统/4 文件管理/FAT表.md",
     "CS408-Obsidian-Note-latest/3操作系统/4 文件管理/attachments/FAT表.png",
@@ -224,37 +253,26 @@
     "CS408-Obsidian-Note-latest/3操作系统/3 内存管理/虚拟内存的实现.md",
     "CS408-Obsidian-Note-latest/3操作系统/5 输入输出管理/5.2.3 设备分配.md",
     "CS408-Obsidian-Note-latest/3操作系统/5 输入输出管理/5.2.4 SPOOLing技术（假脱机技术）.md",
-    "CS408-Obsidian-Note-latest/3操作系统/背诵知识点.md",
     "CS408-Obsidian-Note-latest/3操作系统/1 计算机系统概述/为用户和计算机硬件系统提供接口.md",
     "CS408-Obsidian-Note-latest/1数据结构/5 树与二叉树/5 树与二叉树.canvas",
     "CS408-Obsidian-Note-latest/2计算机组成原理/1 计算机系统概述/1 计算机系统概述.canvas",
     "CS408-Obsidian-Note-latest/2计算机组成原理/1 计算机系统概述/1.2.5 计算机系统的细节.md",
     "CS408-Obsidian-Note-latest/2计算机组成原理/1 计算机系统概述/attachments/程序执行的过程.html",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/8 排序.canvas",
-    "CS408-Obsidian-Note-latest/2计算机组成原理/3 存储系统/3 存储系统.canvas",
-    "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/2 进程与线程.canvas",
     "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/2.3.5 经典同步问题.md",
-    "CS408-Obsidian-Note-latest/1数据结构/6 图/6 图.canvas",
-    "CS408-Obsidian-Note-latest/2计算机组成原理/5 中央处理器/5 中央处理器.canvas",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/直接插入排序力例图.png",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/8.5 归并排序、基数排序和计数排序.md",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/基数排序&二路归并排序-详细版-动画.html",
     "CS408-Obsidian-Note-latest/1数据结构/4 串/4.2 串的模式匹配.md",
-    "CS408-Obsidian-Note-latest/1数据结构/7 查找/7.4.1 B树及其基本操作.md",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/基数排序&二路归并排序-省略版-动画.html",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/基数排序&二路归并排序-省略版.html",
     "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/attachments/408_操作系统经典同步问题_动画演示.html",
-    "CS408-Obsidian-Note-latest/1数据结构/8 排序/直接插入排序&简单选择排序动画.md",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/sort_svg_animation_v2.html",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/preview.html",
-    "CS408-Obsidian-Note-latest/1数据结构/5 树与二叉树/哈夫曼编码相关概念.md",
     "CS408-Obsidian-Note-latest/1数据结构/7 查找/attachments/B树求结点类题型.png",
     "CS408-Obsidian-Note-latest/1数据结构/7 查找/attachments/B树动画演示.html",
     "CS408-Obsidian-Note-latest/1数据结构/6 图/attachments/多重图.png",
     "CS408-Obsidian-Note-latest/1数据结构/6 图/attachments/最早开始时间和最晚开始时间.png",
-    "CS408-Obsidian-Note-latest/1数据结构/5 树与二叉树/attachments/求后继麻烦QA.png",
-    "CS408-Obsidian-Note-latest/1数据结构/5 树与二叉树/attachments/Snipaste_2026-08-06_13-22-00.png",
-    "CS408-Obsidian-Note-latest/1数据结构/5 树与二叉树/attachments/求后继麻烦的原因.png",
     "CS408-Obsidian-Note-latest/1数据结构/5 树与二叉树/attachments/树的存储结构.html"
   ]
 }
