@@ -1,5 +1,6 @@
 {
 	"nodes":[
+		{"id":"a0f1c9d30497161c","type":"file","file":"CS408-Obsidian-Note-latest/4计算机网络/4 网络层/APR流程图.md","x":4660,"y":2817,"width":940,"height":2203},
 		{"id":"f0a7702f7d811c2e","type":"text","text":"![[4.1 网络层概述]]","x":-3245,"y":-1109,"width":965,"height":929,"color":"4"},
 		{"id":"aa29591b1c0dc7f5","type":"text","text":"![[4.1.4 SDN的基本概念]]","x":-3245,"y":-60,"width":785,"height":180,"color":"4"},
 		{"id":"b2637255442b2183","type":"text","text":"![[4.7 网络层设备]]","x":-3245,"y":220,"width":1085,"height":1560,"color":"4"},

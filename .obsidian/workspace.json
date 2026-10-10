@@ -15,34 +15,16 @@
               "state": {
                 "file": "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4 网络层.canvas",
                 "viewState": {
-                  "x": -1436.5521459759816,
-                  "y": 4668.364794309677,
+                  "x": 5205.94918039426,
+                  "y": 3304.692793985469,
                   "zoom": 0.055141554192460585
                 }
               },
               "icon": "lucide-layout-dashboard",
               "title": "4 网络层"
             }
-          },
-          {
-            "id": "11e32ad64113a48d",
-            "type": "leaf",
-            "state": {
-              "type": "canvas",
-              "state": {
-                "file": "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4 网络层.canvas",
-                "viewState": {
-                  "x": -1122.9894684572391,
-                  "y": 4793.366610618756,
-                  "zoom": -0.27819177914087273
-                }
-              },
-              "icon": "lucide-layout-dashboard",
-              "title": "4 网络层"
-            }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -203,7 +185,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 305.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -217,12 +199,18 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "11e32ad64113a48d",
+  "active": "81f363bcd8af9c0c",
   "lastOpenFiles": [
+    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4 网络层.canvas",
+    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/DR和BDR.md",
+    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/APR流程图.md",
+    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/ARP帧封装.png",
+    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/ARP流程图.png",
+    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/ARP流程图.svg",
+    "CS408-Obsidian-Note-latest/1数据结构/6 图/6 图.canvas",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/变长子网划分-堵水法.md",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/变长子网划分-堵水法-3.png",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/变长子网划分-堵水法-2.png",
-    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4 网络层.canvas",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/变长子网划分-堵水法.png",
     "CS408-Obsidian-Note-latest/4计算机网络/1 计算机网络体系结构/1 计算机网络体系结构.canvas",
     "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/2.4.2 死锁预防.md",
@@ -258,21 +246,15 @@
     "CS408-Obsidian-Note-latest/2计算机组成原理/1 计算机系统概述/1 计算机系统概述.canvas",
     "CS408-Obsidian-Note-latest/2计算机组成原理/1 计算机系统概述/1.2.5 计算机系统的细节.md",
     "CS408-Obsidian-Note-latest/2计算机组成原理/1 计算机系统概述/attachments/程序执行的过程.html",
-    "CS408-Obsidian-Note-latest/1数据结构/8 排序/8 排序.canvas",
     "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/2.3.5 经典同步问题.md",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/直接插入排序力例图.png",
-    "CS408-Obsidian-Note-latest/1数据结构/8 排序/8.5 归并排序、基数排序和计数排序.md",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/基数排序&二路归并排序-详细版-动画.html",
-    "CS408-Obsidian-Note-latest/1数据结构/4 串/4.2 串的模式匹配.md",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/基数排序&二路归并排序-省略版-动画.html",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/基数排序&二路归并排序-省略版.html",
     "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/attachments/408_操作系统经典同步问题_动画演示.html",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/sort_svg_animation_v2.html",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/preview.html",
-    "CS408-Obsidian-Note-latest/1数据结构/7 查找/attachments/B树求结点类题型.png",
     "CS408-Obsidian-Note-latest/1数据结构/7 查找/attachments/B树动画演示.html",
-    "CS408-Obsidian-Note-latest/1数据结构/6 图/attachments/多重图.png",
-    "CS408-Obsidian-Note-latest/1数据结构/6 图/attachments/最早开始时间和最晚开始时间.png",
     "CS408-Obsidian-Note-latest/1数据结构/5 树与二叉树/attachments/树的存储结构.html"
   ]
 }
