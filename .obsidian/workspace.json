@@ -13,15 +13,15 @@
             "state": {
               "type": "canvas",
               "state": {
-                "file": "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4 网络层.canvas",
+                "file": "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/6 应用层.canvas",
                 "viewState": {
-                  "x": 5205.94918039426,
-                  "y": 3304.692793985469,
-                  "zoom": 0.055141554192460585
+                  "x": 2109.874169497502,
+                  "y": 2260.6237662472204,
+                  "zoom": 1.1102230246251565e-16
                 }
               },
               "icon": "lucide-layout-dashboard",
-              "title": "4 网络层"
+              "title": "6 应用层"
             }
           }
         ]
@@ -58,7 +58,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "tag:#NAT",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -201,9 +201,20 @@
   },
   "active": "81f363bcd8af9c0c",
   "lastOpenFiles": [
+    "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/第二种：递归迭代查询.md",
+    "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/6 应用层.canvas",
+    "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/attachments/DNS迭代查询流程图.png",
+    "CS408-Obsidian-Note-latest/4计算机网络/5 传输层/5 传输层.canvas",
+    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/Pasted image 20261012000533.png",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4 网络层.canvas",
-    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/DR和BDR.md",
+    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4.2.3 路由聚合.md",
+    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4.2.3 无分类编制的IPV4地址（CIDR）.md",
+    "CS408-Obsidian-Note-latest/README/外中断和内中断.png",
+    "CS408-Obsidian-Note-latest/2计算机组成原理/1 计算机系统概述/1 计算机系统概述.canvas",
+    "CS408-Obsidian-Note-latest/3操作系统/1 计算机系统概述/1 计算机系统概述.canvas",
+    "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/2 进程与线程.canvas",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/APR流程图.md",
+    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/DR和BDR.md",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/ARP帧封装.png",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/ARP流程图.png",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/ARP流程图.svg",
@@ -215,7 +226,6 @@
     "CS408-Obsidian-Note-latest/4计算机网络/1 计算机网络体系结构/1 计算机网络体系结构.canvas",
     "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/2.4.2 死锁预防.md",
     "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/2.4.3 死锁避免.md",
-    "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/2 进程与线程.canvas",
     "CS408-Obsidian-Note-latest/3操作系统/4 文件管理/4 文件管理.canvas",
     "CS408-Obsidian-Note-latest/3操作系统/背诵知识点.md",
     "CS408-Obsidian-Note-latest/3操作系统/5 输入输出管理/5 输入输出管理.canvas",
@@ -223,14 +233,10 @@
     "CS408-Obsidian-Note-latest/3操作系统/4 文件管理/4.2.5 文件共享.md",
     "CS408-Obsidian-Note-latest/3操作系统/4 文件管理/attachments/文件共享方式.png",
     "CS408-Obsidian-Note-latest/3操作系统/4 文件管理/FAT表.md",
-    "CS408-Obsidian-Note-latest/3操作系统/4 文件管理/attachments/FAT表.png",
-    "CS408-Obsidian-Note-latest/3操作系统/3 内存管理/3 内存管理.canvas",
-    "CS408-Obsidian-Note-latest/3操作系统/3 内存管理/attachments/页表概念区分关系图.png",
     "CS408-Obsidian-Note-latest/3操作系统/3 内存管理/页表概念区分关系图.md",
     "CS408-Obsidian-Note-latest/3操作系统/3 内存管理/3.1 内存管理方法.md",
     "CS408-Obsidian-Note-latest/3操作系统/3 内存管理/attachments/页表概念关系区分.html",
     "CS408-Obsidian-Note-latest/3操作系统/3 内存管理/3.2.2 请求分页管理方式.md",
-    "CS408-Obsidian-Note-latest/3操作系统/1 计算机系统概述/1 计算机系统概述.canvas",
     "CS408-Obsidian-Note-latest/3操作系统/1 计算机系统概述/1.1 操作系统的基本概念.md",
     "CS408-Obsidian-Note-latest/3操作系统/1 计算机系统概述/1.0 计算机系统概述常考点.md",
     "CS408-Obsidian-Note-latest/3操作系统/1 计算机系统概述/1.1.2 操作系统的功能和目标.md",
@@ -242,12 +248,7 @@
     "CS408-Obsidian-Note-latest/3操作系统/5 输入输出管理/5.2.3 设备分配.md",
     "CS408-Obsidian-Note-latest/3操作系统/5 输入输出管理/5.2.4 SPOOLing技术（假脱机技术）.md",
     "CS408-Obsidian-Note-latest/3操作系统/1 计算机系统概述/为用户和计算机硬件系统提供接口.md",
-    "CS408-Obsidian-Note-latest/1数据结构/5 树与二叉树/5 树与二叉树.canvas",
-    "CS408-Obsidian-Note-latest/2计算机组成原理/1 计算机系统概述/1 计算机系统概述.canvas",
-    "CS408-Obsidian-Note-latest/2计算机组成原理/1 计算机系统概述/1.2.5 计算机系统的细节.md",
     "CS408-Obsidian-Note-latest/2计算机组成原理/1 计算机系统概述/attachments/程序执行的过程.html",
-    "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/2.3.5 经典同步问题.md",
-    "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/直接插入排序力例图.png",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/基数排序&二路归并排序-详细版-动画.html",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/基数排序&二路归并排序-省略版-动画.html",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/基数排序&二路归并排序-省略版.html",

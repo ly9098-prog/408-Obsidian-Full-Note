@@ -1,6 +1,6 @@
 {
 	"nodes":[
-		{"id":"c1ffbf2e2e38c911","type":"text","text":"![[1.0 计算机系统概述常考点]]","x":-2660,"y":-1620,"width":1480,"height":4000,"color":"4"},
+		{"id":"c1ffbf2e2e38c911","type":"text","text":"![[1.0 计算机系统概述常考点]]","x":-2660,"y":-1620,"width":1480,"height":4060,"color":"4"},
 		{"id":"013f764e5bb4e9e5","type":"text","text":"![[1.1 操作系统的基本概念]]","x":-1040,"y":-1620,"width":1060,"height":1840,"color":"4"},
 		{"id":"a84bda318f273633","type":"text","text":"![[1.4 操作系统结构]]","x":-1040,"y":320,"width":1060,"height":680,"color":"4"},
 		{"id":"c2a2d97943bbb5f4","type":"text","text":"![[1.5 操作系统引导]]","x":-1040,"y":1080,"width":900,"height":980,"color":"4"},
