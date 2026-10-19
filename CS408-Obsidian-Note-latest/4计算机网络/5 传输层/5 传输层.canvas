@@ -10,13 +10,15 @@
 		{"id":"29f70f67eaae1418","type":"file","file":"CS408-Obsidian-Note-latest/4计算机网络/5 传输层/attachments/ipv4-fragmentation-handdrawn.png","x":-1480,"y":2470,"width":1280,"height":847},
 		{"id":"37cba1854f3c9776","type":"text","text":"### 原始笔记对照（完整保留原图）","x":-1480,"y":3370,"width":1280,"height":60},
 		{"id":"e334a5ddb6c45bd9","type":"file","file":"CS408-Obsidian-Note-latest/4计算机网络/5 传输层/attachments/udp-ip-encapsulation-original.png","x":-1480,"y":3460,"width":560,"height":414},
-		{"id":"74b97d555a16b34f","type":"file","file":"CS408-Obsidian-Note-latest/4计算机网络/5 传输层/attachments/ipv4-fragmentation-original.png","x":-860,"y":3460,"width":660,"height":261}
+		{"id":"74b97d555a16b34f","type":"file","file":"CS408-Obsidian-Note-latest/4计算机网络/5 传输层/attachments/ipv4-fragmentation-original.png","x":-860,"y":3460,"width":660,"height":261},
+		{"id":"p4trans20261019","type":"file","file":"CS408-Obsidian-Note-latest/4计算机网络/5 传输层/P4强化：逐层协议封装与TCP-UDP计算.md","x":-2480,"y":4100,"width":1300,"height":3900,"color":"4"}
 	],
 	"edges":[
 		{"id":"e46d241e81f0729c","fromNode":"be796005dee3e14b","fromSide":"right","toNode":"82c6d86e1b42dd32","toSide":"left"},
 		{"id":"9bc4b0b1f0e739e0","fromNode":"82c6d86e1b42dd32","fromSide":"right","toNode":"003a5b452cf2dd8b","toSide":"left"},
 		{"id":"049778b3fa2d74b4","fromNode":"003a5b452cf2dd8b","fromSide":"right","toNode":"b685190c8bbddf4c","toSide":"left"},
 		{"id":"9db2bc26957ec6c4","fromNode":"003a5b452cf2dd8b","fromSide":"right","toNode":"b685190c8bbddf4c","toSide":"left"},
-		{"id":"cb62d6088c9f8374","fromNode":"82c6d86e1b42dd32","fromSide":"bottom","toNode":"07dacfb81d7bcff7","toSide":"top","color":"4","label":"UDP封装与IP分片例题"}
+		{"id":"cb62d6088c9f8374","fromNode":"82c6d86e1b42dd32","fromSide":"bottom","toNode":"07dacfb81d7bcff7","toSide":"top","color":"4","label":"UDP封装与IP分片例题"},
+		{"id":"efe0adb22b93b4d52","fromNode":"07dacfb81d7bcff7","fromSide":"bottom","toNode":"p4trans20261019","toSide":"top","color":"4","label":"P4封装与TCP/UDP综合计算"}
 	]
 }
