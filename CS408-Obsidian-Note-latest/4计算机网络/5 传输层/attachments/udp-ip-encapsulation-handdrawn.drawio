@@ -1,0 +1,175 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" version="24.7.17">
+  <diagram id="udp-ip-encapsulation-handdrawn" name="原笔记画法重绘">
+    <mxGraphModel dx="1920" dy="1580" grid="1" gridSize="32" page="1" pageScale="1" pageWidth="1920" pageHeight="1580" background="#f5f5f1" adaptiveColors="auto">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="UDP 封装与 IPv4 分片" style="fillColor=none;strokeColor=none;fontColor=#30302d;fontSize=54;fontFamily=KaiTi;align=left;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;html=1;whiteSpace=wrap;fontStyle=0;shape=text;labelBackgroundColor=none;" vertex="1" parent="1">
+          <mxGeometry x="72" y="36" width="1050" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="沿用原笔记的展开画法：应用数据 → UDP → IP → 分片 → 以太网帧" style="fillColor=none;strokeColor=none;fontColor=#30302d;fontSize=30;fontFamily=KaiTi;align=left;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;html=1;whiteSpace=wrap;fontStyle=0;shape=text;labelBackgroundColor=none;" vertex="1" parent="1">
+          <mxGeometry x="72" y="116" width="1770" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="app_0" value="应用数据 3200 B" style="fillColor=none;strokeColor=#30302d;fontColor=#30302d;fontSize=36;fontFamily=KaiTi;align=center;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;sketch=1;jiggle=1;html=1;whiteSpace=wrap;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="760" y="208" width="400" height="96" as="geometry" />
+        </mxCell>
+        <mxCell id="udp_0" value="UDP&lt;br&gt;8 B" style="fillColor=none;strokeColor=#30302d;fontColor=#30302d;fontSize=36;fontFamily=KaiTi;align=center;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;sketch=1;jiggle=1;html=1;whiteSpace=wrap;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="480" y="392" width="192" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="udp_1" value="3200 B" style="fillColor=none;strokeColor=#30302d;fontColor=#30302d;fontSize=36;fontFamily=KaiTi;align=center;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;sketch=1;jiggle=1;html=1;whiteSpace=wrap;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="672" y="392" width="768" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="ip_0" value="IP&lt;br&gt;20 B" style="fillColor=none;strokeColor=#30302d;fontColor=#30302d;fontSize=38;fontFamily=KaiTi;align=center;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;sketch=1;jiggle=1;html=1;whiteSpace=wrap;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="480" y="600" width="192" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="ip_1" value="3208 B" style="fillColor=none;strokeColor=#30302d;fontColor=#30302d;fontSize=38;fontFamily=KaiTi;align=center;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;sketch=1;jiggle=1;html=1;whiteSpace=wrap;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="672" y="600" width="768" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="udp_add" value="UDP 加首部 8 B" style="fillColor=none;strokeColor=none;fontColor=#30302d;fontSize=30;fontFamily=KaiTi;align=left;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;html=1;whiteSpace=wrap;fontStyle=0;shape=text;labelBackgroundColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="318" width="650" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="ip_add" value="IP 加首部 20 B；总长 3228 B" style="fillColor=none;strokeColor=none;fontColor=#30302d;fontSize=30;fontFamily=KaiTi;align=left;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;html=1;whiteSpace=wrap;fontStyle=0;shape=text;labelBackgroundColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="526" width="800" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="mtu" value="MTU = 1500 B" style="fillColor=none;strokeColor=none;fontColor=#4f792b;fontSize=38;fontFamily=KaiTi;align=left;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;html=1;whiteSpace=wrap;fontStyle=0;shape=text;labelBackgroundColor=none;" vertex="1" parent="1">
+          <mxGeometry x="80" y="752" width="370" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="split_reason" value="3228 B &amp;gt; 1500 B&lt;br&gt;在 IP 层分片" style="fillColor=none;strokeColor=none;fontColor=#a52e49;fontSize=28;fontFamily=KaiTi;align=left;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;html=1;whiteSpace=wrap;fontStyle=0;shape=text;labelBackgroundColor=none;" vertex="1" parent="1">
+          <mxGeometry x="80" y="816" width="360" height="88" as="geometry" />
+        </mxCell>
+        <mxCell id="frag0_0" value="IP&lt;br&gt;20 B" style="fillColor=none;strokeColor=#30302d;fontColor=#30302d;fontSize=36;fontFamily=KaiTi;align=center;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;sketch=1;jiggle=1;html=1;whiteSpace=wrap;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="1000" width="144" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="frag0_1" value="1480 B" style="fillColor=none;strokeColor=#30302d;fontColor=#30302d;fontSize=36;fontFamily=KaiTi;align=center;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;sketch=1;jiggle=1;html=1;whiteSpace=wrap;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="224" y="1000" width="336" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="part0" value="第 1 片" style="fillColor=none;strokeColor=none;fontColor=#30302d;fontSize=30;fontFamily=KaiTi;align=left;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;html=1;whiteSpace=wrap;fontStyle=0;shape=text;labelBackgroundColor=none;" vertex="1" parent="1">
+          <mxGeometry x="80" y="936" width="220" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="fields0" value="首长 5   总长 1500&lt;br&gt;片偏移 0" style="fillColor=none;strokeColor=none;fontColor=#a52e49;fontSize=29;fontFamily=KaiTi;align=left;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;html=1;whiteSpace=wrap;fontStyle=0;shape=text;labelBackgroundColor=none;" vertex="1" parent="1">
+          <mxGeometry x="80" y="1120" width="418" height="88" as="geometry" />
+        </mxCell>
+        <mxCell id="flags0" value="标识相同   MF = 1" style="fillColor=none;strokeColor=none;fontColor=#4f792b;fontSize=29;fontFamily=KaiTi;align=left;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;html=1;whiteSpace=wrap;fontStyle=0;shape=text;labelBackgroundColor=none;" vertex="1" parent="1">
+          <mxGeometry x="80" y="1224" width="418" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="frame0_0" value="6+6+2" style="fillColor=none;strokeColor=#30302d;fontColor=#30302d;fontSize=28;fontFamily=KaiTi;align=center;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;sketch=1;jiggle=1;html=1;whiteSpace=wrap;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="1352" width="112" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="frame0_1" value="1500 B" style="fillColor=none;strokeColor=#30302d;fontColor=#30302d;fontSize=28;fontFamily=KaiTi;align=center;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;sketch=1;jiggle=1;html=1;whiteSpace=wrap;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="192" y="1352" width="320" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="frame0_2" value="4" style="fillColor=none;strokeColor=#30302d;fontColor=#30302d;fontSize=28;fontFamily=KaiTi;align=center;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;sketch=1;jiggle=1;html=1;whiteSpace=wrap;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="512" y="1352" width="48" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="frag1_0" value="IP&lt;br&gt;20 B" style="fillColor=none;strokeColor=#30302d;fontColor=#30302d;fontSize=36;fontFamily=KaiTi;align=center;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;sketch=1;jiggle=1;html=1;whiteSpace=wrap;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="720" y="1000" width="144" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="frag1_1" value="1480 B" style="fillColor=none;strokeColor=#30302d;fontColor=#30302d;fontSize=36;fontFamily=KaiTi;align=center;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;sketch=1;jiggle=1;html=1;whiteSpace=wrap;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="864" y="1000" width="336" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="part1" value="第 2 片" style="fillColor=none;strokeColor=none;fontColor=#30302d;fontSize=30;fontFamily=KaiTi;align=left;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;html=1;whiteSpace=wrap;fontStyle=0;shape=text;labelBackgroundColor=none;" vertex="1" parent="1">
+          <mxGeometry x="720" y="936" width="220" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="fields1" value="首长 5   总长 1500&lt;br&gt;片偏移 185" style="fillColor=none;strokeColor=none;fontColor=#a52e49;fontSize=29;fontFamily=KaiTi;align=left;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;html=1;whiteSpace=wrap;fontStyle=0;shape=text;labelBackgroundColor=none;" vertex="1" parent="1">
+          <mxGeometry x="720" y="1120" width="418" height="88" as="geometry" />
+        </mxCell>
+        <mxCell id="flags1" value="标识相同   MF = 1" style="fillColor=none;strokeColor=none;fontColor=#4f792b;fontSize=29;fontFamily=KaiTi;align=left;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;html=1;whiteSpace=wrap;fontStyle=0;shape=text;labelBackgroundColor=none;" vertex="1" parent="1">
+          <mxGeometry x="720" y="1224" width="418" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="frame1_0" value="6+6+2" style="fillColor=none;strokeColor=#30302d;fontColor=#30302d;fontSize=28;fontFamily=KaiTi;align=center;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;sketch=1;jiggle=1;html=1;whiteSpace=wrap;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="720" y="1352" width="112" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="frame1_1" value="1500 B" style="fillColor=none;strokeColor=#30302d;fontColor=#30302d;fontSize=28;fontFamily=KaiTi;align=center;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;sketch=1;jiggle=1;html=1;whiteSpace=wrap;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="832" y="1352" width="320" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="frame1_2" value="4" style="fillColor=none;strokeColor=#30302d;fontColor=#30302d;fontSize=28;fontFamily=KaiTi;align=center;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;sketch=1;jiggle=1;html=1;whiteSpace=wrap;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="1152" y="1352" width="48" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="frag2_0" value="IP&lt;br&gt;20 B" style="fillColor=none;strokeColor=#30302d;fontColor=#30302d;fontSize=36;fontFamily=KaiTi;align=center;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;sketch=1;jiggle=1;html=1;whiteSpace=wrap;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="1000" width="144" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="frag2_1" value="248 B" style="fillColor=none;strokeColor=#30302d;fontColor=#30302d;fontSize=36;fontFamily=KaiTi;align=center;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;sketch=1;jiggle=1;html=1;whiteSpace=wrap;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="1504" y="1000" width="336" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="part2" value="第 3 片" style="fillColor=none;strokeColor=none;fontColor=#30302d;fontSize=30;fontFamily=KaiTi;align=left;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;html=1;whiteSpace=wrap;fontStyle=0;shape=text;labelBackgroundColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="936" width="220" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="fields2" value="首长 5   总长 268&lt;br&gt;片偏移 370" style="fillColor=none;strokeColor=none;fontColor=#a52e49;fontSize=29;fontFamily=KaiTi;align=left;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;html=1;whiteSpace=wrap;fontStyle=0;shape=text;labelBackgroundColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="1120" width="418" height="88" as="geometry" />
+        </mxCell>
+        <mxCell id="flags2" value="标识相同   MF = 0" style="fillColor=none;strokeColor=none;fontColor=#4f792b;fontSize=29;fontFamily=KaiTi;align=left;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;html=1;whiteSpace=wrap;fontStyle=0;shape=text;labelBackgroundColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="1224" width="418" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="frame2_0" value="6+6+2" style="fillColor=none;strokeColor=#30302d;fontColor=#30302d;fontSize=28;fontFamily=KaiTi;align=center;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;sketch=1;jiggle=1;html=1;whiteSpace=wrap;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="1352" width="112" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="frame2_1" value="268 B" style="fillColor=none;strokeColor=#30302d;fontColor=#30302d;fontSize=28;fontFamily=KaiTi;align=center;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;sketch=1;jiggle=1;html=1;whiteSpace=wrap;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="1472" y="1352" width="320" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="frame2_2" value="4" style="fillColor=none;strokeColor=#30302d;fontColor=#30302d;fontSize=28;fontFamily=KaiTi;align=center;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;sketch=1;jiggle=1;html=1;whiteSpace=wrap;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="1792" y="1352" width="48" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="frame_explain" value="以太网帧：帧首部 14 B  +  IP 分片  +  FCS 4 B" style="fillColor=none;strokeColor=none;fontColor=#30302d;fontSize=32;fontFamily=KaiTi;align=left;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;html=1;whiteSpace=wrap;fontStyle=0;shape=text;labelBackgroundColor=none;" vertex="1" parent="1">
+          <mxGeometry x="80" y="1464" width="1540" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="mtu_explain" value="MTU 限制的是 IP 分组长度，包含 IP 首部；不含以太网帧首部和 FCS。" style="fillColor=none;strokeColor=none;fontColor=#455f91;fontSize=28;fontFamily=KaiTi;align=left;verticalAlign=middle;rounded=0;strokeWidth=2;spacing=0;spacingLeft=0;spacingRight=0;spacingTop=0;spacingBottom=0;html=1;whiteSpace=wrap;fontStyle=0;shape=text;labelBackgroundColor=none;" vertex="1" parent="1">
+          <mxGeometry x="80" y="1516" width="1760" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_0" value="" source="app_0" target="udp_1" edge="1" parent="1" style="edgeStyle=none;curved=0;rounded=0;exitX=0.5;exitY=1;entryX=0.375;entryY=0;strokeColor=#30302d;strokeWidth=2.5;endArrow=open;endSize=14;html=1;endFill=0;exitPerimeter=0;entryPerimeter=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_1" value="" source="udp_1" target="ip_1" edge="1" parent="1" style="edgeStyle=none;curved=0;rounded=0;exitX=0.375;exitY=1;entryX=0.375;entryY=0;strokeColor=#30302d;strokeWidth=2.5;endArrow=open;endSize=14;html=1;endFill=0;exitPerimeter=0;entryPerimeter=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_2" value="" source="ip_0" target="frag0_1" edge="1" parent="1" style="edgeStyle=none;curved=0;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#30302d;strokeWidth=2.5;endArrow=open;endSize=14;html=1;endFill=0;exitPerimeter=0;entryPerimeter=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="392" y="928" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_3" value="" source="frag0_1" target="frame0_1" edge="1" parent="1" style="edgeStyle=none;curved=0;rounded=0;exitX=0.85;exitY=1;entryX=0.95;entryY=0;strokeColor=#30302d;strokeWidth=2.5;endArrow=open;endSize=14;html=1;endFill=0;exitPerimeter=0;entryPerimeter=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="548" y="1304" />
+              <mxPoint x="496" y="1304" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_4" value="" source="ip_1" target="frag1_1" edge="1" parent="1" style="edgeStyle=none;curved=0;rounded=0;exitX=0.375;exitY=1;entryX=0.5;entryY=0;strokeColor=#30302d;strokeWidth=2.5;endArrow=open;endSize=14;html=1;endFill=0;exitPerimeter=0;entryPerimeter=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="960" y="910" />
+              <mxPoint x="960" y="950" />
+              <mxPoint x="1032" y="950" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_5" value="" source="frag1_1" target="frame1_1" edge="1" parent="1" style="edgeStyle=none;curved=0;rounded=0;exitX=0.85;exitY=1;entryX=0.95;entryY=0;strokeColor=#30302d;strokeWidth=2.5;endArrow=open;endSize=14;html=1;endFill=0;exitPerimeter=0;entryPerimeter=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1188" y="1304" />
+              <mxPoint x="1136" y="1304" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_6" value="" source="ip_1" target="frag2_1" edge="1" parent="1" style="edgeStyle=none;curved=0;rounded=0;exitX=0.88;exitY=1;entryX=0.5;entryY=0;strokeColor=#30302d;strokeWidth=2.5;endArrow=open;endSize=14;html=1;endFill=0;exitPerimeter=0;entryPerimeter=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1672" y="928" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_7" value="" source="frag2_1" target="frame2_1" edge="1" parent="1" style="edgeStyle=none;curved=0;rounded=0;exitX=0.85;exitY=1;entryX=0.95;entryY=0;strokeColor=#30302d;strokeWidth=2.5;endArrow=open;endSize=14;html=1;endFill=0;exitPerimeter=0;entryPerimeter=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1828" y="1304" />
+              <mxPoint x="1776" y="1304" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

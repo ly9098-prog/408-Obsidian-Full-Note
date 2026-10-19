@@ -1,11 +1,22 @@
 {
 	"nodes":[
+		{"id":"07dacfb81d7bcff7","type":"group","x":-2480,"y":1280,"width":2320,"height":2640,"color":"4","label":"UDP封装与IPv4分片 · 例题与原图"},
 		{"id":"be796005dee3e14b","type":"text","text":"![[5.1 传输层概述]]","x":-2000,"y":-760,"width":880,"height":560,"color":"4"},
 		{"id":"82c6d86e1b42dd32","type":"text","text":"![[5.2 UDP协议]]","x":-1000,"y":-760,"width":900,"height":1900,"color":"4"},
-		{"id":"003a5b452cf2dd8b","type":"text","text":"![[5.3 TCP协议]]","x":40,"y":-760,"width":1080,"height":4740,"color":"4"}
+		{"id":"003a5b452cf2dd8b","type":"text","text":"![[5.3 TCP协议]]","x":240,"y":-880,"width":1080,"height":4900,"color":"4"},
+		{"id":"b685190c8bbddf4c","type":"file","file":"CS408-Obsidian-Note-latest/4计算机网络/5 传输层/attachments/Snipaste_2026-10-16_17-56-30.png","x":1420,"y":1740,"width":200,"height":131},
+		{"id":"1f6a8acfbe61199e","type":"file","file":"CS408-Obsidian-Note-latest/4计算机网络/5 传输层/attachments/udp-ip-encapsulation-handdrawn.png","x":-1480,"y":1360,"width":1280,"height":1053},
+		{"id":"243b6c23513fb8f7","type":"file","file":"CS408-Obsidian-Note-latest/4计算机网络/5 传输层/UDP封装与IPv4分片（例题）.md","x":-2440,"y":1360,"width":900,"height":2520,"color":"4"},
+		{"id":"29f70f67eaae1418","type":"file","file":"CS408-Obsidian-Note-latest/4计算机网络/5 传输层/attachments/ipv4-fragmentation-handdrawn.png","x":-1480,"y":2470,"width":1280,"height":847},
+		{"id":"37cba1854f3c9776","type":"text","text":"### 原始笔记对照（完整保留原图）","x":-1480,"y":3370,"width":1280,"height":60},
+		{"id":"e334a5ddb6c45bd9","type":"file","file":"CS408-Obsidian-Note-latest/4计算机网络/5 传输层/attachments/udp-ip-encapsulation-original.png","x":-1480,"y":3460,"width":560,"height":414},
+		{"id":"74b97d555a16b34f","type":"file","file":"CS408-Obsidian-Note-latest/4计算机网络/5 传输层/attachments/ipv4-fragmentation-original.png","x":-860,"y":3460,"width":660,"height":261}
 	],
 	"edges":[
 		{"id":"e46d241e81f0729c","fromNode":"be796005dee3e14b","fromSide":"right","toNode":"82c6d86e1b42dd32","toSide":"left"},
-		{"id":"9bc4b0b1f0e739e0","fromNode":"82c6d86e1b42dd32","fromSide":"right","toNode":"003a5b452cf2dd8b","toSide":"left"}
+		{"id":"9bc4b0b1f0e739e0","fromNode":"82c6d86e1b42dd32","fromSide":"right","toNode":"003a5b452cf2dd8b","toSide":"left"},
+		{"id":"049778b3fa2d74b4","fromNode":"003a5b452cf2dd8b","fromSide":"right","toNode":"b685190c8bbddf4c","toSide":"left"},
+		{"id":"9db2bc26957ec6c4","fromNode":"003a5b452cf2dd8b","fromSide":"right","toNode":"b685190c8bbddf4c","toSide":"left"},
+		{"id":"cb62d6088c9f8374","fromNode":"82c6d86e1b42dd32","fromSide":"bottom","toNode":"07dacfb81d7bcff7","toSide":"top","color":"4","label":"UDP封装与IP分片例题"}
 	]
 }
