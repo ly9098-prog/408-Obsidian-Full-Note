@@ -1,5 +1,8 @@
 {
   "cssTheme": "Blue Topaz",
   "accentColor": "#42c0ff",
-  "theme": "obsidian"
+  "theme": "obsidian",
+  "enabledCssSnippets": [
+    "p4-review"
+  ]
 }

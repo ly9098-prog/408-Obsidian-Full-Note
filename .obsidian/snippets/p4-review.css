@@ -1,0 +1,106 @@
+/* Scoped by the cssclasses property on the three P4 review notes. */
+.p4-review {
+  --p4-reading-font: "Noto Sans SC", "Microsoft YaHei UI", "Microsoft YaHei",
+    "PingFang SC", sans-serif;
+  --font-text: var(--p4-reading-font);
+  --font-text-size: 17px;
+  --line-height-normal: 1.85;
+  --h1-size: 1.75em;
+  --h2-size: 1.35em;
+  --h3-size: 1.12em;
+  --h1-weight: 700;
+  --h2-weight: 700;
+  --h3-weight: 600;
+  --file-line-width: 800px;
+}
+
+.markdown-preview-view.p4-review,
+.markdown-source-view.p4-review .cm-content {
+  font-family: var(--p4-reading-font);
+  font-size: var(--font-text-size);
+  line-height: var(--line-height-normal);
+}
+
+.p4-review :is(h1, h2, h3) {
+  font-family: var(--p4-reading-font);
+  line-height: 1.45;
+}
+
+.p4-review h1 {
+  margin-block: 0.4em 1em;
+}
+
+.p4-review h2 {
+  margin-top: 2em;
+  padding-bottom: 0.45em;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.p4-review h3 {
+  margin-top: 1.5em;
+}
+
+.p4-review :is(p, ul, ol, table, pre, .callout) {
+  margin-block: 0.8em;
+}
+
+.p4-review li {
+  margin-block: 0.4em;
+}
+
+.p4-review strong {
+  font-weight: 700;
+}
+
+.p4-review table {
+  width: 100%;
+  font-size: 0.92em;
+  line-height: 1.65;
+  font-variant-numeric: tabular-nums;
+}
+
+.p4-review :is(th, td) {
+  padding: 0.65em 0.8em;
+  vertical-align: top;
+}
+
+.p4-review th {
+  background-color: var(--background-secondary);
+  font-weight: 600;
+}
+
+.p4-review :is(pre, code) {
+  font-family: var(--font-monospace);
+  font-variant-numeric: tabular-nums;
+}
+
+.p4-review pre {
+  padding: 1em;
+  line-height: 1.7;
+  overflow-x: auto;
+}
+
+.p4-review .callout {
+  padding: 0.85em 1em;
+}
+
+.p4-review .callout-title {
+  font-weight: 600;
+}
+
+.p4-review .callout[data-callout="example"] .callout-content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0.8em auto;
+}
+
+@media (max-width: 600px) {
+  .p4-review {
+    --font-text-size: 16px;
+  }
+
+  .p4-review :is(th, td) {
+    padding: 0.45em 0.5em;
+  }
+}

@@ -17,7 +17,7 @@
 		{"id":"9c96ffee986ba7cc","type":"text","text":"![[4.4.5 边界网关协议BGP的工作原理]]","x":1040,"y":5640,"width":820,"height":520,"color":"4"},
 		{"id":"c39086057c5bcc91","type":"text","text":"![[4.2.3 划分子网与路由聚合]]","x":-2010,"y":700,"width":1260,"height":3820,"color":"4"},
 		{"id":"d6893e70078ee371","type":"file","file":"CS408-Obsidian-Note-latest/4计算机网络/4 网络层/变长子网划分-堵水法.md","x":-1770,"y":4620,"width":780,"height":1280},
-		{"id":"p4net20261019","type":"file","file":"CS408-Obsidian-Note-latest/4计算机网络/4 网络层/P4强化：IP分片与路由选择协议串讲.md","x":4200,"y":-1120,"width":1500,"height":7000,"color":"4"}
+		{"id":"p4net20261019","type":"file","file":"CS408-Obsidian-Note-latest/4计算机网络/4 网络层/P4强化：IP分片与路由选择协议串讲.md","x":5880,"y":-1120,"width":1100,"height":7000,"color":"4"}
 	],
 	"edges":[
 		{"id":"2a6fed21529694e4","fromNode":"f0a7702f7d811c2e","fromSide":"bottom","toNode":"aa29591b1c0dc7f5","toSide":"top"},
@@ -36,6 +36,6 @@
 		{"id":"984c404c36380d18","fromNode":"9c96ffee986ba7cc","fromSide":"right","toNode":"23b57ebb429602f9","toSide":"left"},
 		{"id":"f131d5169119e50a","fromNode":"9c96ffee986ba7cc","fromSide":"left","toNode":"b2637255442b2183","toSide":"bottom"},
 		{"id":"6b2cc7b73bdf5773","fromNode":"b2637255442b2183","fromSide":"right","toNode":"23b57ebb429602f9","toSide":"left"},
-		{"id":"e2bce227a15564313","fromNode":"392dc2851d6977ec","fromSide":"right","toNode":"p4net20261019","toSide":"left"}
+		{"id":"e2bce227a15564313","fromNode":"923ee13862226d58","fromSide":"right","toNode":"p4net20261019","toSide":"left"}
 	]
 }
