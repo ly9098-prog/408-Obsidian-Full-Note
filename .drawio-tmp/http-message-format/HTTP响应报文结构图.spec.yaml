@@ -1,0 +1,390 @@
+meta:
+  profile: default
+  theme: tech-blue
+  layout: vertical
+  canvas: 1280x800
+  title: HTTP 响应报文
+  source: generated
+nodes:
+- id: title
+  label: HTTP 响应报文
+  type: text
+  bounds:
+    x: 48
+    y: 30
+    width: 760
+    height: 60
+  style:
+    fontFamily: Microsoft YaHei
+    fontSize: 36
+    fontColor: '#193142'
+    fontStyle: 1
+    align: left
+    verticalAlign: middle
+- id: subtitle
+  label: HTTP/1.1 示例 · 字段按传输顺序排列，宽度不代表字节数
+  type: text
+  bounds:
+    x: 48
+    y: 94
+    width: 1160
+    height: 40
+  style:
+    fontFamily: Microsoft YaHei
+    fontSize: 22
+    fontColor: '#526C7A'
+    fontStyle: 0
+    align: left
+    verticalAlign: middle
+- id: line-label
+  label: 状态行
+  type: text
+  bounds:
+    x: 48
+    y: 160
+    width: 180
+    height: 88
+  style:
+    fontFamily: Microsoft YaHei
+    fontSize: 28
+    fontColor: '#126D9B'
+    fontStyle: 1
+    align: left
+    verticalAlign: middle
+- id: version
+  label: '版本
+
+    HTTP/1.1'
+  type: service
+  bounds:
+    x: 240
+    y: 160
+    width: 288
+    height: 88
+  style:
+    rounded: 0
+    fillColor: '#E0F1FC'
+    strokeColor: '#8FA7B5'
+    strokeWidth: 2
+    fontFamily: Microsoft YaHei
+    fontSize: 24
+    fontColor: '#193142'
+    fontStyle: 1
+    align: center
+    verticalAlign: middle
+    spacingLeft: 0
+- id: sp1
+  label: SP
+  type: service
+  bounds:
+    x: 528
+    y: 160
+    width: 40
+    height: 88
+  style:
+    rounded: 0
+    fillColor: '#EAF2F7'
+    strokeColor: '#8FA7B5'
+    strokeWidth: 2
+    fontFamily: Microsoft YaHei
+    fontSize: 17
+    fontColor: '#126D9B'
+    fontStyle: 0
+    align: center
+    verticalAlign: middle
+    spacingLeft: 0
+- id: status
+  label: '状态码
+
+    200'
+  type: service
+  bounds:
+    x: 568
+    y: 160
+    width: 160
+    height: 88
+  style:
+    rounded: 0
+    fillColor: '#E0F1FC'
+    strokeColor: '#8FA7B5'
+    strokeWidth: 2
+    fontFamily: Microsoft YaHei
+    fontSize: 24
+    fontColor: '#193142'
+    fontStyle: 1
+    align: center
+    verticalAlign: middle
+    spacingLeft: 0
+- id: sp2
+  label: SP
+  type: service
+  bounds:
+    x: 728
+    y: 160
+    width: 40
+    height: 88
+  style:
+    rounded: 0
+    fillColor: '#EAF2F7'
+    strokeColor: '#8FA7B5'
+    strokeWidth: 2
+    fontFamily: Microsoft YaHei
+    fontSize: 17
+    fontColor: '#126D9B'
+    fontStyle: 0
+    align: center
+    verticalAlign: middle
+    spacingLeft: 0
+- id: reason
+  label: '原因短语
+
+    OK'
+  type: service
+  bounds:
+    x: 768
+    y: 160
+    width: 288
+    height: 88
+  style:
+    rounded: 0
+    fillColor: '#E0F1FC'
+    strokeColor: '#8FA7B5'
+    strokeWidth: 2
+    fontFamily: Microsoft YaHei
+    fontSize: 24
+    fontColor: '#193142'
+    fontStyle: 1
+    align: center
+    verticalAlign: middle
+    spacingLeft: 0
+- id: endline
+  label: CRLF
+  type: service
+  bounds:
+    x: 1056
+    y: 160
+    width: 112
+    height: 88
+  style:
+    rounded: 0
+    fillColor: '#EAF2F7'
+    strokeColor: '#8FA7B5'
+    strokeWidth: 2
+    fontFamily: Microsoft YaHei
+    fontSize: 24
+    fontColor: '#126D9B'
+    fontStyle: 0
+    align: center
+    verticalAlign: middle
+    spacingLeft: 0
+- id: headers-label
+  label: 首部行
+  type: text
+  bounds:
+    x: 48
+    y: 248
+    width: 180
+    height: 128
+  style:
+    fontFamily: Microsoft YaHei
+    fontSize: 28
+    fontColor: '#126D9B'
+    fontStyle: 1
+    align: left
+    verticalAlign: middle
+- id: header0
+  label: 'Content-Type: text/html'
+  type: service
+  bounds:
+    x: 240
+    y: 248
+    width: 816
+    height: 64
+  style:
+    rounded: 0
+    fillColor: '#F7FAFC'
+    strokeColor: '#8FA7B5'
+    strokeWidth: 2
+    fontFamily: Consolas
+    fontSize: 22
+    fontColor: '#193142'
+    fontStyle: 0
+    align: left
+    verticalAlign: middle
+    spacingLeft: 22
+- id: header-end0
+  label: CRLF
+  type: service
+  bounds:
+    x: 1056
+    y: 248
+    width: 112
+    height: 64
+  style:
+    rounded: 0
+    fillColor: '#EAF2F7'
+    strokeColor: '#8FA7B5'
+    strokeWidth: 2
+    fontFamily: Microsoft YaHei
+    fontSize: 22
+    fontColor: '#126D9B'
+    fontStyle: 0
+    align: center
+    verticalAlign: middle
+    spacingLeft: 0
+- id: header1
+  label: 'Content-Length: 14'
+  type: service
+  bounds:
+    x: 240
+    y: 312
+    width: 816
+    height: 64
+  style:
+    rounded: 0
+    fillColor: '#F7FAFC'
+    strokeColor: '#8FA7B5'
+    strokeWidth: 2
+    fontFamily: Consolas
+    fontSize: 22
+    fontColor: '#193142'
+    fontStyle: 0
+    align: left
+    verticalAlign: middle
+    spacingLeft: 22
+- id: header-end1
+  label: CRLF
+  type: service
+  bounds:
+    x: 1056
+    y: 312
+    width: 112
+    height: 64
+  style:
+    rounded: 0
+    fillColor: '#EAF2F7'
+    strokeColor: '#8FA7B5'
+    strokeWidth: 2
+    fontFamily: Microsoft YaHei
+    fontSize: 22
+    fontColor: '#126D9B'
+    fontStyle: 0
+    align: center
+    verticalAlign: middle
+    spacingLeft: 0
+- id: blank-label
+  label: 空行
+  type: text
+  bounds:
+    x: 48
+    y: 376
+    width: 180
+    height: 64
+  style:
+    fontFamily: Microsoft YaHei
+    fontSize: 28
+    fontColor: '#A76B0A'
+    fontStyle: 1
+    align: left
+    verticalAlign: middle
+- id: empty-line
+  label: CRLF
+  type: service
+  bounds:
+    x: 240
+    y: 376
+    width: 928
+    height: 64
+  style:
+    rounded: 0
+    fillColor: '#FFF0CD'
+    strokeColor: '#8FA7B5'
+    strokeWidth: 2
+    fontFamily: Microsoft YaHei
+    fontSize: 26
+    fontColor: '#8D5900'
+    fontStyle: 1
+    align: center
+    verticalAlign: middle
+    spacingLeft: 0
+- id: body-label
+  label: 实体主体
+  type: text
+  bounds:
+    x: 48
+    y: 440
+    width: 180
+    height: 104
+  style:
+    fontFamily: Microsoft YaHei
+    fontSize: 28
+    fontColor: '#2D7350'
+    fontStyle: 1
+    align: left
+    verticalAlign: middle
+- id: body
+  label: <h1>Hello</h1>
+  type: service
+  bounds:
+    x: 240
+    y: 440
+    width: 928
+    height: 104
+  style:
+    rounded: 0
+    fillColor: '#EAF6EF'
+    strokeColor: '#8FA7B5'
+    strokeWidth: 2
+    fontFamily: Consolas
+    fontSize: 30
+    fontColor: '#245C40'
+    fontStyle: 0
+    align: center
+    verticalAlign: middle
+    spacingLeft: 0
+- id: bytes
+  label: 14 B；本例含主体，实际报文的主体可为空。
+  type: text
+  bounds:
+    x: 240
+    y: 548
+    width: 928
+    height: 36
+  style:
+    fontFamily: Microsoft YaHei
+    fontSize: 21
+    fontColor: '#526C7A'
+    fontStyle: 0
+    align: left
+    verticalAlign: middle
+- id: legend1
+  label: SP = 空格（1 B）     CRLF = 回车换行（2 B）
+  type: text
+  bounds:
+    x: 48
+    y: 684
+    width: 1160
+    height: 36
+  style:
+    fontFamily: Microsoft YaHei
+    fontSize: 24
+    fontColor: '#126D9B'
+    fontStyle: 1
+    align: left
+    verticalAlign: middle
+- id: legend2
+  label: 识图重点：起始行 → 若干首部行 → 空行 → 实体主体；空行标记首部结束。
+  type: text
+  bounds:
+    x: 48
+    y: 728
+    width: 1160
+    height: 36
+  style:
+    fontFamily: Microsoft YaHei
+    fontSize: 22
+    fontColor: '#526C7A'
+    fontStyle: 0
+    align: left
+    verticalAlign: middle
+edges: []

@@ -15,9 +15,9 @@
               "state": {
                 "file": "CS408-Obsidian-Note-latest/4计算机网络/5 传输层/5 传输层.canvas",
                 "viewState": {
-                  "x": -1524.1898168326622,
-                  "y": 1018.6988562895939,
-                  "zoom": -0.37370174461141364
+                  "x": -1777.9212699813895,
+                  "y": 7277.622840087582,
+                  "zoom": -0.333333333333333
                 }
               },
               "icon": "lucide-layout-dashboard",
@@ -32,9 +32,9 @@
               "state": {
                 "file": "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/6 应用层.canvas",
                 "viewState": {
-                  "x": -571.4514655996463,
-                  "y": 863.6117130831153,
-                  "zoom": -0.8207680980828953
+                  "x": 1088.1476211154072,
+                  "y": 4294.628019261473,
+                  "zoom": -1.1541014314162286
                 }
               },
               "icon": "lucide-layout-dashboard",
@@ -49,9 +49,9 @@
               "state": {
                 "file": "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4 网络层.canvas",
                 "viewState": {
-                  "x": 3812.109905004199,
-                  "y": 5319.1313538673985,
-                  "zoom": -1.2781917791408726
+                  "x": 6818.638376273877,
+                  "y": -117.62666532494643,
+                  "zoom": -0.9448584458075393
                 }
               },
               "icon": "lucide-layout-dashboard",
@@ -59,7 +59,7 @@
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -220,8 +220,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 305.5,
-    "collapsed": true
+    "width": 305.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -235,14 +234,19 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "d0e69c8720c8df56",
+  "active": "63d27e460076e0bd",
   "lastOpenFiles": [
-    "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/6 应用层.canvas",
-    "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/attachments/计网P4第01页.png",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4 网络层.canvas",
-    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/P4强化：IP分片与路由选择协议串讲.md",
-    "CS408-Obsidian-Note-latest/4计算机网络/5 传输层/P4强化：逐层协议封装与TCP-UDP计算.md",
+    "CS408-Obsidian-Note-latest/4计算机网络/5 传输层/5 传输层.canvas",
+    "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/6 应用层.canvas",
+    "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/attachments/HTTP响应报文结构图.drawio",
+    "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/attachments/HTTP请求报文结构图.drawio",
+    "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/attachments/HTTP响应报文结构图.png",
+    "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/attachments/HTTP请求报文结构图.png",
     "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/P4强化：HTTP报文与协议封装速记.md",
+    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/P4强化：IP分片与路由选择协议串讲.md",
+    "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/attachments/计网P4第01页.png",
+    "CS408-Obsidian-Note-latest/4计算机网络/5 传输层/P4强化：逐层协议封装与TCP-UDP计算.md",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/计网P4第19页.png",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/计网P4第18页.png",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/计网P4第17页.png",
@@ -250,9 +254,6 @@
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/计网P4第15页.png",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/计网P4第14页.png",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/计网P4第13页.png",
-    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/计网P4第12页.png",
-    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/计网P4第11页.png",
-    "CS408-Obsidian-Note-latest/4计算机网络/5 传输层/5 传输层.canvas",
     "CS408-Obsidian-Note-latest/4计算机网络/5 传输层/UDP封装与IPv4分片（例题）.md",
     "CS408-Obsidian-Note-latest/4计算机网络/5 传输层/attachments/ipv4-fragmentation-handdrawn.drawio",
     "CS408-Obsidian-Note-latest/4计算机网络/5 传输层/attachments/udp-ip-encapsulation-handdrawn.drawio",
@@ -289,8 +290,6 @@
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/基数排序&二路归并排序-详细版-动画.html",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/基数排序&二路归并排序-省略版-动画.html",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/基数排序&二路归并排序-省略版.html",
-    "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/attachments/408_操作系统经典同步问题_动画演示.html",
-    "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/sort_svg_animation_v2.html",
-    "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/preview.html"
+    "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/attachments/408_操作系统经典同步问题_动画演示.html"
   ]
 }
