@@ -4,45 +4,27 @@
     "type": "split",
     "children": [
       {
-        "id": "32889dbf0357d7d2",
+        "id": "75f9b4b3898b1dff",
         "type": "tabs",
         "children": [
           {
-            "id": "6d344170b47709ad",
+            "id": "22d50d30c52338ad",
             "type": "leaf",
             "state": {
               "type": "canvas",
               "state": {
-                "file": "CS408-Obsidian-Note-latest/4计算机网络/1 计算机网络体系结构/1 计算机网络体系结构.canvas",
+                "file": "CS408-Obsidian-Note-latest/4计算机网络/3 数据链路层/3 数据链路层.canvas",
                 "viewState": {
-                  "x": 1862.5375967477019,
-                  "y": 361.7902583159263,
-                  "zoom": -0.6474615920899829
+                  "x": -821.822833889405,
+                  "y": 4599.642076329035,
+                  "zoom": -0.340252747273124
                 }
               },
               "icon": "lucide-layout-dashboard",
-              "title": "1 计算机网络体系结构"
-            }
-          },
-          {
-            "id": "63d27e460076e0bd",
-            "type": "leaf",
-            "state": {
-              "type": "canvas",
-              "state": {
-                "file": "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4 网络层.canvas",
-                "viewState": {
-                  "x": -2661.902500741305,
-                  "y": 555.9860541232524,
-                  "zoom": -0.007136499301655053
-                }
-              },
-              "icon": "lucide-layout-dashboard",
-              "title": "4 网络层"
+              "title": "3 数据链路层"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -217,13 +199,15 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "63d27e460076e0bd",
+  "active": "22d50d30c52338ad",
   "lastOpenFiles": [
+    "CS408-Obsidian-Note-latest/4计算机网络/3 数据链路层/3.7.3 HDLC的三种操作方式.md",
     "CS408-Obsidian-Note-latest/4计算机网络/2 物理层/2 物理层.canvas",
+    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4 网络层.canvas",
+    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4.7.1 冲突域和广播域.md",
+    "CS408-Obsidian-Note-latest/4计算机网络/1 计算机网络体系结构/1 计算机网络体系结构.canvas",
     "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/6 应用层.canvas",
     "LICENSE_ORIGINAL.md",
-    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4 网络层.canvas",
-    "CS408-Obsidian-Note-latest/4计算机网络/1 计算机网络体系结构/1 计算机网络体系结构.canvas",
     "CS408-Obsidian-Note-latest/4计算机网络/5 传输层/5 传输层.canvas",
     "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/attachments/HTTP响应报文结构图.drawio",
     "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/attachments/HTTP请求报文结构图.drawio",
@@ -261,7 +245,6 @@
     "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/2.4.3 死锁避免.md",
     "CS408-Obsidian-Note-latest/3操作系统/4 文件管理/4 文件管理.canvas",
     "CS408-Obsidian-Note-latest/3操作系统/背诵知识点.md",
-    "CS408-Obsidian-Note-latest/3操作系统/5 输入输出管理/5 输入输出管理.canvas",
     "CS408-Obsidian-Note-latest/3操作系统/4 文件管理/文件共享方式.md",
     "CS408-Obsidian-Note-latest/3操作系统/4 文件管理/4.2.5 文件共享.md",
     "CS408-Obsidian-Note-latest/3操作系统/4 文件管理/FAT表.md",
@@ -269,7 +252,6 @@
     "CS408-Obsidian-Note-latest/3操作系统/3 内存管理/3.1 内存管理方法.md",
     "CS408-Obsidian-Note-latest/3操作系统/3 内存管理/attachments/页表概念关系区分.html",
     "CS408-Obsidian-Note-latest/3操作系统/3 内存管理/3.2.2 请求分页管理方式.md",
-    "CS408-Obsidian-Note-latest/3操作系统/1 计算机系统概述/1.1 操作系统的基本概念.md",
     "CS408-Obsidian-Note-latest/2计算机组成原理/1 计算机系统概述/attachments/程序执行的过程.html",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/基数排序&二路归并排序-详细版-动画.html",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/基数排序&二路归并排序-省略版-动画.html",
