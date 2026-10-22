@@ -13,15 +13,15 @@
             "state": {
               "type": "canvas",
               "state": {
-                "file": "CS408-Obsidian-Note-latest/4计算机网络/5 传输层/5 传输层.canvas",
+                "file": "CS408-Obsidian-Note-latest/4计算机网络/1 计算机网络体系结构/1 计算机网络体系结构.canvas",
                 "viewState": {
-                  "x": -1777.9212699813895,
-                  "y": 7277.622840087582,
-                  "zoom": -0.333333333333333
+                  "x": 1862.5375967477019,
+                  "y": 361.7902583159263,
+                  "zoom": -0.6474615920899829
                 }
               },
               "icon": "lucide-layout-dashboard",
-              "title": "5 传输层"
+              "title": "1 计算机网络体系结构"
             }
           },
           {
@@ -30,28 +30,11 @@
             "state": {
               "type": "canvas",
               "state": {
-                "file": "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/6 应用层.canvas",
-                "viewState": {
-                  "x": 1088.1476211154072,
-                  "y": 4294.628019261473,
-                  "zoom": -1.1541014314162286
-                }
-              },
-              "icon": "lucide-layout-dashboard",
-              "title": "6 应用层"
-            }
-          },
-          {
-            "id": "d0e69c8720c8df56",
-            "type": "leaf",
-            "state": {
-              "type": "canvas",
-              "state": {
                 "file": "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4 网络层.canvas",
                 "viewState": {
-                  "x": 6818.638376273877,
-                  "y": -117.62666532494643,
-                  "zoom": -0.9448584458075393
+                  "x": -2661.902500741305,
+                  "y": 555.9860541232524,
+                  "zoom": -0.007136499301655053
                 }
               },
               "icon": "lucide-layout-dashboard",
@@ -236,9 +219,12 @@
   },
   "active": "63d27e460076e0bd",
   "lastOpenFiles": [
-    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4 网络层.canvas",
-    "CS408-Obsidian-Note-latest/4计算机网络/5 传输层/5 传输层.canvas",
+    "CS408-Obsidian-Note-latest/4计算机网络/2 物理层/2 物理层.canvas",
     "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/6 应用层.canvas",
+    "LICENSE_ORIGINAL.md",
+    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4 网络层.canvas",
+    "CS408-Obsidian-Note-latest/4计算机网络/1 计算机网络体系结构/1 计算机网络体系结构.canvas",
+    "CS408-Obsidian-Note-latest/4计算机网络/5 传输层/5 传输层.canvas",
     "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/attachments/HTTP响应报文结构图.drawio",
     "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/attachments/HTTP请求报文结构图.drawio",
     "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/attachments/HTTP响应报文结构图.png",
@@ -271,7 +257,6 @@
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/DR和BDR.md",
     "CS408-Obsidian-Note-latest/1数据结构/6 图/6 图.canvas",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/变长子网划分-堵水法.md",
-    "CS408-Obsidian-Note-latest/4计算机网络/1 计算机网络体系结构/1 计算机网络体系结构.canvas",
     "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/2.4.2 死锁预防.md",
     "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/2.4.3 死锁避免.md",
     "CS408-Obsidian-Note-latest/3操作系统/4 文件管理/4 文件管理.canvas",
@@ -285,7 +270,6 @@
     "CS408-Obsidian-Note-latest/3操作系统/3 内存管理/attachments/页表概念关系区分.html",
     "CS408-Obsidian-Note-latest/3操作系统/3 内存管理/3.2.2 请求分页管理方式.md",
     "CS408-Obsidian-Note-latest/3操作系统/1 计算机系统概述/1.1 操作系统的基本概念.md",
-    "CS408-Obsidian-Note-latest/3操作系统/1 计算机系统概述/1.0 计算机系统概述常考点.md",
     "CS408-Obsidian-Note-latest/2计算机组成原理/1 计算机系统概述/attachments/程序执行的过程.html",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/基数排序&二路归并排序-详细版-动画.html",
     "CS408-Obsidian-Note-latest/1数据结构/8 排序/attachments/基数排序&二路归并排序-省略版-动画.html",
