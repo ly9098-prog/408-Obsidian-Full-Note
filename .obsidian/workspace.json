@@ -13,15 +13,15 @@
             "state": {
               "type": "canvas",
               "state": {
-                "file": "CS408-Obsidian-Note-latest/4计算机网络/3 数据链路层/3 数据链路层.canvas",
+                "file": "CS408-Obsidian-Note-latest/1数据结构/6 图/6 图.canvas",
                 "viewState": {
-                  "x": -2856.779803709386,
-                  "y": 1128.6254541073529,
-                  "zoom": -0.04439411935845328
+                  "x": 682.3863747746698,
+                  "y": 1519.6891585635865,
+                  "zoom": 1.1102230246251565e-16
                 }
               },
               "icon": "lucide-layout-dashboard",
-              "title": "3 数据链路层"
+              "title": "6 图"
             }
           }
         ]
@@ -201,17 +201,24 @@
   },
   "active": "22d50d30c52338ad",
   "lastOpenFiles": [
-    "CS408-Obsidian-Note-latest/4计算机网络/3 数据链路层/3.3.1 海明码冗余位数公式.md",
+    "CS408-Obsidian-Note-latest/3操作系统/1 计算机系统概述/1 计算机系统概述.canvas",
+    "CS408-Obsidian-Note-latest/3操作系统/5 输入输出管理/5 输入输出管理.canvas",
+    "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/2 进程与线程.canvas",
+    "CS408-Obsidian-Note-latest/2计算机组成原理/2 数据的表示和运算/2 数据的表示和运算.canvas",
+    "CS408-Obsidian-Note-latest/2计算机组成原理/2 数据的表示和运算/attachments/IEEE754标准的单精度浮点数的表示范围.jpg",
+    "CS408-Obsidian-Note-latest/2计算机组成原理/2 数据的表示和运算/attachments/阶码全为0或全为1时IEEE754浮点数的解释.jpg",
+    "CS408-Obsidian-Note-latest/4计算机网络/1 计算机网络体系结构/1 计算机网络体系结构.canvas",
+    "CS408-Obsidian-Note-latest/4计算机网络/5 传输层/5 传输层.canvas",
+    "CS408-Obsidian-Note-latest/2计算机组成原理/1 计算机系统概述/1 计算机系统概述.canvas",
+    "CS408-Obsidian-Note-latest/2计算机组成原理/4 指令系统/4 指令系统.canvas",
     "CS408-Obsidian-Note-latest/4计算机网络/3 数据链路层/3 数据链路层.canvas",
+    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4 网络层.canvas",
+    "CS408-Obsidian-Note-latest/4计算机网络/3 数据链路层/3.3.1 海明码冗余位数公式.md",
     "CS408-Obsidian-Note-latest/4计算机网络/3 数据链路层/3.3.1 海明码冗余位数例题.md",
     "CS408-Obsidian-Note-latest/4计算机网络/3 数据链路层/3.7.3 HDLC的三种操作方式.md",
     "CS408-Obsidian-Note-latest/4计算机网络/2 物理层/2 物理层.canvas",
-    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4 网络层.canvas",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4.7.1 冲突域和广播域.md",
-    "CS408-Obsidian-Note-latest/4计算机网络/1 计算机网络体系结构/1 计算机网络体系结构.canvas",
-    "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/6 应用层.canvas",
     "LICENSE_ORIGINAL.md",
-    "CS408-Obsidian-Note-latest/4计算机网络/5 传输层/5 传输层.canvas",
     "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/attachments/HTTP响应报文结构图.drawio",
     "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/attachments/HTTP请求报文结构图.drawio",
     "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/attachments/HTTP响应报文结构图.png",
@@ -225,8 +232,6 @@
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/计网P4第17页.png",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/计网P4第16页.png",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/计网P4第15页.png",
-    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/计网P4第14页.png",
-    "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/attachments/计网P4第13页.png",
     "CS408-Obsidian-Note-latest/4计算机网络/5 传输层/UDP封装与IPv4分片（例题）.md",
     "CS408-Obsidian-Note-latest/4计算机网络/5 传输层/attachments/ipv4-fragmentation-handdrawn.drawio",
     "CS408-Obsidian-Note-latest/4计算机网络/5 传输层/attachments/udp-ip-encapsulation-handdrawn.drawio",
@@ -237,12 +242,8 @@
     "CS408-Obsidian-Note-latest/4计算机网络/6 应用层/第二种：递归迭代查询.md",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4.2.3 路由聚合.md",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/4.2.3 无分类编制的IPV4地址（CIDR）.md",
-    "CS408-Obsidian-Note-latest/2计算机组成原理/1 计算机系统概述/1 计算机系统概述.canvas",
-    "CS408-Obsidian-Note-latest/3操作系统/1 计算机系统概述/1 计算机系统概述.canvas",
-    "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/2 进程与线程.canvas",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/APR流程图.md",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/DR和BDR.md",
-    "CS408-Obsidian-Note-latest/1数据结构/6 图/6 图.canvas",
     "CS408-Obsidian-Note-latest/4计算机网络/4 网络层/变长子网划分-堵水法.md",
     "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/2.4.2 死锁预防.md",
     "CS408-Obsidian-Note-latest/3操作系统/2 进程与线程/2.4.3 死锁避免.md",

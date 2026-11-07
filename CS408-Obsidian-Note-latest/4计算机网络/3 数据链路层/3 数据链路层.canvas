@@ -9,7 +9,7 @@
 		{"id":"f2768b66f53eef20","type":"text","text":"![[3.7.2 点对点协议PPP]]","x":-1240,"y":3200,"width":840,"height":840,"color":"4"},
 		{"id":"82f7642521244660","type":"text","text":"![[3.5 媒体介入控制的基本概念]]","x":240,"y":-680,"width":1140,"height":580,"color":"4"},
 		{"id":"1459f1195ec97117","type":"text","text":"![[3.5.1 静态划分信道]]","x":240,"y":0,"width":700,"height":380,"color":"4"},
-		{"id":"533be9784ef2161c","type":"text","text":"![[3.5.1 静态划分信道分类]]","x":240,"y":480,"width":1320,"height":2760,"color":"4"},
+		{"id":"533be9784ef2161c","type":"text","text":"![[3.5.1 静态划分信道分类]]","x":240,"y":480,"width":1320,"height":2840,"color":"4"},
 		{"id":"46fb74129da95be4","type":"text","text":"![[3.6.2 MAC地址]]","x":1920,"y":-680,"width":1762,"height":740,"color":"4"},
 		{"id":"88e55635ac9fbce8","type":"text","text":"![[3.6.2 ARP（address resolution protocol）协议]]","x":1920,"y":190,"width":1222,"height":530,"color":"4"},
 		{"id":"881a8d088e7f6f94","type":"text","text":"![[3.8.2 交换机]]","x":1920,"y":840,"width":1502,"height":1840,"color":"4"},

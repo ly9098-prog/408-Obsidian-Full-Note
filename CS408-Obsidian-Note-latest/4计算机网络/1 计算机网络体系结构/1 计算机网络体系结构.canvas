@@ -6,7 +6,7 @@
 		{"id":"c0c3d429b6a565ee","type":"text","text":"![[1.1.5 计算机网络的分类]]","x":-920,"y":620,"width":1200,"height":520,"color":"4"},
 		{"id":"acd80f5aec3eef4c","type":"text","text":"![[1.1.6 计算机网络的性能指标]]","x":360,"y":-360,"width":784,"height":980,"color":"4"},
 		{"id":"d209b127ad639c0c","type":"text","text":"![[1.2 计算机网络体系结构]]","x":1240,"y":-360,"width":1040,"height":1920,"color":"4"},
-		{"id":"63a9621bd6bfa0b2","type":"text","text":"![[1.2.3 三种网络模型]]","x":2480,"y":-360,"width":1620,"height":1400,"color":"4"}
+		{"id":"63a9621bd6bfa0b2","type":"text","text":"![[1.2.3 三种网络模型]]","x":2480,"y":-360,"width":1620,"height":1480,"color":"4"}
 	],
 	"edges":[
 		{"id":"a3efc6564df5e97d","fromNode":"a18fabc6da1c67da","fromSide":"bottom","toNode":"104be35075d72128","toSide":"top"},
